@@ -8,6 +8,8 @@
 #include "FND.h"
 
 uint16_t fndNumData = 0;
+uint8_t fndFont[16] = {0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xf8, 0x80, 0x90, 0x88, 0x83, 0xc6, 0xa1, 0x86, 0x8e};
+uint8_t fndDot = 0x7f;
 
 void FND_Init(){
 	// GPIO 설정, GPIOA 0, 1, 2, 3 COM(common port) 연결
@@ -39,8 +41,6 @@ void FND_DispDigit(){
 	}
 }
 void FND_DispDigit_1(){
-	uint8_t fndFont[16] = {0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xf8, 0x80, 0x90, 0x88, 0x83, 0xc6, 0xa1, 0x86, 0x8e};
-
 	// data의 자릿수 분리
 	uint8_t digitData1 = fndNumData % 10;
 	FND_SetComPort(FND_COM_PORT, FND_COM_DIG_1|FND_COM_DIG_2|FND_COM_DIG_3|FND_COM_DIG_4, OFF);
@@ -48,8 +48,6 @@ void FND_DispDigit_1(){
 	FND_SetComPort(FND_COM_PORT, FND_COM_DIG_1, ON);
 }
 void FND_DispDigit_10(){
-	uint8_t fndFont[16] = {0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xf8, 0x80, 0x90, 0x88, 0x83, 0xc6, 0xa1, 0x86, 0x8e};
-
 	// data의 자릿수 분리
 	uint8_t digitData10 = fndNumData / 10 % 10;
 	FND_SetComPort(FND_COM_PORT, FND_COM_DIG_1|FND_COM_DIG_2|FND_COM_DIG_3|FND_COM_DIG_4, OFF);
@@ -57,8 +55,6 @@ void FND_DispDigit_10(){
 	FND_SetComPort(FND_COM_PORT, FND_COM_DIG_2, ON);
 }
 void FND_DispDigit_100(){
-	uint8_t fndFont[16] = {0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xf8, 0x80, 0x90, 0x88, 0x83, 0xc6, 0xa1, 0x86, 0x8e};
-
 	// data의 자릿수 분리
 	uint8_t digitData100 = fndNumData / 100 % 10;
 	FND_SetComPort(FND_COM_PORT, FND_COM_DIG_1|FND_COM_DIG_2|FND_COM_DIG_3|FND_COM_DIG_4, OFF);
@@ -66,13 +62,16 @@ void FND_DispDigit_100(){
 	FND_SetComPort(FND_COM_PORT, FND_COM_DIG_3, ON);
 }
 void FND_DispDigit_1000(){
-	uint8_t fndFont[16] = {0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xf8, 0x80, 0x90, 0x88, 0x83, 0xc6, 0xa1, 0x86, 0x8e};
-
 	// data의 자릿수 분리
 	uint8_t digitData1000 = fndNumData / 1000 % 10;
 	FND_SetComPort(FND_COM_PORT, FND_COM_DIG_1|FND_COM_DIG_2|FND_COM_DIG_3|FND_COM_DIG_4, OFF);
 	GPIO_WritePort(FND_FONT_PORT, fndFont[digitData1000]);
 	FND_SetComPort(FND_COM_PORT, FND_COM_DIG_4, ON);
+}
+void FND_DispDigit_DP() {
+	FND_SetComPort(FND_COM_PORT, FND_COM_DIG_1|FND_COM_DIG_2|FND_COM_DIG_3|FND_COM_DIG_4, OFF);
+	GPIO_WritePort(FND_FONT_PORT, fndDot);
+	FND_SetComPort(FND_COM_PORT, FND_COM_DIG_3, ON);
 }
 void FND_SetNum(uint16_t num){
 	fndNumData = num;

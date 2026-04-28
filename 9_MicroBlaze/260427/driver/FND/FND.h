@@ -37,6 +37,7 @@ void FND_DispDigit_1();
 void FND_DispDigit_10();
 void FND_DispDigit_100();
 void FND_DispDigit_1000();
+void FND_DispDigit_DP();
 void FND_SetNum(uint16_t num);
 void FND_DispOn();
 void FND_DispOFF();
