@@ -1,25 +1,11 @@
-#include <stdint.h>
-#include "xil_printf.h"
-#include "driver/FND/FND.h"
-#include "common/common.h"
+#include "ap/ap_main.h"
 
 
 int main(){
 
-	FND_Init();
-
-	uint16_t counter = 0;
-	uint32_t prevTimeCounter = 0;
-
+	ap_init();
 	while(1){
-		if(millis() - prevTimeCounter >= 100) {
-			prevTimeCounter = millis();
-			FND_SetNum(counter++);
-		}
-
-		FND_DispDigit();
-		millis_inc();
-		delay_ms(1);
+		ap_execute();
 	}
 
 	return 0;
