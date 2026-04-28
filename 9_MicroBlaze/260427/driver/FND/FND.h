@@ -33,7 +33,7 @@
 void FND_Init();
 void FND_SetComPort(GPIO_Typedef_t *GPIOx, uint32_t Seg_Pin, int OnOFF);
 void FND_DispDigit();
-void FND_Dispdigit_1();
+void FND_DispDigit_1();
 void FND_DispDigit_10();
 void FND_DispDigit_100();
 void FND_DispDigit_1000();
