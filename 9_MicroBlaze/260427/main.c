@@ -6,33 +6,30 @@
 
 
 int main(){
-	GPIOA_CR = 0x0f; // 상위 4-bit는 입력, 하위 4-bit는 출력
-	GPIOB_CR = 0xff;
-
-	while(1){
-		GPIOA->CR = 0x0f;
-		GPIOB->CR = 0xff;
-
+	
 		GPIO_SetMode(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, OUTPUT);
 		GPIO_SetMode(GPIOA, GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, INPUT);
+		GPIO_SetMode(GPIOB, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, OUTPUT);
 
-		GPIOB_ODR = 0x00;
-		if ((GPIOA->IDR & (1<<4))) {
-			GPIOA->ODR &= ~(1<<0);
-			GPIO_WritePin(GPIOA, GPIO_PIN_1, SET);
+	while(1){
+		GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, RESET);
+		
+		if(GPIO_ReadPin(GPIOA, GPIO_PIN_4)){
+			GPIO_WritePin(GPIOA, GPIO_PIN_0, RESET);
 		}
-		else if ((GPIOA->IDR & (1<<5))) {
-			GPIOA->ODR &= ~(1<<1);
+		else if(GPIO_ReadPin(GPIOA, GPIO_PIN_5)){
+			GPIO_WritePin(GPIOA, GPIO_PIN_1, RESET);
 		}
-		else if ((GPIOA->IDR & (1<<6))) {
-			GPIOA->ODR &= ~(1<<2);
+		else if(GPIO_ReadPin(GPIOA, GPIO_PIN_6)){
+			GPIO_WritePin(GPIOA, GPIO_PIN_1, RESET);
 		}
-		else if ((GPIOA->IDR & (1<<7))) {
-			GPIOA->ODR &= ~(1<<3);
+		else if(GPIO_ReadPin(GPIOA, GPIO_PIN_7)){
+			GPIO_WritePin(GPIOA, GPIO_PIN_1, RESET);
 		}
-		else {
-			GPIOA->ODR |= (0x0f);
+		else{
+			GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, SET);
 		}
+
 	}
 
 	return 0;

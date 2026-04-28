@@ -8,8 +8,8 @@
 #include "GPIO.h"
 
 
-void GPIO_SetMode(GPIO_Typedef_t *GPIOx, uint32_t GPIO_Pin, itn gpio_dir){  // GPIOÀÇ ÁÖ¼Ò, 32-bit registerÀÌ¹Ç·Î uint32_t, direction
-	if(GPIO_dir == OUTPUT)	GPIOx->CR |= GPIO_Pin;
+void GPIO_SetMode(GPIO_Typedef_t *GPIOx, uint32_t GPIO_Pin, int gpio_dir){  // GPIOì˜ ì£¼ì†Œ, 32-bit registerì´ë¯€ë¡œ uint32_t, direction
+	if(gpio_dir == OUTPUT)	GPIOx->CR |= GPIO_Pin;
 	else					GPIOx->CR &= ~(GPIO_Pin);
 }
 void GPIO_WritePin(GPIO_Typedef_t *GPIOx, uint32_t GPIO_Pin, int level){
@@ -19,7 +19,7 @@ void GPIO_WritePin(GPIO_Typedef_t *GPIOx, uint32_t GPIO_Pin, int level){
 uint32_t GPIO_ReadPin(GPIO_Typedef_t *GPIOx, uint32_t GPIO_Pin){
 	return (GPIOx->IDR & GPIO_Pin) ? 1 : 0;
 }
-void GPIO_WritePort(GPIO_Typedef_t *GPIOx, uint32_t GPIO_Pin, int data){
+void GPIO_WritePort(GPIO_Typedef_t *GPIOx, int data){
 	GPIOx->ODR = data;
 }
 uint32_t GPIO_ReadPort(GPIO_Typedef_t *GPIOx){

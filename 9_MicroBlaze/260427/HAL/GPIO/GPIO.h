@@ -5,8 +5,8 @@
  *      Author: kccistc
  */
 
-#ifndef SRC_GPIO_GPIO_H_
-#define SRC_GPIO_GPIO_H_
+#ifndef SRC_HAL_GPIO_GPIO_H_
+#define SRC_HAL_GPIO_GPIO_H_
 
 #include <stdint.h>
 
@@ -46,11 +46,11 @@ typedef struct {
 #define	SET		1
 
 
-void GPIO_SetMode(GPIO_Typedef_t *GPIOx, uint32_t GPIO_Pin, itn gpio_dir);
+void GPIO_SetMode(GPIO_Typedef_t *GPIOx, uint32_t GPIO_Pin, int gpio_dir);
 void GPIO_WritePin(GPIO_Typedef_t *GPIOx, uint32_t GPIO_Pin, int level);
 uint32_t GPIO_ReadPin(GPIO_Typedef_t *GPIOx, uint32_t GPIO_Pin);
-void GPIO_WritePort(GPIO_Typedef_t *GPIOx, uint32_t GPIO_Pin, int data);
+void GPIO_WritePort(GPIO_Typedef_t *GPIOx, int data);
 uint32_t GPIO_ReadPort(GPIO_Typedef_t *GPIOx);
 
 
-#endif /* SRC_GPIO_GPIO_H_ */
+#endif /* SRC_HAL_GPIO_GPIO_H_ */
