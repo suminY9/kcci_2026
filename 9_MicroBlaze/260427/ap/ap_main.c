@@ -18,6 +18,6 @@ void ap_execute(){
 		UpCounter_Execute();
 
 		millis_inc();
-		delay_us(10);
+		delay_ms(1);
 	}
 }

@@ -15,12 +15,12 @@ void UpCounter_Init(){
 }
 void UpCounter_Execute(){
 	static uint32_t prevTimeCounter = 0;
+	FND_DispDigit();
 
 	if(millis() - prevTimeCounter < 100-1) {
 		return;
 	}
 	prevTimeCounter = millis();
-	FND_SetNum(counter++);
 
-	FND_DispDigit();
+	FND_SetNum(counter++);
 }
