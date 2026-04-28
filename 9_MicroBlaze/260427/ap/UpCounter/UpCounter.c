@@ -14,8 +14,14 @@ void UpCounter_Init(){
 	counter = 0;
 }
 void UpCounter_Execute(){
-	static uint32_t prevTimeCounter = 0;
+	UpCounter_DispLoop();
+	UpCounter_Run();
+}
+void UpCounter_DispLoop(){
 	FND_DispDigit();
+}
+void UpCounter_Run(){
+	static uint32_t prevTimeCounter = 0;
 
 	if(millis() - prevTimeCounter < 100-1) {
 		return;

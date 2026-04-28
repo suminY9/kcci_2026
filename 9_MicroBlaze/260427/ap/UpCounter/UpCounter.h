@@ -14,5 +14,7 @@
 
 void UpCounter_Init();
 void UpCounter_Execute();
+void UpCounter_DispLoop();
+void UpCounter_Run();
 
 #endif /* SRC_AP_UPCOUNTER_UPCOUNTER_H_ */
