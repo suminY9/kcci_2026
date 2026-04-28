@@ -7,24 +7,17 @@
 
 
 #include "ap_main.h"
-#include "../driver/FND/FND.h"
 #include "../common/common.h"
+#include "UpCounter/UpCounter.h"
 
 void ap_init(){
-	FND_Init();
+	UpCounter_Init();
 }
 void ap_execute(){
-	uint16_t counter = 0;
-	uint32_t prevTimeCounter = 0;
-
 	while(1){
-		if(millis() - prevTimeCounter >= 100) {
-			prevTimeCounter = millis();
-			FND_SetNum(counter++);
-		}
+		UpCounter_Execute();
 
-		FND_DispDigit();
 		millis_inc();
-		delay_ms(1);
+		delay_us(10);
 	}
 }
