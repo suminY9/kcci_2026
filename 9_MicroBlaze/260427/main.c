@@ -1,24 +1,7 @@
 #include <stdint.h>
-#include "xparameters.h"
-#include "sleep.h"
 #include "xil_printf.h"
-#include "HAL/GPIO/GPIO.h"
 #include "driver/FND/FND.h"
-
-uint32_t millis_tick = 0;
-
-uint32_t millis(){
-	return millis_tick;
-}
-void millis_inc(){
-	millis_tick++;
-}
-void delay_ms(uint32_t msec){
-	usleep(msec*1000);
-}
-void delay_us(uint32_t usec){
-	usleep(usec);
-}
+#include "common/common.h"
 
 
 int main(){

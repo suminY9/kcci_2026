@@ -7,7 +7,7 @@
 
 #include "FND.h"
 
-uint8_t fndNumData = 0;
+uint16_t fndNumData = 0;
 
 void FND_Init(){
 	// GPIO 설정, GPIOA 0, 1, 2, 3 COM(common port) 연결
