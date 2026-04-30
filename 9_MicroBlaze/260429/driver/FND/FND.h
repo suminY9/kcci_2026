@@ -28,11 +28,19 @@
 #define SEG_PIN_G      	GPIO_PIN_6
 #define SEG_PIN_DP     	GPIO_PIN_7
 
+#define FND_DP_ON		1
+#define FND_DP_OFF		0
+#define FND_DIGIT_1		0x01
+#define FND_DIGIT_10	0x02
+#define FND_DIGIT_100	0x04
+#define FND_DIGIT_1000	0x08
+
 #define ON             	0
 #define OFF			   	1
 
 void FND_Init();
 void FND_SetComPort(GPIO_Typedef_t *FND_Port, uint32_t Seg_Pin, int OnOFF);
+void FND_SetDP(uint8_t digit, uint8_t on_off);
 void FND_DispDigit();
 void FND_DispDigit_1();
 void FND_DispDigit_10();

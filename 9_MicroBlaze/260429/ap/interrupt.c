@@ -9,18 +9,17 @@
 
 XIntc IntrController;
 
-void TMR1_ISR(void *CallbackRef)
-{
-	xil_printf("1sec TIMER 1 ISR!\n");
+// 1msec interrupt service routine
+void TMR1_ISR(void *CallbackRef) {
+	millis_inc();
+	UpCounter_DisLoop();
 }
 
-void TMR2_ISR(void *CallbackRef)
-{
-	xil_printf("2sec                 TIMER 2 ISR!\n");
+void TMR2_ISR(void *CallbackRef) {
+	TimeClock_IncTime();
 }
 
-int SetupInterruptSystem() // p: pointer
-{
+int SetupInterruptSystem() {
 	int status;
 
 	// 1. 인터럽트 컨트롤러 초기화

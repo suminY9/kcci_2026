@@ -11,6 +11,7 @@
 
 
 uint16_t fndNumData = 0;
+uint8_t fndDpData = 0;
 
 void FND_Init() {
 	GPIO_SetMode(GPIOA, FND_COM_DIG_1|FND_COM_DIG_2|FND_COM_DIG_3|FND_COM_DIG_4, OUTPUT);
@@ -21,6 +22,34 @@ void FND_SetComPort(GPIO_Typedef_t *FND_Port, uint32_t Seg_Pin, int OnOFF) {
 	GPIO_WritePin(FND_Port, Seg_Pin, OnOFF);
 }
 
+void FND_SetDP(uint8_t digit, uint8_t on_off){
+	if (digit == FND_DIGIT_1) {
+		if(!on_off) fndDpData |= 1<<0;
+		else fndDpData &= ~(1<<0);
+	}
+	else if (digit == FND_DIGIT_10) {
+		if(!on_off) fndDpData |= 1<<1;
+		else fndDpData &= ~(1<<1);
+	}
+	else if (digit == FND_DIGIT_100) {
+		if(!on_off) fndDpData |= 1<<2;
+		else fndDpData &= ~(1<<2);
+	}
+	else if (digit == FND_DIGIT_1000) {
+		if(!on_off) fndDpData |= 1<<3;
+		else fndDpData &= ~(1<<3);
+	}
+}
+
+void FND_DispDP(uint8_t digit){
+	if(fndDpData & (1<<0)){
+		GPIO_WritePin(GPIOB, GPIO_PIN_7, RESET);
+	}
+	else {
+		GPIO_WritePin(GPIOB, GPIO_PIN_7, SET);
+	}
+}
+
 void FND_DispDigit() {
 	static uint8_t fndDigState = 0;
 	fndDigState = (fndDigState + 1) % 4;
@@ -28,15 +57,19 @@ void FND_DispDigit() {
 	switch(fndDigState) {
 	case 0 :
 		FND_DispDigit_1();
+		FND_DispDP(FND_DIGIT_1);
 		break;
 	case 1 :
 		FND_DispDigit_10();
+		FND_DispDP(FND_DIGIT_10);
 		break;
 	case 2 :
 		FND_DispDigit_100();
+		FND_DispDP(FND_DIGIT_100);
 		break;
 	case 3 :
 		FND_DispDigit_1000();
+		FND_DispDP(FND_DIGIT_1000);
 		break;
 	default:
 		FND_DispDigit_1();
@@ -46,8 +79,7 @@ void FND_DispDigit() {
 
 uint8_t fndFont[16] = {
 		0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xf8,
-	    0x80, 0x90,	0x88, 0x83,	0xc6, 0xa1,	0x86, 0x8e
-	};
+	    0x80, 0x90,	0x88, 0x83,	0xc6, 0xa1,	0x86, 0x8e	};
 
 void FND_DispDigit_1() {
 	uint8_t digitData1 = fndNumData % 10;

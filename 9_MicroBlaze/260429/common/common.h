@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 #include "sleep.h"
+#include "../HAL/TMR/TMR.h"
 
 uint32_t millis();
 void millis_inc();
