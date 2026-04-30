@@ -7,7 +7,6 @@
 
 #include "GPIO.h"
 
-
 void GPIO_SetMode(GPIO_Typedef_t *GPIOx, uint32_t GPIO_Pin, int GPIO_Dir) {
 	if (GPIO_Dir == OUTPUT) {
 		GPIOx->CR |= GPIO_Pin;

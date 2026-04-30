@@ -13,6 +13,7 @@ uint16_t counter = 0;
 
 void UpCounter_Init() {
 	FND_Init();
+	LED_Init();
 	Button_Init(&hBtnRunStop, GPIOA, GPIO_PIN_4);
 	Button_Init(&hBtnClear, GPIOA, GPIO_PIN_7);
 
@@ -21,6 +22,7 @@ void UpCounter_Init() {
 
 void UpCounter_Excute() {
 //	UpCounter_DisLoop();
+	LED_Shift(LeftShift);
 
 	static upcounter_state_t upCounterState = STOP;
 
@@ -52,6 +54,8 @@ void UpCounter_Excute() {
 
 void UpCounter_DisLoop() {
 	FND_DispDigit();
+	LED_SetOFF(LED_PIN_6|LED_PIN_5|LED_PIN_4);
+	LED_SetON(LED_PIN_7);
 }
 
 void UpCounter_Run() {

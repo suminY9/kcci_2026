@@ -13,6 +13,9 @@ XIntc IntrController;
 void TMR1_ISR(void *CallbackRef) {
 	millis_inc();
 	UpCounter_DisLoop();
+
+	if(!(millis() % 1000)) LED_DecShiftState();
+	if(!(millis() % 5000)) LED_IncShiftState();
 }
 
 void TMR2_ISR(void *CallbackRef) {

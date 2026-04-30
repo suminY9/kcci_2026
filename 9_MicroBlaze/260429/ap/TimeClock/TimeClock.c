@@ -23,6 +23,7 @@ void TimeClock_SetTime(uint8_t hh, uint8_t mm, uint8_t ss, uint8_t ms){
 
 void TimeClock_Execute(clock_mode_t ClockMode){
 	TimeClock_DispTime(ClockMode);
+	LED_Shift(RightShift);
 }
 
 void TimeClock_IncTime(){
@@ -53,10 +54,10 @@ void TimeClock_IncTime(){
 
 void TimeClock_DispTime(clock_mode_t ClockMode){
 	if (timeClock.msec < 50) {
-		FND_SetDP(FND_DIGIT_100, FND_DP_ON);
+		FND_SetDP(FND_DIGIT_100, ON);
 	}
 	else {
-		FND_SetDP(FND_DIGIT_100,FND_DP_OFF);
+		FND_SetDP(FND_DIGIT_100, OFF);
 	}
 
 	if(ClockMode == HOURMIN)	  	TimeClock_DispHourMin();
@@ -68,6 +69,8 @@ void TimeClock_DispHourMin(){
 	timeNum = timeClock.hour * 100 + timeClock.min;
 
 	FND_SetNum(timeNum);
+	LED_SetOFF(LED_PIN_7|LED_PIN_4);
+	LED_SetON(LED_PIN_6|LED_PIN_5);
 }
 
 void TimeClock_DispSecMsec(){
@@ -75,4 +78,6 @@ void TimeClock_DispSecMsec(){
 	timeNum = timeClock.sec * 100 + timeClock.msec;
 
 	FND_SetNum(timeNum);
+	LED_SetOFF(LED_PIN_7|LED_PIN_5);
+	LED_SetON(LED_PIN_6|LED_PIN_4);
 }

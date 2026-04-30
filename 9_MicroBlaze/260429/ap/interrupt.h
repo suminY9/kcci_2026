@@ -13,6 +13,7 @@
 #include "xintc.h"
 #include "xil_exception.h" // 인터럽트 사용하려면 필요 함.
 #include "../common/common.h"
+#include "../driver/LED/LED.h"
 #include "UpCounter/UpCounter.h"
 #include "TimeClock/TimeClock.h"
 

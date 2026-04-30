@@ -11,6 +11,7 @@
 
 #include "../../driver/FND/FND.h"
 #include "../../driver/Button/Button.h"
+#include "../../driver/LED/LED.h"
 #include "../../common/common.h"
 
 typedef enum {

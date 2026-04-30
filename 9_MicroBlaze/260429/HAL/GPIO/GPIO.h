@@ -19,6 +19,7 @@ typedef struct {
 
 #define GPIOA_BASE_ADDR 0x44A00000
 #define GPIOB_BASE_ADDR 0x44A10000
+#define GPIOC_BASE_ADDR 0x44A20000
 
 #define GPIOA_CR  (*(uint32_t *) (GPIOA_BASE_ADDR + 0x00))
 #define GPIOA_IDR (*(uint32_t *) (GPIOA_BASE_ADDR + 0x04))
@@ -28,9 +29,14 @@ typedef struct {
 #define GPIOB_IDR (*(uint32_t *) (GPIOB_BASE_ADDR + 0x04))
 #define GPIOB_ODR (*(uint32_t *) (GPIOB_BASE_ADDR + 0x08))
 
+#define GPIOC_CR  (*(uint32_t *) (GPIOC_BASE_ADDR + 0x00))
+#define GPIOC_IDR (*(uint32_t *) (GPIOC_BASE_ADDR + 0x04))
+#define GPIOC_ODR (*(uint32_t *) (GPIOC_BASE_ADDR + 0x08))
+
 
 #define GPIOA ((GPIO_Typedef_t *) (GPIOA_BASE_ADDR))
 #define GPIOB ((GPIO_Typedef_t *) (GPIOB_BASE_ADDR))
+#define GPIOC ((GPIO_Typedef_t *) (GPIOC_BASE_ADDR))
 
 #define GPIO_PIN_0 0x01 // 0b00000001
 #define GPIO_PIN_1 0x02 // 0b00000010

@@ -55,20 +55,20 @@ void ap_excute() {
 	static clock_mode_t clock_mode = SECMSEC;
 
 	while (1) {
-		if(mode == UPCOUNTER)	UpCounter_Excute();
-		else if(mode == CLOCK)	TimeClock_Execute(clock_mode);
-
 		switch (mode) {
 			case UPCOUNTER:
-				if (Button_GetState(&hBtnMode) == ACT_PUSHED) {
+				UpCounter_Excute();
+				if (Button_GetState(&hBtnMode) == ACT_RELEASED) {
 					mode = CLOCK;
 				}
 				break;
 			case CLOCK:
-				if (Button_GetState(&hBtnMode) == ACT_PUSHED) {
+				TimeClock_Execute(clock_mode);
+				if (Button_GetState(&hBtnMode) == ACT_RELEASED) {
 					mode = UPCOUNTER;
+					FND_SetDP(FND_DIGIT_100,FND_DP_OFF);
 				}
-				else if (Button_GetState(&hBtnClockMode) == ACT_PUSHED){
+				else if (Button_GetState(&hBtnClockMode) == ACT_RELEASED){
 					switch (clock_mode){
 					case SECMSEC:
 						clock_mode = HOURMIN;
