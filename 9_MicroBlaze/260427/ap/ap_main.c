@@ -12,47 +12,35 @@
 #include "UpCounter/UpCounter.h"
 #include "Clock/Clock.h"
 
-hBtn_t hBtnClock;
+hBtn_t hBtnMode;
 
 void ap_init(){
 	UpCounter_Init();
 	Clock_Init();
-	Button_Init(&hBtnClock, GPIOA, GPIO_PIN_5);  // Button R
+	Button_Init(&hBtnMode, GPIOA, GPIO_PIN_5);
 }
 void ap_execute(){
+	static mode_t mode = UPCOUNTER;
+
 	while(1){
-		UpCounter_Execute();
+		if(mode == UPCOUNTER)	UpCounter_Execute();
+		else if(mode == CLOCK)	Clock_Execute();
 
 		millis_inc();
 		delay_ms(1);
+
+		switch (mode) {
+			case UPCOUNTER:
+				if (Button_GetState(&hBtnMode) == ACT_PUSHED) {
+					mode = CLOCK;
+				}
+				break;
+			case CLOCK:
+				if (Button_GetState(&hBtnMode) == ACT_PUSHED) {
+					mode = UPCOUNTER;
+				}
+				break;
+		}
 	}
 }
 
-void UpCounter_Execute(){
-	UpCounter_DispLoop();
-
-	static upcounter_state_t upCounterState = STOP;
-
-	switch(upCounterState){
-	case STOP:
-		UpCounter_Stop();
-		if(Button_GetState(&hBtnRunStop) == ACT_PUSHED) {
-			upCounterState = RUN;
-		}
-		else if(Button_GetState(&hBtnClear) == ACT_PUSHED) {
-			upCounterState = CLEAR;
-		}
-		break;
-	case RUN:
-		UpCounter_Run();
-		if(Button_GetState(&hBtnRunStop) == ACT_PUSHED) {
-			upCounterState = STOP;
-		}
-		break;
-	case CLEAR:
-		UpCounter_Clear();
-		upCounterState = STOP;
-		break;
-	default: break;
-	}
-}

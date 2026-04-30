@@ -40,6 +40,11 @@ void FND_DispDigit(){
 		default: break;
 	}
 }
+
+void FND_DispDP(){
+	FND_DispDigit_DP();
+}
+
 void FND_DispDigit_1(){
 	// data의 자릿수 분리
 	uint8_t digitData1 = fndNumData % 10;

@@ -10,6 +10,16 @@
 
 #include <stdint.h>
 
+typedef enum {
+	UPCOUNTER,
+	CLOCK
+}mode_t;
+
+typedef enum {
+	HOURMIN,
+	SECMSEC
+}clock_mode_t;
+
 void ap_init();
 void ap_execute();
 
