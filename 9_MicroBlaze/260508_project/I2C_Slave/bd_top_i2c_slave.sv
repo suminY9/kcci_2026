@@ -3,6 +3,7 @@
 module board_top_i2c_slave (
     input  logic       clk,
     input  logic       reset,
+    input  logic [7:0] rx_data,
     input  wire        scl,
     inout  logic       sda,
     // fnd output
@@ -13,6 +14,7 @@ module board_top_i2c_slave (
     slave_fnd U_SLAVE_FND (
         .clk(clk),
         .reset(reset),
+        .rx_data(rx_data),
         .scl(scl),
         .sda(sda),
         .fnd_data(fnd_data),

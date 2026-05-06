@@ -3,6 +3,7 @@
 module slave_fnd (
     input  logic       clk,
     input  logic       reset,
+    input  logic [7:0] rx_data,
     input  logic       scl,
     inout  logic       sda,
     // fnd signal
@@ -17,6 +18,7 @@ module slave_fnd (
     i2c_slave U_I2C_SLAVE (
         .clk(clk),
         .reset(reset),
+        .rx_data(rx_data),
         .scl(scl),
         .sda(sda),
         .i_data(i_data),

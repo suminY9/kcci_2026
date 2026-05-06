@@ -3,6 +3,7 @@
 module i2c_slave (
     input  logic       clk,
     input  logic       reset,
+    input  logic [7:0] rx_data,
     // I2C port
     input  logic       scl,
     inout  logic       sda,
@@ -77,6 +78,7 @@ module i2c_slave (
             bit_cnt   <= 0;
             sda_out   <= 1;
             sda_en    <= 0;
+            shift_reg <= 8'h00;
         end else begin
             if (scl_sync1 && sda_nege) begin
                 state   <= ADDR;
@@ -113,8 +115,8 @@ module i2c_slave (
                             if (is_read) begin
                                 state <= TX_DATA;
                                 sda_en <= 1'b1;
-                                shift_reg <= i_data;
-                                sda_out   <= i_data[7];
+                                shift_reg <= rx_data;
+                                sda_out   <= rx_data[7];
                             end else begin
                                 state  <= RX_DATA;
                                 sda_en <= 1'b0;
@@ -158,7 +160,10 @@ module i2c_slave (
                     TX_ACK: begin
                         if (scl_pose) begin
                             if (sda_sync1 == 1'b0) begin
-                                state <= TX_DATA;
+                                state     <= TX_DATA;
+                                shift_reg <= rx_data;
+                                sda_en    <= 1'b1;
+                                sda_out   <= rx_data[7];
                             end else begin
                                 state <= IDLE;
                             end
