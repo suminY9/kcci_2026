@@ -121,6 +121,6 @@ void FND_DispAllOn() {
 void FND_DispAllOff() {
 	FND_SetComPort(FND_COM_PORT, FND_COM_DIG_1|FND_COM_DIG_2|FND_COM_DIG_3|FND_COM_DIG_4, OFF);
 	GPIO_WritePort(FND_FONT_PORT, 0xff);
-	fndDpData = 0x00;
+	// fndDpData = 0x00;
 }
 
