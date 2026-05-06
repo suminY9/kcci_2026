@@ -25,6 +25,7 @@
     	input  wire       done,
     	input  wire       ack_out,
     	input  wire       busy,
+		output wire		  intr_en,
 		// User ports ends
 		// Do not modify the ports beyond this line
 
@@ -137,6 +138,23 @@
 	// axi_awready is asserted for one S_AXI_ACLK clock cycle when both
 	// S_AXI_AWVALID and S_AXI_WVALID are asserted. axi_awready is
 	// de-asserted when reset is low.
+
+
+		reg done_latched;
+		wire internal_intr_en;
+
+		assign intr_en = done_latched & internal_intr_en;
+
+		always @(posedge S_AXI_ACLK) begin
+			if(!S_AXI_ARESETN) begin
+				done_latched <= 1'b0;
+			end else begin
+				if(done)	done_latched <= 1'b1;
+				else if (slv_reg_wren && axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 2'h0)
+					done_latched <= 1'b0;
+			end
+		end
+
 
 	always @( posedge S_AXI_ACLK )
 	begin
@@ -385,7 +403,7 @@
 	        2'h0   : reg_data_out <= slv_reg0;
 	        2'h1   : reg_data_out <= slv_reg1;
 	        2'h2   : reg_data_out <= {24'd0, ack_out, rx_data};
-	        2'h3   : reg_data_out <= {30'd0, done, busy};
+	        2'h3   : reg_data_out <= {30'd0, done_latched, busy};
 	        default : reg_data_out <= 0;
 	      endcase
 	end
@@ -414,6 +432,7 @@
 	assign cmd_write = slv_reg0[1];
 	assign cmd_read  = slv_reg0[2];
 	assign cmd_stop  = slv_reg0[3];
+	assign internal_intr_en	 = slv_reg0[4];
 	assign tx_data   = slv_reg1[7:0];
 	assign ack_in    = slv_reg1[8];
 	// User logic ends

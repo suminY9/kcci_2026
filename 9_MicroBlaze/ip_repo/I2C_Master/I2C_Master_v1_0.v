@@ -17,6 +17,7 @@
 		// Users to add ports here
 		output wire scl,
 		inout  wire sda,
+		output wire intr,
 		// User ports ends
 		// Do not modify the ports beyond this line
 
@@ -50,6 +51,10 @@
 		wire 	   done, busy;
 		wire [7:0] tx_data, rx_data;
 
+		wire intr_en;
+
+		assign intr = intr_en;
+
 // Instantiation of Axi Bus Interface S00_AXI
 	I2C_Master_v1_0_S00_AXI # ( 
 		.C_S_AXI_DATA_WIDTH(C_S00_AXI_DATA_WIDTH),
@@ -65,6 +70,7 @@
 	    .done(done),
 	    .ack_out(ack_out),
 	    .busy(busy),
+		.intr_en(intr_en),
 		.S_AXI_ACLK(s00_axi_aclk),
 		.S_AXI_ARESETN(s00_axi_aresetn),
 		.S_AXI_AWADDR(s00_axi_awaddr),
