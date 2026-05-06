@@ -19,6 +19,7 @@
 		output wire mosi,
 		output wire miso,
 		output wire cs_n,
+		output wire intr,
 		// User ports ends
 		// Do not modify the ports beyond this line
 
@@ -51,6 +52,9 @@
 		wire 	   start, done, busy;
 		wire [7:0] clk_div;
 		wire [7:0] tx_data, rx_data;
+		wire 	   intr_en;
+
+		assign intr = done & intr_en;
 
 // Instantiation of Axi Bus Interface S00_AXI
 	SPI_Mater_v1_0_S00_AXI # ( 
@@ -65,6 +69,7 @@
 		.clk_div(clk_div),
 		.tx_data(tx_data),
 		.rx_data(rx_data),
+		.intr_en(intr_en),
 		.S_AXI_ACLK(s00_axi_aclk),
 		.S_AXI_ARESETN(s00_axi_aresetn),
 		.S_AXI_AWADDR(s00_axi_awaddr),

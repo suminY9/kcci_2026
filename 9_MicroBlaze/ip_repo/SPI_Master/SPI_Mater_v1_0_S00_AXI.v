@@ -23,6 +23,7 @@
 		input  wire [7:0] rx_data,
 		input  wire done,
 		input  wire busy,
+		output wire intr_en,
 		// User ports ends
 		// Do not modify the ports beyond this line
 
@@ -405,8 +406,9 @@
 	end    
 
 	// Add user logic here
-	assign cpol = slv_reg0[0];
-	assign cpha = slv_reg0[1];
+	assign cpol    = slv_reg0[0];
+	assign cpha    = slv_reg0[1];
+	assign intr_en = slv_reg0[2];
 	assign clk_div = slv_reg0[15:8];
 	assign tx_data = slv_reg1[7:0];
 	assign start = slv_reg1[8];
