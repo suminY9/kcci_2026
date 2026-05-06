@@ -14,14 +14,14 @@
 #include "xil_exception.h" // 인터럽트 사용하려면 필요 함.
 #include "../common/common.h"
 #include "../driver/LED/LED.h"
-#include "../HAL/SPI/SPI.h"
+#include "../HAL/I2C/I2C.h"
 
 #define INTC_DEV_ID 	XPAR_INTC_0_DEVICE_ID
 #define TMR_DEV_ID 		XPAR_TMR_0_DEVICE_ID
-#define SPI_DEV_ID 		XPAR_SPI_MATER_0_DEVICE_ID
+#define I2C_DEV_ID 		XPAR_I2C_MASTER_0_DEVICE_ID
 
-void TMR1_ISR(void *CallbackRef);
-void TMR2_ISR(void *CallbackRef);
+void TMR_ISR(void *CallbackRef);
+void I2C_ISR(void *CallbackRef);
 int SetupInterruptSystem();
 
 

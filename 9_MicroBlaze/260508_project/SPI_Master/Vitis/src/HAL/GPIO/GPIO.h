@@ -35,13 +35,13 @@ typedef struct {
 #define GPIO8C_IDR (*(uint32_t *) (GPIO8C_BASE_ADDR + 0x04))
 #define GPIO8C_ODR (*(uint32_t *) (GPIO8C_BASE_ADDR + 0x08))
 
-#define GPIO4C_CR  (*(uint32_t *) (GPIO8C_BASE_ADDR + 0x00))
-#define GPIO4C_IDR (*(uint32_t *) (GPIO8C_BASE_ADDR + 0x04))
-#define GPIO4C_ODR (*(uint32_t *) (GPIO8C_BASE_ADDR + 0x08))
+#define GPIO4A_CR  (*(uint32_t *) (GPIO4A_BASE_ADDR + 0x00))
+#define GPIO4A_IDR (*(uint32_t *) (GPIO4A_BASE_ADDR + 0x04))
+#define GPIO4A_ODR (*(uint32_t *) (GPIO4A_BASE_ADDR + 0x08))
 
-#define GPIO4C_CR  (*(uint32_t *) (GPIO8C_BASE_ADDR + 0x00))
-#define GPIO4C_IDR (*(uint32_t *) (GPIO8C_BASE_ADDR + 0x04))
-#define GPIO4C_ODR (*(uint32_t *) (GPIO8C_BASE_ADDR + 0x08))
+#define GPIO4B_CR  (*(uint32_t *) (GPIO4B_BASE_ADDR + 0x00))
+#define GPIO4B_IDR (*(uint32_t *) (GPIO4B_BASE_ADDR + 0x04))
+#define GPIO4B_ODR (*(uint32_t *) (GPIO4B_BASE_ADDR + 0x08))
 
 #define LED 	  ((GPIO_Typedef_t *) (GPIO8A_BASE_ADDR))
 #define SW  	  ((GPIO_Typedef_t *) (GPIO8B_BASE_ADDR))

@@ -14,9 +14,8 @@ void TMR_ISR(void *CallbackRef) {
 	millis_inc();
 }
 
-void SPI_ISR(void *CallbackRef){
-	SPI_RxRead();
-	XIntc_Acknowledge(&IntrController, SPI_DEV_ID);
+void I2C_ISR(void *CallbackRef){
+	FND_SetNum(I2C_RX & 0xff);
 }
 
 int SetupInterruptSystem() {
@@ -33,8 +32,8 @@ int SetupInterruptSystem() {
 	if (status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
-	// 2-2. SPI_ISR 함수를 Intc와 연결
-	status = XIntc_Connect(&IntrController, SPI_DEV_ID, (XInterruptHandler)SPI_ISR, (void *)0);
+	// 2-2. I2C_ISR 함수를 Intc와 연결
+	status = XIntc_Connect(&IntrController, I2C_DEV_ID, (XInterruptHandler)I2C_ISR, (void *)0);
 	if (status != XST_SUCCESS) {
 		return XST_FAILURE;
 	}
@@ -47,7 +46,7 @@ int SetupInterruptSystem() {
 
 	// 4. 각각의 인터럽트 채널 활성화
 	XIntc_Enable(&IntrController, TMR_DEV_ID);
-	XIntc_Enable(&IntrController, SPI_DEV_ID);
+	XIntc_Enable(&IntrController, I2C_DEV_ID);
 
 	// 5. MicroBlaze의 Exception 초기화 및 활성화 (인터럽트를 통틀어서 하는거를 exception이라 한다.)
 	// CPU와 인터럽트 컨트롤러를 연결시켜주는 부분.

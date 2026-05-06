@@ -20,8 +20,9 @@ typedef struct {
 #define GPIO8A_BASE_ADDR 0x44A00000
 #define GPIO8B_BASE_ADDR 0x44A10000
 #define GPIO8C_BASE_ADDR 0x44A20000
+#define GPIO8D_BASE_ADDR 0x44A40000
 #define GPIO4A_BASE_ADDR 0x44A30000
-#define GPIO4B_BASE_ADDR 0x44A40000
+#define GPIO4B_BASE_ADDR 0x44A50000
 
 #define GPIO8A_CR  (*(uint32_t *) (GPIO8A_BASE_ADDR + 0x00))
 #define GPIO8A_IDR (*(uint32_t *) (GPIO8A_BASE_ADDR + 0x04))
@@ -35,19 +36,24 @@ typedef struct {
 #define GPIO8C_IDR (*(uint32_t *) (GPIO8C_BASE_ADDR + 0x04))
 #define GPIO8C_ODR (*(uint32_t *) (GPIO8C_BASE_ADDR + 0x08))
 
-#define GPIO4C_CR  (*(uint32_t *) (GPIO8C_BASE_ADDR + 0x00))
-#define GPIO4C_IDR (*(uint32_t *) (GPIO8C_BASE_ADDR + 0x04))
-#define GPIO4C_ODR (*(uint32_t *) (GPIO8C_BASE_ADDR + 0x08))
+#define GPIO8D_CR  (*(uint32_t *) (GPIO8D_BASE_ADDR + 0x00))
+#define GPIO8D_IDR (*(uint32_t *) (GPIO8D_BASE_ADDR + 0x04))
+#define GPIO8D_ODR (*(uint32_t *) (GPIO8D_BASE_ADDR + 0x08))
 
-#define GPIO4C_CR  (*(uint32_t *) (GPIO8C_BASE_ADDR + 0x00))
-#define GPIO4C_IDR (*(uint32_t *) (GPIO8C_BASE_ADDR + 0x04))
-#define GPIO4C_ODR (*(uint32_t *) (GPIO8C_BASE_ADDR + 0x08))
+#define GPIO4A_CR  (*(uint32_t *) (GPIO4A_BASE_ADDR + 0x00))
+#define GPIO4A_IDR (*(uint32_t *) (GPIO4A_BASE_ADDR + 0x04))
+#define GPIO4A_ODR (*(uint32_t *) (GPIO4A_BASE_ADDR + 0x08))
+
+#define GPIO4B_CR  (*(uint32_t *) (GPIO4B_BASE_ADDR + 0x00))
+#define GPIO4B_IDR (*(uint32_t *) (GPIO4B_BASE_ADDR + 0x04))
+#define GPIO4B_ODR (*(uint32_t *) (GPIO4B_BASE_ADDR + 0x08))
 
 #define LED 	  ((GPIO_Typedef_t *) (GPIO8A_BASE_ADDR))
-#define SW  	  ((GPIO_Typedef_t *) (GPIO8B_BASE_ADDR))
+#define SWA  	  ((GPIO_Typedef_t *) (GPIO8B_BASE_ADDR))
 #define FND_DATA  ((GPIO_Typedef_t *) (GPIO8C_BASE_ADDR))
+#define GPIO	  ((GPIO_Typedef_t *) (GPIO8D_BASE_ADDR))
 #define FND_DIGIT ((GPIO_Typedef_t *) (GPIO4A_BASE_ADDR))
-#define GPIO	  ((GPIO_Typedef_t *) (GPIO4B_BASE_ADDR))
+#define SWB		  ((GPIO_Typedef_t *) (GPIO4B_BASE_ADDR))
 
 #define GPIO_PIN_0 0x01 // 0b00000001
 #define GPIO_PIN_1 0x02 // 0b00000010

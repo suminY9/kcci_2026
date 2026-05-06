@@ -10,6 +10,9 @@
 
 
 #include <stdint.h>
+#include "../driver/Button/Button.h"
+
+hBtn_t hBtnStart, hBtnWrite, hBtnRead, hBtnStop;
 
 void ap_init();
 void ap_excute();
