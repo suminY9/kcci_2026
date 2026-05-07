@@ -15,7 +15,7 @@ module slave_fnd (
     logic i_done;
     logic [7:0] i_data;
 
-    i2c_slave U_I2C_SLAVE (
+    I2C_Slave U_I2C_SLAVE (
         .clk(clk),
         .reset(reset),
         .rx_data(rx_data),

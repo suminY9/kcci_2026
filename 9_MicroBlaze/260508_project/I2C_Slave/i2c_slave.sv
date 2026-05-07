@@ -1,176 +1,251 @@
 `timescale 1ns / 1ps
 
-module i2c_slave (
-    input  logic       clk,
-    input  logic       reset,
+module I2C_Slave #(
+    parameter SLAVE_ADDR = 7'h12
+)(
+    input  logic clk,
+    input  logic reset,
+
+    input  logic scl,
+    inout  wire  sda,
+
+    input  logic [7:0] rx_data, // Slave -> Master 보낼 데이터 (Master가 Read일 때)
+    output logic [7:0] i_data, // Master -> Slave 받은 데이터 (Master가 Write일 때)
+    output logic       i_done // Slave 수신 완료를 나타냄.
+);
+
+    logic sda_o, sda_i;
+    assign sda_i = sda;
+    assign sda   = sda_o ? 1'bz : 1'b0; // 3-state buffer
+
+    i2c_slave #(
+        .SLAVE_ADDR(7'h12)
+    ) u_i2c_slave (
+        .*,
+        .sda_i(sda_i),
+        .sda_o(sda_o)
+    );
+    
+endmodule
+
+
+module i2c_slave #(
+    parameter SLAVE_ADDR = 7'h12
+)(
+    input  logic clk,
+    input  logic reset,
+
+    input  logic scl,
+    input  logic sda_i,
+    output logic sda_o,
+
     input  logic [7:0] rx_data,
-    // I2C port
-    input  logic       scl,
-    inout  logic       sda,
-    // internal signal
     output logic [7:0] i_data,
     output logic       i_done
 );
 
-    // slave address
-    localparam slave_ADDR = 7'b100_0000;
+    // 싱크로나이저
+    logic scl_sync_0, scl_sync_1;
+    logic sda_sync_0, sda_sync_1;
 
-    // synchronizer
-    logic scl_sync0, scl_sync1;
-    logic sda_sync0, sda_sync1;
+    // always_ff @(posedge clk) begin
+    //     scl_sync_0 <= scl;
+    //     scl_sync_1 <= scl_sync_0;
 
-    always_ff @(posedge clk, posedge reset) begin
+    //     sda_sync_0 <= sda_i;
+    //     sda_sync_1 <= sda_sync_0;
+    // end
+
+    always_ff @(posedge clk or posedge reset) begin
         if (reset) begin
-            scl_sync0 <= 1'b0;
-            scl_sync1 <= 1'b0;
-            sda_sync0 <= 1'b0;
-            sda_sync1 <= 1'b0;
+            scl_sync_0 <= 1'b1;
+            scl_sync_1 <= 1'b1;
+            sda_sync_0 <= 1'b1;
+            sda_sync_1 <= 1'b1;
         end else begin
-            scl_sync0 <= scl;
-            scl_sync1 <= scl_sync0;
-            sda_sync0 <= sda;
-            sda_sync1 <= sda_sync0;
+            scl_sync_0 <= scl;
+            scl_sync_1 <= scl_sync_0;
+
+            sda_sync_0 <= sda_i;
+            sda_sync_1 <= sda_sync_0;
         end
     end
-    assign scl_pose = (scl_sync0 && ~scl_sync1) ? 1 : 0;
-    assign scl_nege = (~scl_sync0 && scl_sync1) ? 1 : 0;
-    assign sda_pose = (sda_sync0 && ~sda_sync1) ? 1 : 0;
-    assign sda_nege = (~sda_sync0 && sda_sync1) ? 1 : 0;
+
+    // edge 검출
+    wire scl_rising  = (scl_sync_1 == 0 && scl_sync_0 == 1);
+    wire scl_falling = (scl_sync_1 == 1 && scl_sync_0 == 0);
+    
+    wire sda_rising = (sda_sync_1 == 0 && sda_sync_0 == 1);
+    wire sda_falling = (sda_sync_1 == 1 && sda_sync_0 == 0);
+
+    // wire start = sda_falling && (scl_sync_0 == 1);
+    wire start = (sda_sync_1 == 1'b1 && sda_sync_0 == 1'b0 && scl_sync_0 == 1'b1);
+    // wire start = (sda_sync_1 == 1 && sda_sync_0 == 0);
+    wire stop  = sda_rising && (scl_sync_0 == 1);
+
+    // START, STOP 검출
+    // wire start = (sda_sync_1 == 1 && sda_sync_0 == 0 && scl_sync_0 == 1);
+    // wire stop  = (sda_sync_1 == 0 && sda_sync_0 == 1 && scl_sync_0 == 1);
 
 
-    /**** to Master ****/
+    logic stop_event;
+
     typedef enum logic [2:0] {
-        IDLE = 3'd0,
-        START,
+        IDLE,
         ADDR,
-        ACK_ADDR,
-        RX_DATA,
-        RX_ACK,
-        TX_DATA,
-        TX_ACK
-    } slave_state_e;
-    slave_state_e state;
+        ADDR_ACK,
+        DATA,
+        DATA_ACK
+    } i2c_slave_state_e;
 
-    logic [3:0] bit_cnt;
+    i2c_slave_state_e state;
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset)
+            stop_event <= 1'b0;
+        else if (stop)
+            stop_event <= 1'b1;
+        else if (state == IDLE)
+            stop_event <= 1'b0;
+    end
+
     logic [7:0] shift_reg;
-    logic sda_out, sda_en;
-    logic is_read;
+    logic [2:0] bit_cnt;
+    logic       rw; // 1: read, 0: write
 
-    assign sda = sda_en ? (sda_out ? 1'bz : 1'b0) : 1'bz;
-
-    always_ff @(posedge clk, posedge reset) begin
+    always_ff @(posedge clk or posedge reset) begin
         if (reset) begin
-            i_data <= 8'h00;
+            state      <= IDLE;
+            bit_cnt    <= 0;
+            shift_reg  <= 0;
+            sda_o      <= 1'b1;
+            i_done <= 0;
+            i_data    <= 0;
+            rw         <= 0;
+        end else begin
             i_done <= 1'b0;
-        end else begin
-            if (state == RX_DATA && bit_cnt == 8 && scl_nege) begin
-                i_data <= shift_reg;
-                i_done <= 1'b1;
-            end else begin
-                i_done <= 1'b0;
-            end
+
+            case (state)
+                IDLE: begin
+                    sda_o <= 1'b1;
+                    if (start) begin
+                        state   <= ADDR;
+                        bit_cnt <= 0;
+                        shift_reg <= 0;
+                    end
+                end
+                // 주소 (7bit + RW)
+                ADDR: begin
+                    if (stop_event) begin
+                            state <= IDLE;
+                            sda_o <= 1'b1;
+                        end else begin
+                            if (scl_rising) begin
+                                shift_reg <= {shift_reg[6:0], sda_sync_0};
+                                if (bit_cnt == 3'd7) begin
+                                    rw    <= sda_sync_0;
+                                    state <= ADDR_ACK;
+                                    bit_cnt <= 0;
+                                end else begin
+                                    bit_cnt <= bit_cnt + 1;
+                                end
+                            end
+                        end
+                end
+                ADDR_ACK: begin
+                    if (stop_event) begin
+                            state <= IDLE;
+                            sda_o <= 1'b1;
+                    end else begin
+                        if (scl_falling) begin
+                            if (shift_reg[7:1] == SLAVE_ADDR)
+                                sda_o <= 1'b0; // ACK
+                            else
+                                sda_o <= 1'b1; // NACK
+                        end
+                        if (scl_rising) begin
+                            // sda_o <= 1'b1;
+                            if (shift_reg[7:1] == SLAVE_ADDR) begin
+                                state <= DATA;
+                                bit_cnt <= 0;
+                                shift_reg <= 0;
+                            end else begin
+                                state <= IDLE;
+                            end
+                        end
+                    end
+                end
+                DATA: begin
+                    if (stop_event) begin
+                            state <= IDLE;
+                            sda_o <= 1'b1;
+                    end else begin
+                        if (rw == 1'b0) begin
+                            // Write (Master -> Slave)
+                            if (scl_falling) begin
+                                sda_o <= 1'b1; // scl이 low일 때 여기서 ACK 상태 해제.(이래야 안정적임.)
+                            end
+                            if (scl_rising) begin
+                                shift_reg <= {shift_reg[6:0], sda_sync_0};
+
+                                if (bit_cnt == 3'd7) begin
+                                    i_data    <= {shift_reg[6:0], sda_sync_0};
+                                    i_done <= 1'b1;
+                                    state      <= DATA_ACK;
+                                    bit_cnt    <= 0;
+                                end else begin
+                                    bit_cnt <= bit_cnt + 1;
+                                end
+                            end
+                        end else begin
+                            // Read (Slave -> Master)
+                            if (scl_falling) begin
+                                sda_o <= rx_data[7 - bit_cnt];
+                            end
+                            if (scl_rising) begin
+                                if (bit_cnt == 3'd7) begin
+                                    state   <= DATA_ACK;
+                                    bit_cnt <= 0;
+                                end else begin
+                                    bit_cnt <= bit_cnt + 1;
+                                end
+                            end
+                        end
+                    end
+                end
+                DATA_ACK: begin
+                    if (stop_event) begin
+                            state <= IDLE;
+                            sda_o <= 1'b1;
+                    end else begin
+                        if (rw == 1'b0) begin
+                            // Slave ACK
+                            if (scl_falling)
+                                sda_o <= 1'b0;
+
+                            if (scl_rising) begin
+                                // sda_o   <= 1'b1;
+                                state   <= DATA;
+                                bit_cnt <= 0;
+                            end
+                        end else begin
+                            // Master ACK / NACK
+                            if (scl_falling)
+                                sda_o <= 1'b1;
+
+                            if (scl_rising) begin
+                                if (sda_sync_0 == 1'b1) begin
+                                    state <= IDLE; // NACK -> 종료
+                                end else begin
+                                    state   <= DATA;
+                                    bit_cnt <= 0;
+                                end
+                            end
+                        end
+                    end
+                end
+            endcase
         end
     end
 
-    always_ff @(posedge clk, posedge reset) begin
-        if (reset) begin
-            state     <= IDLE;
-            bit_cnt   <= 0;
-            sda_out   <= 1;
-            sda_en    <= 0;
-            shift_reg <= 8'h00;
-        end else begin
-            if (scl_sync1 && sda_nege) begin
-                state   <= ADDR;
-                bit_cnt <= 0;
-                sda_en  <= 0;
-            end else if (scl_sync1 && sda_pose) begin
-                state  <= IDLE;
-                sda_en <= 1'b0;
-            end else begin
-                case (state)
-                    IDLE: begin
-                        sda_en <= 1'b0;
-                    end
-                    ADDR: begin
-                        if (scl_pose) begin
-                            shift_reg <= {shift_reg[6:0], sda_sync1};
-                            bit_cnt   <= bit_cnt + 1;
-                        end
-                        if (bit_cnt == 8 && scl_nege) begin
-                            bit_cnt <= 0;
-                            if (shift_reg[7:1] == slave_ADDR) begin
-                                is_read <= shift_reg[0];
-                                state   <= ACK_ADDR;
-                                sda_en  <= 1'b1;
-                                sda_out <= 1'b0;
-                            end else begin
-                                state <= IDLE;
-                            end
-                        end
-                    end
-                    ACK_ADDR: begin
-                        if (scl_nege) begin
-                            bit_cnt <= 0;
-                            if (is_read) begin
-                                state <= TX_DATA;
-                                sda_en <= 1'b1;
-                                shift_reg <= rx_data;
-                                sda_out   <= rx_data[7];
-                            end else begin
-                                state  <= RX_DATA;
-                                sda_en <= 1'b0;
-                            end
-                        end
-                    end
-                    RX_DATA: begin
-                        if (scl_pose) begin
-                            shift_reg <= {shift_reg[6:0], sda_sync1};
-                            bit_cnt   <= bit_cnt + 1;
-                        end
-                        if (bit_cnt == 8 && scl_nege) begin
-                            bit_cnt <= 0;
-                            state   <= RX_ACK;
-                            sda_en  <= 1'b1;
-                            sda_out <= 1'b0;
-                        end
-                    end
-                    RX_ACK: begin
-                        if (scl_nege) begin
-                            sda_en <= 1'b0;
-                            state  <= RX_DATA;
-                        end
-                    end
-                    TX_DATA: begin
-                        if (scl_nege) begin
-                            if (bit_cnt < 7) begin
-                                sda_out   <= shift_reg[6];
-                                shift_reg <= {shift_reg[6:0], 1'b0};
-                                bit_cnt   <= bit_cnt + 1;
-                            end else if (bit_cnt == 7) begin
-                                bit_cnt <= 8;
-                            end
-                        end
-                        if (bit_cnt == 8 & scl_nege) begin
-                            bit_cnt <= 1'b0;
-                            state   <= TX_ACK;
-                            sda_en  <= 1'b0;
-                        end
-                    end
-                    TX_ACK: begin
-                        if (scl_pose) begin
-                            if (sda_sync1 == 1'b0) begin
-                                state     <= TX_DATA;
-                                shift_reg <= rx_data;
-                                sda_en    <= 1'b1;
-                                sda_out   <= rx_data[7];
-                            end else begin
-                                state <= IDLE;
-                            end
-                        end
-                    end
-                endcase
-            end
-        end
-    end
 endmodule
