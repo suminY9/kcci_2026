@@ -150,7 +150,7 @@
 				done_latched <= 1'b0;
 			end else begin
 				if(done)	done_latched <= 1'b1;
-				else if (slv_reg_wren && axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 2'h0)
+				else if (slv_reg_wren && axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] == 2'h3)
 					done_latched <= 1'b0;
 			end
 		end
@@ -292,7 +292,7 @@
 	                    end
 	        endcase
 	      end
-		  else begin
+		  else if(done) begin
 			slv_reg0[3:0] <= 4'b0000;	// Auto-clear logic: 쓰기 신호가 없을 때 명령 비트를 0으로 되돌림
 		  end
 	  end
@@ -428,10 +428,10 @@
 	end    
 
 	// Add user logic here
-	assign cmd_start = slv_reg0[0];
-	assign cmd_write = slv_reg0[1];
-	assign cmd_read  = slv_reg0[2];
-	assign cmd_stop  = slv_reg0[3];
+	assign cmd_start 		 = slv_reg0[0];
+	assign cmd_write 		 = slv_reg0[1];
+	assign cmd_read  		 = slv_reg0[2];
+	assign cmd_stop  		 = slv_reg0[3];
 	assign internal_intr_en	 = slv_reg0[4];
 	assign tx_data   = slv_reg1[7:0];
 	assign ack_in    = slv_reg1[8];

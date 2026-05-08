@@ -22,6 +22,7 @@ void ap_init() {
 	SPI_Init();
 	FND_Init();
 	LED_Init();
+	GPIO_SetMode(SW, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, INPUT);
 	Button_Init(&hBtnStart, GPIO, GPIO_PIN_0);
 
 	// 1MHz -> 1us 간격으로 count 증가, interrupt 발생 안함.

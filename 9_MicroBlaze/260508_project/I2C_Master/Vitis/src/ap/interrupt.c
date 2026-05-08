@@ -15,7 +15,8 @@ void TMR_ISR(void *CallbackRef) {
 }
 
 void I2C_ISR(void *CallbackRef){
-	FND_SetNum(I2C_RX & 0xff);
+	//FND_SetNum(I2C_RX & 0xff);
+	LED_SetON(LED, I2C_RX & 0xff);
 }
 
 int SetupInterruptSystem() {

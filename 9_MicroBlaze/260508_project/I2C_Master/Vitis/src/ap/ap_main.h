@@ -12,7 +12,10 @@
 #include <stdint.h>
 #include "../driver/Button/Button.h"
 
-hBtn_t hBtnStart, hBtnWrite, hBtnRead, hBtnStop;
+hBtn_t hBtnStart;
+hBtn_t hBtnWrite;
+hBtn_t hBtnRead;
+hBtn_t hBtnStop;
 
 void ap_init();
 void ap_excute();

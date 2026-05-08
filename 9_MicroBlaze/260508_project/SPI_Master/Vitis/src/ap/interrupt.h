@@ -11,7 +11,7 @@
 
 #include "xparameters.h"
 #include "xintc.h"
-#include "xil_exception.h" // ï¿½ï¿½ï¿½Í·ï¿½Æ® ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ ï¿½ï¿½.
+#include "xil_exception.h" // ÀÎÅÍ·´Æ® »ç¿ëÇÏ·Á¸é ÇÊ¿ä ÇÔ.
 #include "../common/common.h"
 #include "../driver/LED/LED.h"
 #include "../HAL/SPI/SPI.h"

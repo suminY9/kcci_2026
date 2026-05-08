@@ -14,6 +14,7 @@
 #include "../HAL/I2C/I2C.h"
 #include "../driver/FND/FND.h"
 #include "interrupt.h"
+#include "xil_printf.h"
 
 
 
@@ -36,6 +37,7 @@ void ap_init() {
 }
 
 void ap_excute() {
+	xil_printf("SW[12]: %d\n", GPIO_ReadPort(SWB));
 	if(GPIO_ReadPin(SWB, GPIO_PIN_0)) MASTER_Write();
 	else MASTER_Read();
 //	FND_DispDigit();
