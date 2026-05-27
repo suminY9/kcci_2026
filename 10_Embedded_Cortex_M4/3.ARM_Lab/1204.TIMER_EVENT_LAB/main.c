@@ -26,7 +26,7 @@ void Main(void)
 
 	int d = 0;
 	int key = 0;
-	double time = 0;
+	int time = 0;
 
 	for(;;)
 	{
@@ -55,7 +55,7 @@ void Main(void)
 	    {
 			(d ^= 1) ? LED_On() : LED_Off();
 			TIM4_Expired = 0;
-			time++;
+			if(key) time++;
 	    }
 	}
 }
