@@ -6,5 +6,6 @@
 *.ip_user_files/
 *.tmp
 *.bak
+*.o
 Thumbs.db
 Destop.ini
