@@ -22,16 +22,27 @@ void Main(void)
 
 	Key_ISR_Enable(1);
 	Uart2_RX_Interrupt_Enable(1);
-	TIM4_Repeat_Interrupt_Enable(1, 200);
+	TIM4_Repeat_Interrupt_Enable(1, 100);
 
 	int d = 0;
+	int key = 0;
+	int time = 0;
 
 	for(;;)
 	{
 		if(Key_Pressed)
 		{
-			printf("KEY Pressed!!!\n");
+			// printf("KEY Pressed!!!\n");
 			Key_Pressed = 0;
+			
+			if(key) {
+				printf("TIME COUNT STOP: %dmsec\n", time*100);
+				key = 0;
+			} else {
+				printf("TIME COUNT START\n");
+				key = 1;
+				time = 0;
+			}
 		}
 
 		if(Uart_Data_In)
@@ -44,6 +55,7 @@ void Main(void)
 	    {
 			(d ^= 1) ? LED_On() : LED_Off();
 			TIM4_Expired = 0;
+			time++;
 	    }
 	}
 }
