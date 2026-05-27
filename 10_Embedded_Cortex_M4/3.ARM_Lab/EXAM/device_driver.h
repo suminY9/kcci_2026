@@ -29,6 +29,7 @@ extern void SysTick_Stop(void);
 extern void LED_Init(void);
 extern void LED_On(void);
 extern void LED_Off(void);
+extern void LED_Toggle(void);
 
 // Clock.c
 

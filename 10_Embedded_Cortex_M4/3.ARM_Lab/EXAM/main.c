@@ -21,10 +21,8 @@ void Main(void)
 	printf("\nTimer 4 Interrupt Test\n");
 
 	Key_ISR_Enable(1);
-	Uart2_RX_Interrupt_Enable(1);
+	Uart2_RX_Interrupt_Enable(0);
 	TIM4_Repeat_Interrupt_Enable(1, 200);
-
-	int d = 0;
 
 	for(;;)
 	{
@@ -32,17 +30,11 @@ void Main(void)
 		{
 			printf("KEY Pressed!!!\n");
 			Key_Pressed = 0;
+			LED_Toggle();
 		}
-
-		if(Uart_Data_In)
-		{
-			printf("RX Data = %c\n", Uart_Data);
-			Uart_Data_In = 0;
-		}		
 
 		if(TIM4_Expired)
 	    {
-			(d ^= 1) ? LED_On() : LED_Off();
 			TIM4_Expired = 0;
 	    }
 	}
