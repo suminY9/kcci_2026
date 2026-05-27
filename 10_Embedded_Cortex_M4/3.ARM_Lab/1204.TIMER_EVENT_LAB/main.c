@@ -26,7 +26,7 @@ void Main(void)
 
 	int d = 0;
 	int key = 0;
-	int time = 0;
+	double time = 0;
 
 	for(;;)
 	{
@@ -36,7 +36,7 @@ void Main(void)
 			Key_Pressed = 0;
 			
 			if(key) {
-				printf("TIME COUNT STOP: %dmsec\n", time*100);
+				printf("TIME COUNT STOP: %.1lfsec\n", (double)time/10);
 				key = 0;
 			} else {
 				printf("TIME COUNT START\n");
