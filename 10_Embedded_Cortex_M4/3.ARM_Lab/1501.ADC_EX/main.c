@@ -22,7 +22,8 @@ void Main(void)
 	for(;;)
 	{
 		ADC1_Start();
-		while(!ADC1_Get_Status());
+		// while(!ADC1_Get_Status());
+		Macro_Set_Bit(ADC1->CR2, 1); 					// ADC ON
 		printf("0x%.4X\n", ADC1_Get_Data());
 		for(i=0; i<0x400000; i++);
 	}
