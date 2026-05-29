@@ -24,24 +24,10 @@ extern unsigned int SysTick_Get_Time(void);
 extern unsigned int SysTick_Get_Load_Time(void);
 extern void SysTick_Stop(void);
 
-// Led.c
-
-extern void LED_Init(void);
-extern void LED_On(void);
-extern void LED_Off(void);
-extern void LED_Toggle(void);
 
 // Clock.c
-
 extern void Clock_Init(void);
 
-// Key.c
-
-extern void Key_Poll_Init(void);
-extern int Key_Get_Pressed(void);
-extern void Key_Wait_Key_Released(void);
-extern void Key_Wait_Key_Pressed(void);
-extern void Key_ISR_Enable(int en);
 
 // Timer.c
 

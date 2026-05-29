@@ -78,7 +78,7 @@ void Main(void)
 
 #endif
 
-#if 0
+#if 1
 
 void Main(void)
 {
@@ -108,7 +108,7 @@ void Main(void)
 
 #endif
 
-#if 1
+#if 0
 
 void Main(void)
 {
