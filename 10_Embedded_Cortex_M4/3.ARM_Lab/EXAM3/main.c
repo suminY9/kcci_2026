@@ -7,7 +7,7 @@ int TIM4_Check_Timeout(void);
 void TIM4_Stop(void);
 void LED_Toggle(void);
 int Is_Uart_Data_In(void);
-void Uart2_Send_Byte(char data);
+void Uart2_Send_Char(char data);
 
 
 static void Sys_Init(int baud) 
@@ -19,10 +19,6 @@ static void Sys_Init(int baud)
 	LED_Init();
 }
 
-volatile int Key_Pressed = 0;
-volatile int Uart_Data_In = 0;
-volatile unsigned char Uart_Data = 0;
-volatile int TIM4_Expired = 0;
 
 void Main(void)
 {
@@ -37,8 +33,8 @@ void Main(void)
 
 		if(Is_Uart_Data_In()){
 			Uart_Data = (char)USART2->DR;
-			Uart2_Send_Byte(Uart_Data);
-			Uart2_Send_Byte(Uart_Data + 1);
+			Uart2_Send_Char(Uart_Data);
+			Uart2_Send_Char(Uart_Data + 1);
 		}
 	}
 }
@@ -84,7 +80,7 @@ int Is_Uart_Data_In(void){
 	else return 0;
 }
 
-void Uart2_Send_Byte(char data)
+void Uart2_Send_Char(char data)
 {
   if(data == '\n'){
     while(!Macro_Check_Bit_Set(USART2->SR, 7));

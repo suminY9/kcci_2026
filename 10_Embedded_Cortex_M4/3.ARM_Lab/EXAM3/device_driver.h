@@ -29,7 +29,6 @@ extern void SysTick_Stop(void);
 extern void LED_Init(void);
 extern void LED_On(void);
 extern void LED_Off(void);
-extern void LED_Toggle(void);
 
 // Clock.c
 
@@ -48,9 +47,9 @@ extern void Key_ISR_Enable(int en);
 extern void TIM2_Delay(int time);
 extern void TIM2_Stopwatch_Start(void);
 extern unsigned int TIM2_Stopwatch_Stop(void);
-extern void TIM4_Repeat(int time);
-extern int TIM4_Check_Timeout(void);
-extern void TIM4_Stop(void);
+// extern void TIM4_Repeat(int time);
+// extern int TIM4_Check_Timeout(void);
+// extern void TIM4_Stop(void);
 extern void TIM4_Change_Value(int time);
 extern void TIM4_Repeat_Interrupt_Enable(int en, int time);
 extern void TIM3_Out_Init(void);
