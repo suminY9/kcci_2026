@@ -5,9 +5,9 @@
 
 
 void Key_Enable(void);
-int Key_Get_Pressed(void);
-void Key_Wait_Key_Pressed(void);
-void Key_Wait_Key_Released(void);
+int Key_Pressed(void);
+void Key_Wait_Pressed(void);
+void Key_Wait_Released(void);
 void LED_Enable(void);
 void LED_Toggle(void);
 
@@ -21,8 +21,8 @@ void Main(void)
 	
 	for(;;)
 	{
-		if(Key_Get_Pressed()){
-			Key_Wait_Key_Released();
+		if(Key_Pressed()){
+			Key_Wait_Released();
 			cnt++;
 
 			if(cnt == 2) {
@@ -39,18 +39,18 @@ void Key_Enable(void){
 	Macro_Write_Block(GPIOC->MODER, 0x3, 0x0, 26); // PC13 input
 }
 
-int Key_Get_Pressed(void)
+int Key_Pressed(void)
 {
 	if(Macro_Check_Bit_Clear(GPIOC->IDR, 13)) return 1;
 	else return 0;
 }
 
-void Key_Wait_Key_Pressed(void)
+void Key_Wait_Pressed(void)
 {
 	while(!Macro_Check_Bit_Clear(GPIOC->IDR, 13));
 }
 
-void Key_Wait_Key_Released(void){
+void Key_Wait_Released(void){
 	while(!Macro_Check_Bit_Set(GPIOC->IDR, 13));
 }
 

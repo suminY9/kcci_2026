@@ -9,18 +9,18 @@ void _Invalid_ISR(void)
 	for(;;);
 }
 
-extern volatile int Key_Pressed;
+volatile int Pressed;
 
 void EXTI15_10_IRQHandler(void)
 {
-	Key_Pressed = 1;
+	Pressed = 1;
 	
 	EXTI->PR = 0x1 << 13;
 	NVIC_ClearPendingIRQ(40);
 }
 
-extern volatile int Uart_Data_In;
-extern volatile unsigned char Uart_Data;
+volatile int Uart_Data_In;
+volatile unsigned char Uart_Data;
 
 void USART2_IRQHandler(void)
 {
@@ -29,7 +29,7 @@ void USART2_IRQHandler(void)
 	NVIC_ClearPendingIRQ(38);
 }
 
-extern volatile int TIM4_Expired;
+volatile int TIM4_Expired;
 
 void TIM4_IRQHandler(void)
 {

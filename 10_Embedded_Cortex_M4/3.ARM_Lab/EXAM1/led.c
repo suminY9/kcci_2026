@@ -27,10 +27,3 @@ void LED_Off(void)
 	// LED Off
 	Macro_Clear_Bit(GPIOA->ODR, 5); 
 }
-
-void LED_Toggle(void)
-{
-	// LED Toggle
-	Macro_Invert_Bit(GPIOA->ODR, 5);
-	Macro_Invert_Bit(GPIOA->ODR, 7);
-}
