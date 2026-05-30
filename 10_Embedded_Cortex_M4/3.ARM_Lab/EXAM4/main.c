@@ -4,11 +4,15 @@
 #define INT_KEY 13
 #define EXT_KEY 7
 
+void Key_Enable(void);
+int Key_Pressed(int);
+void Key_Wait_Pressed(int);
+void Key_Wait_Released(int);
 void LED_Enable(void);
 void LED_On(void);
 void LED_Off(void);
-void SysTick_Run(unsigned int);
-int SysTick_Check_Timeout(void);
+void Systick_Run(unsigned int);
+int Systick_Check_Timeout(void);
 
 
 static void Sys_Init(int baud) 
@@ -20,64 +24,82 @@ static void Sys_Init(int baud)
 	LED_Init();
 }
 
-volatile int Key_Pressed = 0;
-volatile int Uart_Data_In = 0;
-volatile unsigned char Uart_Data = 0;
-volatile int TIM4_Expired = 0;
-
-int cnt = 1;
 
 void Main(void)
 {
 	Sys_Init(115200);
-	printf("\nTimer 4 Interrupt Test\n");
-
-	// Key_ISR_Enable(1);
-	// Uart2_RX_Interrupt_Enable(0);
-	// TIM4_Repeat_Interrupt_Enable(1, 200);
 
 	for(;;)
 	{
-		int key_1st_flag;
-		int key_2nd_flag;
+		int state = 0; 		// 0: key_flag updat, 1: now key work 1 - timer start, 2: now key work 2 - timer triggered
+		int key_1st = 0;	// now key
+		int key_2nd = 0;	// input key during now key working -> can change
+		int led_phase = 0;	// 0: led on, 1: led off & go to state 0
 
-		switch(key_1st_flag){
-			INT_KEY:
-				LED_On();
-				SysTick_Run(1000);
-				key_1st_flag = 0;
+		switch(state){
+			case 0:
+				if(!key_2nd){
+					key_1st = key_2nd;
+					state = 1;
+				}
 				break;
-			EXT_KEY:
-				LED_On();
-				SysTick_Run(4000);
-				key_1st_flag = 0;
+			case 1:
+				switch(key_1st){
+					case INT_KEY:
+						Systick_Run(1000);
+						if(led_phase == 0) LED_On();
+						else if(led_phase == 1) LED_Off();
+						break;
+					case EXT_KEY:
+						Systick_Run(4000);
+						if(led_phase == 0) LED_On();
+						else if (led_phase == 1) LED_Off();
+						break;
+				}
+				state = 2;
 				break;
-			0:
-				if(SysTick_Check_Timeout())	LED_Off();
+			case 2:
+				if(Systick_Check_Timeout()){
+					if(led_phase == 0){
+						led_phase = 1;
+						state = 1;
+					}
+					else if(led_phase == 1) state = 0;
+				}
+				break;
 		}
 		
-		switch(key_2nd_flag){
-			INT_KEY:
-				SysTick_Run(1000);
-				break;
-			EXT_KEY:
-				SysTick_Run(4000);
-				break;
-			0: 
-				if(SysTick_Check_Timeout())	LED_On();
+		if(Key_Pressed(EXT_KEY)){
+			Key_Wait_Released(EXT_KEY);
+			key_2nd = EXT_KEY;
 		}
-		
-		if(Key_Get_Pressed(EXT_KEY)){
-			Key_Wait_Key_Released(EXT_KEY);
-			if(!key_1st_flag) key_2nd_flag = EXT_KEY;
-			else key_1st_flag = EXT_KEY;
-		}
-		if(Key_Get_Pressed(INT_KEY)){
-			Key_Wait_Key_Released(INT_KEY);
-			if(!key_1st_flag) key_2nd_flag = INT_KEY;
-			else key_1st_flag = INT_KEY;
+		if(Key_Pressed(INT_KEY)){
+			Key_Wait_Released(INT_KEY);
+			key_2nd = INT_KEY;
 		}
 	}
+}
+
+
+void Key_Enable(void){
+	Macro_Set_Bit(RCC->AHB1ENR, 2); // GPIOC clock on
+	Macro_Write_Block(GPIOC->MODER, 0x3, 0x0, 26); // PC13 input
+	Macro_Write_Block(GPIOC->MODER, 0x3, 0x0, 14); // PC7 input
+}
+
+int Key_Pressed(int key_num)
+{
+	if(Macro_Check_Bit_Clear(GPIOC->IDR, key_num)) return 1;
+	else return 0;
+}
+
+void Key_Wait_Pressed(int key_num)
+{
+	while(!Macro_Check_Bit_Clear(GPIOC->IDR, key_num));
+}
+
+void Key_Wait_Released(int key_num){
+	while(!Macro_Check_Bit_Set(GPIOC->IDR, key_num));
 }
 
 void LED_Enable(void){
@@ -97,7 +119,7 @@ void LED_Off(void){
 	Macro_Clear_Bit(GPIOA->ODR, 5);
 }
 
-void SysTick_Run(unsigned int msec)
+void Systick_Run(unsigned int msec)
 {
 	// Timer 설정 : 인터럽트 발생 안함, clock source는 HCLK/8, Timer 정지
 	Macro_Write_Block(SysTick->CTRL, 0x7, 0x0, 0);
@@ -110,7 +132,7 @@ void SysTick_Run(unsigned int msec)
 	Macro_Set_Bit(SysTick->CTRL, 0);
 }
 
-int SysTick_Check_Timeout(void)
+int Systick_Check_Timeout(void)
 {
 	// Timer의 Timeout이 발생하면 참(1)리턴, 아니면 거짓(0) 리턴
 	while(!Macro_Check_Bit_Set(SysTick->CTRL, 16)){
