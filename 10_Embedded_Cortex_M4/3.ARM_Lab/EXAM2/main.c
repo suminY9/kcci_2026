@@ -3,9 +3,9 @@
 
 
 void Key_Enable(void);
-int Key_Get_Pressed(int);
-void Key_Wait_Key_Pressed(int);
-void Key_Wait_Key_Released(int);
+int Key_Pressed(int);
+void Key_Wait_Pressed(int);
+void Key_Wait_Released(int);
 void LED_Enable(void);
 void LED_INT_On(void);
 void LED_INT_Off(void);
@@ -27,10 +27,6 @@ static void Sys_Init(int baud)
 
 
 int phase = 1;
-volatile int Key_Pressed = 0;
-volatile int Uart_Data_In = 0;
-volatile unsigned char Uart_Data = 0;
-volatile int TIM4_Expired = 0;
 
 void Main(void)
 {
@@ -54,12 +50,12 @@ void Main(void)
 				break;
 		}
 
-		if(Key_Get_Pressed(EXT_KEY)){
-			Key_Wait_Key_Released(EXT_KEY);
+		if(Key_Pressed(EXT_KEY)){
+			Key_Wait_Released(EXT_KEY);
 			phase = 0;
 		}
-		if(Key_Get_Pressed(INT_KEY)){
-			Key_Wait_Key_Released(INT_KEY);
+		if(Key_Pressed(INT_KEY)){
+			Key_Wait_Released(INT_KEY);
 			phase++;
 			if(phase == 4) phase = 1;
 		}
@@ -73,18 +69,18 @@ void Key_Enable(void){
 	Macro_Write_Block(GPIOC->MODER, 0x3, 0x0, 14); // PC7 input
 }
 
-int Key_Get_Pressed(int key_num)
+int Key_Pressed(int key_num)
 {
 	if(Macro_Check_Bit_Clear(GPIOC->IDR, key_num)) return 1;
 	else return 0;
 }
 
-void Key_Wait_Key_Pressed(int key_num)
+void Key_Wait_Pressed(int key_num)
 {
 	while(!Macro_Check_Bit_Clear(GPIOC->IDR, key_num));
 }
 
-void Key_Wait_Key_Released(int key_num){
+void Key_Wait_Released(int key_num){
 	while(!Macro_Check_Bit_Set(GPIOC->IDR, key_num));
 }
 
