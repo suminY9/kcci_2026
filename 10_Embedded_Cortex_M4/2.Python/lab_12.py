@@ -33,36 +33,36 @@
 # [12-2] class로 만드는 마트 셀프 계산기
 # ############################################################
 
-class Mart_Calc :
-    s = 0
-    def add(self, x) :
-        self.s += x
+# class Mart_Calc :
+#     s = 0
+#     def add(self, x) :
+#         self.s += x
 
-usr1 = Mart_Calc()
-print(type(Mart_Calc))
-print(type(usr1))
-Mart_Calc.add(usr1, 50)
-usr1.add(10)
-print(usr1.s)
-print(Mart_Calc.s)
+# usr1 = Mart_Calc()
+# print(type(Mart_Calc))
+# print(type(usr1))
+# Mart_Calc.add(usr1, 50)
+# usr1.add(10)
+# print(usr1.s)
+# print(Mart_Calc.s)
 
 # ############################################################
 # [12-3] class의 장점
 # ############################################################
 
-class Mart_Calc :
-    s = 0
-    def add(self, x) :
-        self.s += x
+# class Mart_Calc :
+#     s = 0
+#     def add(self, x) :
+#         self.s += x
 
-usr1 = Mart_Calc()
-usr2 = Mart_Calc()
-usr1.add(10)
-usr2.add(100)
-usr1.add(30)
-usr2.add(400)
-print(usr1.s)
-print(usr2.s)
+# usr1 = Mart_Calc()
+# usr2 = Mart_Calc()
+# usr1.add(10)
+# usr2.add(100)
+# usr1.add(30)
+# usr2.add(400)
+# print(usr1.s)
+# print(usr2.s)
 
 # ############################################################
 # [12-4] Class의 변수의 종류
@@ -111,6 +111,7 @@ print(usr2.s)
 # ############################################################
 
 # class Mart_Calc :
+#     s = 10
 #     def add(self, x) :
 #         self.s += x
 #         return self.s
