@@ -31,3 +31,5 @@ AutoCasherSystem.py
 
 YOLO_Trainig_Products.jpynb
 : Colab에서 dataset을 학습시킴
+: 2-1. xml to txt convert 단계에서 cp949 인식 오류 발생 시!
+공유 드라이브에서 class.csv 파일을 엑셀 파일로 다운로드 -> 엑셀로 열어서 다른이름으로 저장>csv(쉼표로 구분) 형식으로 저장 -> 변환된 class.csv 사용
