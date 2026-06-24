@@ -3,7 +3,7 @@
 
 class.csv
 data.yaml
-Dataset   <- 학습시킬 데이터셋
+Dataset.zip   <- 학습시킬 데이터셋
 
 
 
