@@ -1,5 +1,9 @@
-[ AutoCahserSystem_v2.py ]
+[ AutoCasherSystem.py ] -version 1
+### 내용
+1. 좌상단에 실시간 fps 출력
+2. YOLO로 상품을 detect하면 화면에 box와 함께 class name 출력
 
+[ AutoCahserSystem.py ]  -version 2
 ### 개선 사항
 1. 상품의 가격 합계를 fps 아래에 출력되도록 함.
 2. 상품명이 한글로 출력되도록 함.
