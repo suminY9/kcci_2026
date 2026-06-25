@@ -2,64 +2,101 @@ import cv2
 from ultralytics import YOLO
 import time
 import csv
+from PIL import ImageFont, ImageDraw, Image
+import numpy as np
 
-# 1. Jetson Orin에서 직접 빌드한 TensorRT 엔진 로드 (.engine)
-# Ultralytics가 내부 전처리 및 NMS 플러그인을 자동으로 핸들링합니다.
-model = YOLO("Project_TEAM6_test.engine", task="detect")
+# ================= [설정 및 초기화] =================
+model_path = "epochs65.engine"  # 원본 클래스 코드의 메인 실행 파일 기준
+csv_path = "class.csv"
+camera_id = 0
+kor_font_path = "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"
+price_kor_font_path = "usr/share/fonts/truetype/nanum/NanumSquareB.ttf"
 
-# 카메라인 경우 (0번 웹캠)
-cap = cv2.VideoCapture(0)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH,320)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT,240)
-cap.set(cv2.CAP_PROP_BUFFERSIZE,1)
+# 1. TensorRT 엔진 로드
+model = YOLO(model_path, task="detect")
 
-# 윈도우 설정
-cv2.namedWindow('cam', cv2.WINDOW_NORMAL)
-cv2.resizeWindow('cam', 320+40, 240+60)
+# 한글 폰트 로드
+try:
+    pil_font = ImageFont.truetype(kor_font_path, 24)
+    price_pil_font = ImageFont.truetype(price_kor_font_path, 20)
+except IOError:
+    print(f"폰트 파일을 찾을 수 없습니다: {kor_font_path}")
+    exit()
+
+# CSV 데이터 로드 및 딕셔너리 생성
 ansToText = {}
 Price = {}
-with open('class.csv', mode='r', encoding='cp949') as f:
+with open(csv_path, mode='r', encoding='cp949') as f:
     reader = csv.reader(f)
-    next(reader) # 헤더(class_id, class_name) 건너뛰기
+    next(reader)  # 헤더 건너뛰기
     for row in reader:
-        ansToText[int(row[0])] = row[3]
-        Price[int(row[0])] = int(row[2])
+        class_id = int(row[0])
+        name = row[1]
+        price = int(row[2])
+        
+        # 상자 라벨용 텍스트 및 가격 매핑 (원본 클래스 기능과 동일하게 맞춤)
+        ansToText[class_id] = f"{name} : {price}원"
+        Price[class_id] = price
 
-# model.names = ansToText
-# model.predictor.model.names = ansToText
+# 카메라 및 윈도우 설정
+cap = cv2.VideoCapture(camera_id)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+
+cv2.namedWindow('cam', cv2.WINDOW_NORMAL)
+cv2.resizeWindow('cam', 640 + 40, 480 + 60)
 
 # FPS 측정 초기값
 prev_time = time.time()
 fps = 0.0
 
+# ================= [메인 루프] =================
 while cap.isOpened():
     success, frame = cap.read()
-    # frame = cv2.resize(frame, (320, 240)) # 좌우 반전 (웹캠이 거울처럼 보이도록)
     if not success:
         break
 
-    # 2. 추론 실행 
-    # conf: 신뢰도 임계값을 0.5 이상으로 올려 잡다한 박스를 제거합니다.
-    # device=0: 확실하게 GPU를 사용하도록 지정합니다.
-    results = model(frame, imgsz=640, conf=0.5, iou=0.45, device=0,
-                    verbose=False)
+    # 2. 추론 실행
+    results = model(frame, imgsz=640, conf=0.5, iou=0.45, device=0, verbose=False)
     
-    results[0].names = ansToText # class id를 텍스트로 매핑
+    # 클래스 이름을 한글 서식이 포함된 텍스트로 변경
+    results[0].names = ansToText
     
-    # 3. 결과 시각화 (Ultralytics가 올바른 위치에 깔끔하게 그려줌)
-    frame = results[0].plot()
+    # 3. 결과 시각화 (YOLO 박스 내 한글 처리 포함)
+    frame = results[0].plot(font=kor_font_path)
 
-    # FPS 계산
+    # 4. 화면에 인식된 상품들의 총 가격 계산
+    total_price = 0
+    if results[0].boxes is not None:
+        for cls_id in results[0].boxes.cls:
+            total_price += Price.get(int(cls_id.item()), 0)
+
+    # 5. FPS 계산
     cur_time = time.time()
     dt = cur_time - prev_time
     if dt > 0:
         fps = 1.0 / dt
     prev_time = cur_time
 
-    # 화면 좌상단에 FPS 출력
+    # 화면 좌상단에 FPS 출력 (영문이므로 OpenCV 기본 출력 사용)
     fps_text = f"FPS: {fps:.1f}"
     cv2.putText(frame, fps_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
                 0.8, (0, 255, 0), 2, lineType=cv2.LINE_AA)
+
+    # ================= [Total 가격 한글 출력 처리] =================
+    total_text = f"총 금액: {total_price} 원"
+    
+    # OpenCV(BGR) 이미지를 PIL(RGB) 이미지로 변환
+    img_pil = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+    draw = ImageDraw.Draw(img_pil)
+    
+    # 한글 텍스트 그리기 (위치 (10, 60), 노란색 (255, 255, 0))
+    draw.text((10, 45), total_text, font=price_pil_font, fill=(255, 255, 0))
+    
+    # PIL 이미지를 다시 OpenCV(BGR) 이미지로 복원
+    frame = cv2.cvtColor(np.array(img_pil), cv2.COLOR_RGB2BGR)
+    # =============================================================
 
     cv2.imshow("cam", frame)
 
