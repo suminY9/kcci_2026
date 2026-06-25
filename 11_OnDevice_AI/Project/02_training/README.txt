@@ -3,6 +3,8 @@
 1. 좌상단에 실시간 fps 출력
 2. YOLO로 상품을 detect하면 화면에 box와 함께 class name 출력
 
+=============================================
+
 [ AutoCahserSystem.py ]  -version 2
 ### 개선 사항
 1. 상품의 가격 합계를 fps 아래에 출력되도록 함.
@@ -14,3 +16,10 @@
 $ sudo apt-get update
 $ sudo apt-get install -y fonts-nanum
 $ sudo fc-cache -fv
+
+=============================================
+
+[ AutoCasherSystem.py ] -version 3
+### 개선 사항
+1. 영수증을 저장하도록 함.
+실행중일 때 's'를 누르면 영수증이 txt 파일로 출력됨.
