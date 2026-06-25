@@ -16,7 +16,7 @@ IMAGE_DIR = os.path.join(BASE_TRAINING_DIR, "images")
 LABEL_DIR = os.path.join(BASE_TRAINING_DIR, "label")
 
 # 결과 폴더 하위에 images와 label 폴더를 각각 분리 정의
-OUTPUT_DIR = "./Dataset/Augmented2"
+OUTPUT_DIR = "./Dataset/Augmented"
 OUT_IMAGE_DIR = os.path.join(OUTPUT_DIR, "images")
 OUT_LABEL_DIR = os.path.join(OUTPUT_DIR, "label")
 
