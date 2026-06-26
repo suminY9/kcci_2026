@@ -23,3 +23,8 @@ $ sudo fc-cache -fv
 ### 개선 사항
 1. 영수증을 저장하도록 함.
 실행중일 때 's'를 누르면 영수증이 txt 파일로 출력됨.
+
+=============================================
+
+[ YOLO_Training_Continue.ipynb ]
+YOLO_Training_Products.ipynb 실행 중 중단되었을 때 last.pt를 사용해서 이어서 돌리기 위함.
