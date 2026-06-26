@@ -18,8 +18,6 @@ Project/
 ├── 03_result/
 └── README.md
 ```
-
-
 ---
 
 
