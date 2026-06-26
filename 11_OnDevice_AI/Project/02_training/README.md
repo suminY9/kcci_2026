@@ -35,8 +35,7 @@ $ sudo fc-cache -fv
 ---  
 
 
-<br>
-  
+   
 ## [ YOLO_Training_Continue.ipynb ]
 YOLO_Training_Products.ipynb 실행 중 중단되었을 때 last.pt를 사용해서 이어서 돌리기 위함.  
 
