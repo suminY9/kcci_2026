@@ -5,8 +5,7 @@
 $ pip install imgaug opencv-python numpy
 ```
 
-
----
+  
 ### Augmentation manual
 1. 상하 반전
 ```python
@@ -46,8 +45,7 @@ seq_complex = iaa.Sequential([
 ])
 ```
 
-
-
+  
 옵션 목록 dictionary 수정
 ```python
 augmentations = {
