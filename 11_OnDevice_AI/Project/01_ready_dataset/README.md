@@ -46,7 +46,7 @@ seq_complex = iaa.Sequential([
 ```
 
   
-옵션 목록 dictionary 수정
+### 옵션 목록 dictionary 수정
 ```python
 augmentations = {
     "flip_h": seq_flip_h,
