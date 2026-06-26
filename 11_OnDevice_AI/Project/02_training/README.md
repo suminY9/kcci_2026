@@ -4,6 +4,7 @@
 2. YOLO로 상품을 detect하면 화면에 box와 함께 class name 출력  
 
 
+<br>
   
 ## [ AutoCahserSystem.py ]  -version 2
 **개선 사항**
@@ -21,6 +22,7 @@ $ sudo fc-cache -fv
 ```
 
 
+<br>
   
 ## [ AutoCasherSystem.py ] -version 3
 **개선 사항**
@@ -28,10 +30,12 @@ $ sudo fc-cache -fv
 실행중일 때 's'를 누르면 영수증이 txt 파일로 출력됨.  
 
 
+<br>
   
 ---  
 
 
+<br>
   
 ## [ YOLO_Training_Continue.ipynb ]
 YOLO_Training_Products.ipynb 실행 중 중단되었을 때 last.pt를 사용해서 이어서 돌리기 위함.  
