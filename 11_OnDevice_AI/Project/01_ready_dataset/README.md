@@ -6,6 +6,7 @@ $ pip install imgaug opencv-python numpy
 ```
 
 
+---
 ### Augmentation manual
 1. 상하 반전
 ```python
@@ -44,6 +45,8 @@ seq_complex = iaa.Sequential([
     iaa.AdditiveGaussianNoise(scale=(0, 15))
 ])
 ```
+
+
 
 옵션 목록 dictionary 수정
 ```python
