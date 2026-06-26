@@ -1,3 +1,30 @@
+```text
+Project/
+├── 00_data/
+│   ├── class.csv
+│   ├── data.yaml
+│   └── Dataset.zip
+├── 01_ready_dataset/
+│   ├── ansToTest2CSV.py
+│   ├── DatasetAugmentation.py
+│   ├── Import_yaml.py
+│   ├── resize_images.py
+│   └── resize_labels.py
+├── 02_training/
+│   ├── AutoCasherSystem.py
+│   ├── trt_module.py
+│   ├── YOLO_Training_Products.ipynb
+│   └── YOLO_Training_Continue.ipynb
+├── 03_result/
+└── README.md
+
+  
+<br>
+
+
+---
+
+
 ## 00_data
 **학습에 쓸 데이터들**
 
