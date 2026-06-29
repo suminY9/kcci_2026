@@ -31,6 +31,13 @@ $ sudo fc-cache -fv
 
 
 <br>
+
+## [ AutoCasherSystem.py ] -version 4
+**개선 사항**
+1. Web 장바구니 기능 추가.
+
+
+<br>
   
 ---  
 
