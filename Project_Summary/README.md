@@ -13,5 +13,3 @@
 4. [RISC-V 기반 Single-cycle CPU 설계](../06_RISC-V/)
 5. [Verilog 및 Basys3를 활용한 Stopwatch/Watch 설계 및 검증](../04_top_project/0_team_project/)
 6. [Vision AI를 활용한 Auto Cashier System](../11_OnDevice_AI/Project/)
-7. SPI Controller ASIC Full Flow
-8. 분산형 메모리 시스템 시뮬레이션 환경 구축 및 연구  
