@@ -1,8 +1,7 @@
-### Project Summary  
+# Project Summary  
   
-
-# 대한상공회의소 KCCI On-Device 시스템 반도체 설계 1기
-# 2026.01.20 ~ 2026.08.24
+### 대한상공회의소 KCCI On-Device 시스템 반도체 설계 1기
+### 2026.01.20 ~ 2026.08.24
   
 
   <br>
