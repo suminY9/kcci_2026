@@ -24,10 +24,18 @@ module VGA_SW_top(
         .y_pixel(y_pixel),
         .de(de)
     ); 
-    VGA_RGB_SW U_VGA_RGB_SW(
-        .sw_red(sw_red),
-        .sw_green(sw_green),
-        .sw_blue(sw_blue),
+    // VGA_RGB_SW U_VGA_RGB_SW(
+    //     .sw_red(sw_red),
+    //     .sw_green(sw_green),
+    //     .sw_blue(sw_blue),
+    //     .de(de),
+    //     .x_pixel(x_pixel),
+    //     .y_pixel(y_pixel),
+    //     .port_red(port_red),
+    //     .port_green(port_green),
+    //     .port_blue(port_blue)
+    // );
+    VGA_ColorBox U_VGA_ColorBox(
         .de(de),
         .x_pixel(x_pixel),
         .y_pixel(y_pixel),
