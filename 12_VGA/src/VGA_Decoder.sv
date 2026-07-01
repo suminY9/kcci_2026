@@ -16,7 +16,7 @@ module VGA_Decoder(
         .reset(reset),
         .pclk(pclk)
     );
-    
+
     pixel_counter u_pixel_counter(
         .clk(clk),
         .reset(reset),
@@ -111,7 +111,7 @@ module vga_decoder(
     localparam H_Front_porch  = 16;
     localparam H_Sync_pulse   = 96;
     localparam H_Back_porch   = 48;
-    localparam H_Whole_line   = 880;
+    localparam H_Whole_line   = 800;
 
     localparam V_Visible_area = 480;
     localparam V_Front_porch  = 10;
