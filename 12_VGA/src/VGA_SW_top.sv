@@ -24,7 +24,6 @@ module VGA_SW_top(
         .y_pixel(y_pixel),
         .de(de)
     ); 
-
     VGA_RGB_SW U_VGA_RGB_SW(
         .sw_red(sw_red),
         .sw_green(sw_green),

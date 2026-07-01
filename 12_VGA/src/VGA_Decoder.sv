@@ -16,7 +16,6 @@ module VGA_Decoder(
         .reset(reset),
         .pclk(pclk)
     );
-
     pixel_counter u_pixel_counter(
         .clk(clk),
         .reset(reset),
