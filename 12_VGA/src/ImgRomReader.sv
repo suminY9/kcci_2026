@@ -11,6 +11,11 @@ module ImgRomReader(
     output logic [3:0]  port_blue
 );
 
-    assign addr = de ? (640*y_pixel + x_pixel) : 'bz;  // de가 LOW일 때 출력 Z
-    assign {port_red, port_green, port_blue} = de ? {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]} : 0;
+    assign addr = de ? (320*y_pixel + x_pixel) : 'bz;  // de가 LOW일 때 출력 Z
+    // assign {port_red, port_green, port_blue} = de ? {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]} : 0;
+
+    always_comb begin
+        if((x_pixel > 320) || (y_pixel > 240)) {port_red, port_green, port_blue} = 0;
+        else {port_red, port_green, port_blue} = de ? {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]} : 0;
+    end
 endmodule
