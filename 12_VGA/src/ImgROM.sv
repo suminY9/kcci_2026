@@ -8,7 +8,8 @@ module ImgROM(
     logic [15:0] mem[0:320*240-1];
 
     initial begin
-        $readmemh("Lenna_320x240.mem", mem); // Lenna.mem이라는 파일을 16진수로 읽어서 mem이라는 메모리 공간에 넣음.
+        // $readmemh("Lenna_320x240.mem", mem); // Lenna.mem이라는 파일을 16진수로 읽어서 mem이라는 메모리 공간에 넣음.
+        $readmemh("monkey.mem", mem);
     end
 
     assign data = mem[addr];
