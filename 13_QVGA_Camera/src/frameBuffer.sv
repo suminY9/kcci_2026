@@ -1,0 +1,22 @@
+module frameBuffer(
+    // wirte side
+    input  logic wclk,
+    input  logic we,
+    input  logic [$clog2(320*240)-1:0] wAddr, //QVGA size
+    input  logic [15:0] wData,
+    // read side
+    input  logic [$clog2(320*240)-1:0] rAddr,
+    output logic [15:0] rData
+);
+
+    logic [15:0] mem[0:(320*240)-1];
+
+    // write side
+    always_ff @(posedge wclk) begin
+       if(we) mem[wAddr] <= wData; 
+    end
+
+    // read side
+    assign rData = mem[rAddr];
+
+endmodule
