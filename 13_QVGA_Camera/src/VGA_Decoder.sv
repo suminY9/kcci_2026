@@ -2,6 +2,7 @@
 module VGA_Decoder (
     input  logic       clk,
     input  logic       reset,
+    output logic       rclk,
     output logic       h_sync,
     output logic       v_sync,
     output logic [9:0] x_pixel,
@@ -12,6 +13,8 @@ module VGA_Decoder (
     logic pclk;
     logic [9:0] h_count;  // 0 ~ 799
     logic [9:0] v_count;  // 0 ~ 524
+
+    assign rclk = pclk;
 
     pclk_gen u_pclk_gen (
         .clk  (clk),

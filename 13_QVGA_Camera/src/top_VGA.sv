@@ -33,7 +33,7 @@ module top_VGA (
     logic [$clog2(320*240)-1:0] wAddr;
     logic [15:0] wData;
 
-    logic clk_100M, clk_25M;
+    logic clk_100M, clk_25M, rclk;
 
     assign xclk = clk_25M;
 
@@ -48,6 +48,7 @@ module top_VGA (
 
         .clk    (clk_100M),
         .reset  (reset),
+        .rclk   (rclk),
         .h_sync (h_sync),
         .v_sync (v_sync),
         .x_pixel(x_pixel),
@@ -70,6 +71,7 @@ module top_VGA (
         .we(we),
         .wAddr(wAddr),
         .wData(wData),
+        .rclk(rclk),
         .rAddr(qvga_addr),
         .rData(qvga_imgPxlData)
     );

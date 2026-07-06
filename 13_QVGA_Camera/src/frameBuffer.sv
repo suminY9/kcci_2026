@@ -5,6 +5,7 @@ module frameBuffer(
     input  logic [$clog2(320*240)-1:0] wAddr, //QVGA size
     input  logic [15:0] wData,
     // read side
+    input  logic                       rclk,
     input  logic [$clog2(320*240)-1:0] rAddr,
     output logic [15:0] rData
 );
@@ -17,6 +18,9 @@ module frameBuffer(
     end
 
     // read side
-    assign rData = mem[rAddr];
+    always_ff @(posedge rclk) begin
+        rData <= mem[rAddr];
+    end
+    // assign rData = mem[rAddr];
 
 endmodule
