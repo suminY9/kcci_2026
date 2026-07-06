@@ -7,7 +7,7 @@
   <br>
   
   
-1. [MicroBlaze를 활용한 AXI4-Lite Protocol 기반 I2C, SPI 직렬 통신 FPGA 설계 및 검증](../09_MicroBlaze/260422/)
+1. [MicroBlaze를 활용한 AXI4-Lite Protocol 기반 I2C, SPI 직렬 통신 FPGA 설계 및 검증](../09_MicroBlaze/260508_project/)
 2. [SPI, I2C 설계 및UVM 검증](../07_SPI_I2C/)
 3. [RISC-V 기반 Multi-cycle MCU 설계](../06_RISC-V/0_team_project/)
 4. [RISC-V 기반 Single-cycle CPU 설계](../06_RISC-V/)
