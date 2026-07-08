@@ -23,7 +23,7 @@ module top_VGA (
     output logic [3:0] port_blue,
 
     output logic scl,
-    output logic sda
+    inout  logic sda
 );
 
     logic [9:0] x_pixel;

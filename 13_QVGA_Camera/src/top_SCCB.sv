@@ -4,9 +4,10 @@ module SCCB_sender(
    input  logic WR,
    input  logic start,
    input  logic [15:0] tx_data,
+   input  logic SCCBrp,
    output logic SCCBdone,
    output wire  scl,
-   output logic sda,
+   inout  logic sda,
    output logic [7:0] rx_data
 );
 
@@ -14,7 +15,7 @@ module SCCB_sender(
     logic [7:0] txBuffer;
 
     // IP address setting
-    localparam IP_ADDR = 7'b000_0000;
+    localparam IP_ADDR = 7'h21;
 
     typedef enum logic [2:0] {
         IDLE = 3'd0,
@@ -69,6 +70,10 @@ module SCCB_sender(
                 end
                 REG: begin
                     if(done) begin
+                        if(SCCBrp) begin
+                            state <= STOP;
+                            cmd_stop <= 1'b1;
+                        end
                         state <= DATA;
                         txBuffer  <= tx_data[7:0];
                         cmd_write <= 1'b1;

@@ -2,11 +2,11 @@ module SCCB_Data_Controller(
     input  logic clk, // 100MHz
     input  logic reset,
     output logic scl,
-    output logic sda
+    inout  logic sda
 );
 
-    logic SCCBstart, SCCBrw, SCCBdone;
-    logic [7:0]  Rdatablock;
+    logic SCCBstart, SCCBrw, SCCBdone, SCCBrp;
+    logic [7:0]  RdataBlock;
     logic [15:0] WdataBlock;
 
     // QVGA Resolution
@@ -44,8 +44,9 @@ module SCCB_Data_Controller(
                P8 = 8,
                P9 = 9,
                WRITE = 10,
-               READ  = 11,
-               DONE  = 12;
+               READ1 = 11,
+               READ2 = 12,
+               DONE  = 13;
 
     localparam ROM_DEPTH = 70;
     logic [15:0] ROM[0:ROM_DEPTH-1];
@@ -70,11 +71,17 @@ module SCCB_Data_Controller(
     always_ff @(posedge clk, posedge reset) begin
         if(reset) begin
             state      <= IDLE;
+            Fstate     <= IDLE;
+            Rstate     <= IDLE;
             done       <= 0;
             instrAddr  <= 0;
             configAddr <= 0;
             Rdone      <= 0;
             SCCBstart  <= 1'b0;
+            cnt_reg    <= 0;
+            SCCBrp     <= 0;
+            WdataBlock <= 0;
+            RdataBlock <= 0;
         end else begin
             case(state)
                 IDLE: begin
@@ -87,7 +94,7 @@ module SCCB_Data_Controller(
                             WdataBlock <= ROM[instrAddr];
                             SCCBrw     <= 1'b1;
                             SCCBstart  <= 1'b1;
-                            Rstate     <= IDLE + 1;
+                            Rstate     <= P1;
                             Fstate     <= WRITE;
                         end
                         P1: begin // delay 30ms
@@ -108,7 +115,7 @@ module SCCB_Data_Controller(
                         P3: begin // delay 1ms
                             cnt_reg <= cnt_reg + 1;
                             if(instrAddr == 44)      Rstate <= P4;
-                            else if(instrAddr == 51) Rstate <= P5;
+                            else if(instrAddr == 52) Rstate <= P6;
                             if(cnt_reg == 100_000-1) begin
                                 cnt_reg <= 0;
                                 Fstate  <= Rstate;
@@ -126,7 +133,7 @@ module SCCB_Data_Controller(
                             WdataBlock <= {ROM[instrAddr][15:8], ConfigRAM[configAddr]};
                             SCCBrw     <= 1'b1;
                             SCCBstart  <= 1'b1;
-                            Rstate     <= P3;
+                            Rstate     <= P5;
                             Fstate     <= WRITE;
                         end
                         P6: begin // SetColorFormat
@@ -145,10 +152,11 @@ module SCCB_Data_Controller(
                                 Rdone      <= 1'b0;
                             end else begin
                                 WdataBlock <= ROM[instrAddr];
-                                SCCBrw    <= 1'b0;
+                                SCCBrw    <= 1'b1;
                                 SCCBstart <= 1'b1;
+                                SCCBrp    <= 1'b1;
                                 Rstate    <= P6;
-                                Fstate    <= READ;
+                                Fstate    <= READ1;
                             end
                         end
                         // P7: begin // AutoExposureMode
@@ -201,11 +209,21 @@ module SCCB_Data_Controller(
                                 if(instrAddr > 50 && instrAddr < 57) configAddr <= configAddr + 1;
                             end
                         end
-                        READ: begin
+                        READ1: begin
+                            SCCBstart <= 1'b0;
+                            if(SCCBdone) begin
+                                Fstate    <= READ2;
+                                SCCBstart <= 1'b1;
+                                SCCBrw    <= 1'b0;
+                                SCCBrp    <= 1'b1;
+                            end
+                        end
+                        READ2: begin
                             SCCBstart <= 1'b0;
                             if(SCCBdone) begin
                                 Fstate          <= Rstate;
                                 WdataBlock[7:0] <= RdataBlock;
+                                SCCBrp          <= 1'b0;
                                 Rdone           <= 1'b1;
                             end
                         end
@@ -238,7 +256,7 @@ module SCCB_Data_Controller(
                                 SCCBrw    <= 1'b0;
                                 SCCBstart <= 1'b1;
                                 Rstate    <= P1;
-                                Fstate    <= READ;
+                                Fstate    <= READ1;
                             end
                         end
                         WRITE: begin
@@ -249,11 +267,21 @@ module SCCB_Data_Controller(
                                 instrAddr <= instrAddr + 1;
                             end
                         end
-                        READ: begin
+                        READ1: begin
+                            SCCBstart <= 1'b0;
+                            if(SCCBdone) begin
+                                Fstate    <= READ2;
+                                SCCBstart <= 1'b1;
+                                SCCBrw    <= 1'b0;
+                                SCCBrp    <= 1'b1;
+                            end
+                        end
+                        READ2: begin
                             SCCBstart <= 1'b0;
                             if(SCCBdone) begin
                                 Fstate          <= Rstate;
                                 WdataBlock[7:0] <= RdataBlock;
+                                SCCBrp          <= 1'b0;
                                 Rdone           <= 1'b1;
                             end
                         end
@@ -302,7 +330,7 @@ module SCCB_Data_Controller(
                                 SCCBrw    <= 1'b0;
                                 SCCBstart <= 1'b1;
                                 Rstate    <= P1;
-                                Fstate    <= READ;
+                                Fstate    <= READ1;
                             end
                         end
                         WRITE: begin
@@ -313,14 +341,32 @@ module SCCB_Data_Controller(
                                 instrAddr <= instrAddr + 1;
                             end
                         end
-                        READ: begin
+                        READ1: begin
+                            SCCBstart <= 1'b0;
+                            if(SCCBdone) begin
+                                Fstate    <= READ2;
+                                SCCBstart <= 1'b1;
+                                SCCBrw    <= 1'b0;
+                                SCCBrp    <= 1'b1;
+                            end
+                        end
+                        READ2: begin
                             SCCBstart <= 1'b0;
                             if(SCCBdone) begin
                                 Fstate          <= Rstate;
                                 WdataBlock[7:0] <= RdataBlock;
+                                SCCBrp          <= 1'b0;
                                 Rdone           <= 1'b1;
                             end
                         end
+                        // READ: begin
+                        //     SCCBstart <= 1'b0;
+                        //     if(SCCBdone) begin
+                        //         Fstate          <= Rstate;
+                        //         WdataBlock[7:0] <= RdataBlock;
+                        //         Rdone           <= 1'b1;
+                        //     end
+                        // end
                     endcase
                     if(done[4]) begin
                         state  <= IDLE;
@@ -338,6 +384,7 @@ module SCCB_Data_Controller(
         .start(SCCBstart),
         .tx_data(WdataBlock),
         .SCCBdone(SCCBdone),
+        .SCCBrp(SCCBrp),
         .scl(scl),
         .sda(sda),
         .rx_data(RdataBlock)

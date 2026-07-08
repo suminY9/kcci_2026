@@ -8,55 +8,55 @@
 @07 7135
 @08 7211
 @09 73F0
-@10 7A20
-@11 7B01
-@12 7C1E
-@13 7D35
-@14 7E5A
-@15 7F69
-@16 8076
-@17 8180
-@18 8288
-@19 838F
-@20 8496
-@21 85A3
-@22 86AF
-@23 87C4
-@24 88D7
-@25 89E8
-@26 0000
-@27 1000
-@28 0D40
-@29 1418
-@30 A505
-@31 AB07
-@32 2495
-@33 2533
-@34 26E3
-@35 9F78
-@36 A068
-@37 A103
-@38 A6D8
-@39 A7D8
-@40 A8F0
-@41 A990
-@42 AA94
-@43 1211 // ResetSW_SetRosolution_Config(RES_QVGA)
-@44 0C04
-@45 3E19
-@46 703A
-@47 7135
-@48 7211
-@49 73F1
-@50 A202
-@51 17FF // ResetSW_SetResolution_SetFrameControl
-@52 18FF
-@53 32FF
-@54 19FF
-@55 1AFF
-@56 03FF
-@57 12FF // ResetSW_SetColorFormat
-@58 40FF
-@59 13FF // AutoExposureMode
-@60 55FF // SetBrightness
-@61 13FF // AutoGainMode
+@0a 7A20
+@0b 7B01
+@0c 7C1E
+@0d 7D35
+@0e 7E5A
+@0f 7F69
+@10 8076
+@11 8180
+@12 8288
+@13 838F
+@14 8496
+@15 85A3
+@16 86AF
+@17 87C4
+@18 88D7
+@19 89E8
+@1a 0000
+@1b 1000
+@1c 0D40
+@1d 1418
+@1e A505
+@1f AB07
+@20 2495
+@21 2533
+@22 26E3
+@23 9F78
+@24 A068
+@25 A103
+@26 A6D8
+@27 A7D8
+@28 A8F0
+@29 A990
+@2a AA94
+@2b 1211 // ResetSW_SetRosolution_Config(RES_QVGA)
+@2c 0C04
+@2d 3E19
+@2e 703A
+@2f 7135
+@30 7211
+@31 73F1
+@32 A202
+@33 17FF // ResetSW_SetResolution_SetFrameControl
+@34 18FF
+@35 32FF
+@36 19FF
+@37 1AFF
+@38 03FF
+@39 12FF // ResetSW_SetColorFormat
+@3a 40FF
+@3b 13FF // AutoExposureMode
+@3c 55FF // SetBrightness
+@3d 13FF // AutoGainMode
