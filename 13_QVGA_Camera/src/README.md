@@ -55,22 +55,27 @@ Project/
 │   ├── P4 : delay10ms
 │   ├── P5 : SetResolution(QVGA)_SetFrameControl
 │   ├── P6 : SetColorFormat
-│   └── WRITE
+│   ├── WRITE
+│   └── DONE
 ├── ShowColorBar/
+│   └── DONE
 ├── AutoExposureMode/
 │   ├── P1 : Use READ
 │   ├── P2 : No READ
 │   ├── WRITE
 │   ├── READ1 : READ 1st Phase
-│   └── READ2 : READ 2nd Phase
+│   ├── READ2 : READ 2nd Phase
+│   └── DONE
 ├── SetBrightness/
 │   ├── P1
-│   └── WRITE
+│   ├── WRITE
+│   └── DONE
 ├── AutoGainMode/
 │   ├── P1 : Use READ
 │   ├── P2 : No READ
 │   ├── WRITE
 │   ├── READ1 : READ 1st Phase
-│   └── READ2 : READ 2nd Phase
+│   ├── READ2 : READ 2nd Phase
+│   └── DONE
 └── README.md
 ```
