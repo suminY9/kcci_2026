@@ -80,7 +80,7 @@ module i2c_master (
 
     assign scl   = scl_r;
     assign sda_o = sda_r;
-    assign busy  = (state != IDLE);
+    // assign busy  = (state != IDLE);
 
     always_ff @(posedge clk or posedge reset) begin
         if (reset) begin
@@ -102,7 +102,7 @@ module i2c_master (
             state        <= IDLE;
             scl_r        <= 1'b1;
             sda_r        <= 1'b1;
-            // busy         <= 1'b0;
+            busy         <= 1'b0;
             step         <= 0;
             done         <= 1'b0;
             tx_shift_reg <= 0;
@@ -119,7 +119,7 @@ module i2c_master (
                     if (cmd_start) begin
                         state <= START;
                         step  <= 0;
-                        // busy  <= 1'b1;
+                        busy  <= 1'b1;
                     end
                 end
                 START: begin
@@ -148,21 +148,26 @@ module i2c_master (
                 end
                 WAIT_CMD: begin
                     step <= 0;
+                    busy <= 1'b0;
                     if (cmd_write) begin
                         tx_shift_reg <= tx_data;
                         bit_cnt      <= 0;
                         is_read      <= 1'b0;
                         state        <= DATA;
+                        busy         <= 1'b1;
                     end else if (cmd_read) begin
                         rx_shift_reg <= 0;
                         bit_cnt      <= 0;
                         is_read      <= 1'b1;
                         ack_in_r     <= ack_in;
                         state        <= DATA;
+                        busy         <= 1'b1;
                     end else if (cmd_stop) begin
                         state <= STOP;
+                        busy         <= 1'b1;
                     end else if (cmd_start) begin
                         state <= START;
+                        busy         <= 1'b1;
                     end
                 end
                 DATA: begin
@@ -183,11 +188,11 @@ module i2c_master (
                             end
                             2'd3: begin
                                 scl_r <= 1'b0;
-                                if (!is_read) tx_shift_reg <= {tx_shift_reg[6:0], 1'b0};
                                 step  <= 2'd0;
                                 if (bit_cnt == 7) begin
                                     state <= ACK;
                                 end else begin
+                                    if (!is_read) tx_shift_reg <= {tx_shift_reg[6:0], 1'b0};
                                     bit_cnt <= bit_cnt + 1;
                                 end
                             end

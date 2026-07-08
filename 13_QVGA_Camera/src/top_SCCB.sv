@@ -57,38 +57,47 @@ module SCCB_sender(
                     end
                 end
                 ID: begin
-                    if(done) begin
-                        if(WR == 0) begin
-                            state     <= REG;
-                            txBuffer  <= tx_data[15:8];
-                            cmd_write <= 1'b1;
-                        end else begin
-                            state    <= DATA;
-                            cmd_read <= 1'b1;
+                    if(busy) begin
+                        if(done) begin
+                            if(WR == 0) begin
+                                state     <= REG;
+                                txBuffer  <= tx_data[15:8];
+                                cmd_write <= 1'b1;
+                            end else begin
+                                state    <= DATA;
+                                cmd_read <= 1'b1;
+                            end
                         end
                     end
                 end
                 REG: begin
-                    if(done) begin
-                        if(SCCBrp) begin
-                            state <= STOP;
-                            cmd_stop <= 1'b1;
+                    if(busy) begin
+                        if(done) begin
+                            if(SCCBrp) begin
+                                state <= STOP;
+                                cmd_stop <= 1'b1;
+                            end else begin
+                                state <= DATA;
+                                txBuffer  <= tx_data[7:0];
+                                cmd_write <= 1'b1;
+                            end
                         end
-                        state <= DATA;
-                        txBuffer  <= tx_data[7:0];
-                        cmd_write <= 1'b1;
                     end
                 end
                 DATA: begin
-                    if(done) begin
-                        state    <= STOP;
-                        cmd_stop <= 1'b1;
+                    if(busy) begin
+                        if(done) begin
+                            state    <= STOP;
+                            cmd_stop <= 1'b1;
+                        end
                     end
                 end
                 STOP: begin
-                    if(done) begin
-                        state    <= IDLE;
-                        SCCBdone <= 1'b1;
+                    if(busy) begin
+                        if(done) begin
+                            state    <= IDLE;
+                            SCCBdone <= 1'b1;
+                        end
                     end
                 end
             endcase
