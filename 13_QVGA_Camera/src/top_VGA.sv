@@ -20,7 +20,10 @@ module top_VGA (
     output logic       v_sync,
     output logic [3:0] port_red,
     output logic [3:0] port_green,
-    output logic [3:0] port_blue
+    output logic [3:0] port_blue,
+
+    output logic scl,
+    output logic sda
 );
 
     logic [9:0] x_pixel;
@@ -114,6 +117,13 @@ module top_VGA (
         .in2(port_gray),
         .in3(port_rgb),
         .out({port_red, port_green, port_blue})
+    );
+
+    SCCB_Data_Controller U_SCCB_Data_Ctrl(
+        .clk(clk_100M),
+        .reset(reset),
+        .scl(scl),
+        .sda(sda)
     );
 endmodule
 
