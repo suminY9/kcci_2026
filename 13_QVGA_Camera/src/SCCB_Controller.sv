@@ -215,13 +215,10 @@ module SCCB_Data_Controller(
                                 cnt_reg <= 0;
                             end
                             if(temp) begin
-                                // cnt_reg <= cnt_reg + 1;
-                                // if(cnt_reg == 100_000-1) begin
-                                    WdataBlock[7:0] <= RdataBlock;
-                                    Fstate          <= Rstate;
-                                    Rdone           <= 1'b1;
-                                    temp            <= 1'b0;
-                                // end
+                                WdataBlock[7:0] <= RdataBlock;
+                                Fstate          <= Rstate;
+                                Rdone           <= 1'b1;
+                                temp            <= 1'b0;
                             end
                         end
                         DONE: begin
@@ -315,13 +312,10 @@ module SCCB_Data_Controller(
                                 cnt_reg <= 0;
                             end
                             if(temp) begin
-                                cnt_reg <= cnt_reg + 1;
-                                if(cnt_reg == 100_000-1) begin
-                                    WdataBlock[7:0] <= RdataBlock;
-                                    Fstate          <= Rstate;
-                                    Rdone           <= 1'b1;
-                                    temp            <= 1'b0;
-                                end
+                                WdataBlock[7:0] <= RdataBlock;
+                                Fstate          <= Rstate;
+                                Rdone           <= 1'b1;
+                                temp            <= 1'b0;
                             end
                         end
                         DONE: begin
@@ -434,13 +428,10 @@ module SCCB_Data_Controller(
                                 cnt_reg <= 0;
                             end
                             if(temp) begin
-                                cnt_reg <= cnt_reg + 1;
-                                if(cnt_reg == 100_000-1) begin
-                                    WdataBlock[7:0] <= RdataBlock;
-                                    Fstate          <= Rstate;
-                                    Rdone           <= 1'b1;
-                                    temp            <= 1'b0;
-                                end
+                                WdataBlock[7:0] <= RdataBlock;
+                                Fstate          <= Rstate;
+                                Rdone           <= 1'b1;
+                                temp            <= 1'b0;
                             end
                         end
                         DONE: begin
