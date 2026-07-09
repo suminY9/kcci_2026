@@ -56,6 +56,8 @@ Project/
 │   ├── P5 : SetResolution(QVGA)_SetFrameControl
 │   ├── P6 : SetColorFormat
 │   ├── WRITE
+│   ├── READ1 : READ 1st Phase
+│   ├── READ2 : READ 2nd Phase
 │   └── DONE
 ├── ShowColorBar/
 │   └── DONE
