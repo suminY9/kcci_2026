@@ -164,8 +164,8 @@ module SCCB_Data_Controller(
                         P6: begin // SetColorFormat
                             if(Rdone) begin
                                 if(temp == 1'b0) begin
-                                    if(instrAddr == 57) WdataBlock[7:0] <= WdataBlock[7:0] & 8'b11111010;
-                                    if(instrAddr == 58) WdataBlock[7:0] <= WdataBlock[7:0] & 8'b00001111;
+                                    if(instrAddr == 57) WdataBlock[7:0] <= ((WdataBlock[7:0] & 8'b11111010) | 8'h04);
+                                    if(instrAddr == 58) WdataBlock[7:0] <= ((WdataBlock[7:0] & 8'b00001111) | 8'h10);
                                     temp <= 1'b1;
                                 end else begin
                                     SCCBrw    <= 1'b0;
