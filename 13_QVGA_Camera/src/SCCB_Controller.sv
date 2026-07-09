@@ -17,7 +17,7 @@ module SCCB_Data_Controller(
                hstop  = 24,
                vstart = 12,
                vstop  = 492,
-               /*** do now edit ***/
+               /*** do not edit ***/
                HSTART = (hstart>>3)&8'hff,
                HSTOP  = (hstop>>3)&8'hff,
                HREF   = ((hstop&8'h07)<<3)|(hstart&8'h07),
