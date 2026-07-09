@@ -55,8 +55,8 @@
 @36 19FF
 @37 1AFF
 @38 03FF
-@39 1214 // ResetSW_SetColorFormat
-@3a 4010
+@39 12FF // ResetSW_SetColorFormat
+@3a 40FF
 @3b 1301 // AutoExposureMode
 @3c 55FF // SetBrightness
 @3d 1304 // AutoGainMode

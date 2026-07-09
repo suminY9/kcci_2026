@@ -162,11 +162,32 @@ module SCCB_Data_Controller(
                             end
                         end
                         P6: begin // SetColorFormat
-                            WdataBlock <= ROM[instrAddr];
-                            SCCBrw     <= 1'b0;
-                            SCCBstart  <= 1'b1;
-                            Rstate     <= P6;
-                            Fstate     <= WRITE;
+                            if(Rdone) begin
+                                if(temp == 1'b0) begin
+                                    if(instrAddr == 57) WdataBlock[7:0] <= WdataBlock[7:0] & 8'b11111010;
+                                    if(instrAddr == 58) WdataBlock[7:0] <= WdataBlock[7:0] & 8'b00001111;
+                                    temp <= 1'b1;
+                                end else begin
+                                    SCCBrw    <= 1'b0;
+                                    SCCBstart <= 1'b1;
+                                    Rstate    <= P6;
+                                    Fstate    <= WRITE;
+                                    Rdone     <= 1'b0;
+                                    temp      <= 1'b0;
+                                end
+                            end else begin
+                                if(temp == 1'b0) begin
+                                    WdataBlock <= ROM[instrAddr];
+                                    temp <= 1'b1;
+                                end else begin
+                                    SCCBrw    <= 1'b0;
+                                    SCCBstart <= 1'b1;
+                                    SCCBrp    <= 1'b1;
+                                    Rstate    <= P6;
+                                    Fstate    <= READ1;
+                                    temp      <= 1'b0;
+                                end
+                            end
                         end
                         WRITE: begin
                             SCCBstart <= 1'b0;
@@ -174,6 +195,33 @@ module SCCB_Data_Controller(
                                 Fstate    <= P3;
                                 instrAddr <= instrAddr + 1;
                                 if(instrAddr > 50 && instrAddr < 57) configAddr <= configAddr + 1;
+                            end
+                        end
+                        READ1: begin
+                            SCCBstart <= 1'b0;
+                            if(SCCBdone) begin
+                                SCCBstart <= 1'b1;
+                                SCCBrw    <= 1'b1;
+                                SCCBrp    <= 1'b0;
+                                Fstate    <= READ2;
+                            end
+                        end
+                        READ2: begin
+                            SCCBstart <= 1'b0;
+                            if(SCCBdone) begin
+                                SCCBrw  <= 1'b0;
+                                SCCBrp  <= 1'b0;
+                                temp    <= 1'b1;
+                                cnt_reg <= 0;
+                            end
+                            if(temp) begin
+                                // cnt_reg <= cnt_reg + 1;
+                                // if(cnt_reg == 100_000-1) begin
+                                    WdataBlock[7:0] <= RdataBlock;
+                                    Fstate          <= Rstate;
+                                    Rdone           <= 1'b1;
+                                    temp            <= 1'b0;
+                                // end
                             end
                         end
                         DONE: begin
