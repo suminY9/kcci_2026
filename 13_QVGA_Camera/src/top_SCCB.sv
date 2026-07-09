@@ -87,8 +87,8 @@ module SCCB_sender(
                 DATA: begin
                     if(busy) begin
                         if(done) begin
-                            state    <= STOP;
                             cmd_stop <= 1'b1;
+                            state    <= STOP;
                         end
                     end
                 end
@@ -112,7 +112,7 @@ module SCCB_sender(
         .cmd_read(cmd_read),
         .cmd_stop(cmd_stop),
         .tx_data(txBuffer),
-        .ack_in(1'bx),
+        .ack_in(1'b1),
         .rx_data(rx_data),
         .done(done),
         .ack_out(),

@@ -113,9 +113,10 @@ module i2c_master (
             done <= 1'b0;
             case (state)
                 IDLE: begin
-                    scl_r <= 1'b1;
-                    sda_r <= 1'b1;
-                    busy  <= 1'b0;
+                    scl_r   <= 1'b1;
+                    sda_r   <= 1'b1;
+                    busy    <= 1'b0;
+                    is_read <= 1'b0;
                     if (cmd_start) begin
                         state <= START;
                         step  <= 0;

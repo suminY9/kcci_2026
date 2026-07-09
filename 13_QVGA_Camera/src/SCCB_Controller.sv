@@ -99,20 +99,20 @@ module SCCB_Data_Controller(
                         IDLE: begin // WriteSCCB(REG_COM7, 0x80)
                             if(temp == 1'b0) begin
                                 WdataBlock <= ROM[instrAddr];
-                                temp <= 1'b1;
+                                temp       <= 1'b1;
                             end
                                 else begin
                                 SCCBrw     <= 1'b0;
                                 SCCBstart  <= 1'b1;
                                 Rstate     <= P1;
                                 Fstate     <= WRITE;
-                                temp <= 1'b0;
+                                temp       <= 1'b0;
                                 end
                             end
                         P1: begin // delay 30ms
                             cnt_reg <= cnt_reg + 1;
                             if(cnt_reg == 3_000_000-1) begin
-                            // if(cnt_reg == 3_000_00-1) begin     // debugging
+                            // if(cnt_reg == 1_000_00-1) begin     // debugging
                                 Fstate    <= P2;
                                 cnt_reg   <= 0;
                             end
@@ -125,7 +125,7 @@ module SCCB_Data_Controller(
                                 SCCBrw     <= 1'b0;
                                 SCCBstart  <= 1'b1;
                                 Fstate     <= WRITE;
-                                if(instrAddr == 51) Rstate <= P5;
+                                if(instrAddr == 50) Rstate <= P5;
                                 else                Rstate <= P2;
                                 temp <= 1'b0;
                             end
@@ -133,7 +133,8 @@ module SCCB_Data_Controller(
                         P3: begin // delay 1ms
                             cnt_reg <= cnt_reg + 1;
                             if(cnt_reg == 100_000-1) begin
-                                if(instrAddr == 44 || instrAddr == 51 || instrAddr == 57) Fstate <= P4;
+                                if(instrAddr == 44 || instrAddr == 57) Fstate <= P4;
+                                else if (instrAddr == 59)              Fstate  <= DONE;
                                 else begin
                                     cnt_reg <= 0;
                                     Fstate  <= Rstate;
@@ -144,7 +145,6 @@ module SCCB_Data_Controller(
                             cnt_reg <= cnt_reg + 1;
                             if(cnt_reg == 1_000_000-1) begin
                                 if(instrAddr == 57)       Fstate  <= P6;
-                                else if (instrAddr == 59) Fstate  <= DONE;
                                 else                      Fstate  <= P2;
                                 cnt_reg <= 0;
                             end
@@ -158,7 +158,7 @@ module SCCB_Data_Controller(
                                 SCCBstart  <= 1'b1;
                                 Rstate     <= P5;
                                 Fstate     <= WRITE;
-                                temp <= 1'b0;
+                                temp       <= 1'b0;
                             end
                         end
                         P6: begin // SetColorFormat
@@ -178,6 +178,7 @@ module SCCB_Data_Controller(
                         end
                         DONE: begin
                             done[0] <= 1'b1;
+                            // state   <= IDLE;   // debugging
                         end
                     endcase
                     if(done[0]) begin
@@ -187,7 +188,6 @@ module SCCB_Data_Controller(
                     end
                 end
                 ShowColorBar: begin
-                    
                     case(Fstate)
                         DONE: begin
                             done[1] <= 1'b1;
@@ -204,16 +204,16 @@ module SCCB_Data_Controller(
                         P1: begin   // Use READ
                             if(Rdone) begin
                                 if(temp == 1'b0) begin
-                                    if(AutoExposureMode_EN) WdataBlock[7:0] <= WdataBlock[7:0] & 8'h01;
+                                    if(AutoExposureMode_EN) WdataBlock[7:0] <= WdataBlock[7:0] | 8'h01;
                                     else                    WdataBlock[7:0] <= WdataBlock[7:0] & 8'hfe;
                                     temp <= 1'b1;
                                 end else begin
                                     SCCBrw    <= 1'b0;
                                     SCCBstart <= 1'b1;
+                                    Rstate    <= DONE;
                                     Fstate    <= WRITE;
                                     Rdone     <= 1'b0;
-                                    Rstate    <= DONE;
-                                    temp <= 1'b0;
+                                    temp      <= 1'b0;
                                 end
                             end else begin
                                 if(temp == 1'b0) begin
@@ -222,9 +222,10 @@ module SCCB_Data_Controller(
                                 end else begin
                                     SCCBrw    <= 1'b0;
                                     SCCBstart <= 1'b1;
+                                    SCCBrp    <= 1'b1;
                                     Rstate    <= P1;
                                     Fstate    <= READ1;
-                                    temp <= 1'b0;
+                                    temp      <= 1'b0;
                                 end
                             end
                         end
@@ -248,40 +249,31 @@ module SCCB_Data_Controller(
                                 instrAddr <= instrAddr + 1;
                             end
                         end
-                        READ1: begin   // READ Phase 1
+                        READ1: begin
                             SCCBstart <= 1'b0;
                             if(SCCBdone) begin
-                                temp    <= 1'b1;
-                                cnt_reg <= 0;
-                            end else if(temp) begin   // delay 10ms after SCCBdone
-                                cnt_reg <= cnt_reg + 1;
-                                if(cnt_reg == 100_000-1) begin
-                                    cnt_reg <= 0;
-                                    temp    <= 1'b0;
-                                end
-                            end else if(!SCCBdone && !temp) begin
-                                Fstate    <= READ2;
                                 SCCBstart <= 1'b1;
                                 SCCBrw    <= 1'b1;
-                                SCCBrp    <= 1'b1;
+                                SCCBrp    <= 1'b0;
+                                Fstate    <= READ2;
                             end
                         end
-                        READ2: begin   // READ Phase 2
+                        READ2: begin
                             SCCBstart <= 1'b0;
                             if(SCCBdone) begin
+                                SCCBrw  <= 1'b0;
+                                SCCBrp  <= 1'b0;
                                 temp    <= 1'b1;
                                 cnt_reg <= 0;
-                            end else if(temp) begin   // delay 10ms after SCCBdone
+                            end
+                            if(temp) begin
                                 cnt_reg <= cnt_reg + 1;
                                 if(cnt_reg == 100_000-1) begin
-                                    cnt_reg <= 0;
-                                    temp    <= 1'b0;
+                                    WdataBlock[7:0] <= RdataBlock;
+                                    Fstate          <= Rstate;
+                                    Rdone           <= 1'b1;
+                                    temp            <= 1'b0;
                                 end
-                            end if(!SCCBdone && !temp) begin
-                                WdataBlock[7:0] <= RdataBlock;
-                                Fstate          <= Rstate;
-                                SCCBrp          <= 1'b0;
-                                Rdone           <= 1'b1;
                             end
                         end
                         DONE: begin
@@ -297,14 +289,14 @@ module SCCB_Data_Controller(
                     case(Fstate)
                         P1: begin
                             if(temp == 1'b0) begin
-                                if(BRIGHTNESS >= 127) WdataBlock <= {ROM[instrAddr][15:8], BRIGHTNESS-127};
-                                else                  WdataBlock <= {ROM[instrAddr][15:8], 255-BRIGHTNESS};
+                                if(BRIGHTNESS >= 8'd127) WdataBlock <= {ROM[instrAddr][15:8], 8'(BRIGHTNESS-8'd127)};
+                                else                     WdataBlock <= {ROM[instrAddr][15:8], 8'(8'd255-BRIGHTNESS)};
                                 temp <= 1'b1;
                             end else begin
                                 SCCBrw     <= 1'b0;
                                 SCCBstart  <= 1'b1;
                                 Fstate     <= WRITE;
-                                temp <= 1'b0;
+                                temp       <= 1'b0;
                             end
                         end
                         WRITE: begin
@@ -330,16 +322,16 @@ module SCCB_Data_Controller(
                         P1: begin   // Use READ
                             if(Rdone) begin
                                 if(temp == 1'b0) begin
-                                    if(AutoGainMode_EN) WdataBlock[7:0] <= WdataBlock[7:0] & 8'h04;
+                                    if(AutoGainMode_EN) WdataBlock[7:0] <= WdataBlock[7:0] | 8'h04;
                                     else                WdataBlock[7:0] <= WdataBlock[7:0] & 8'hfb;
                                     temp <= 1'b1;
                                 end else begin
                                     SCCBrw    <= 1'b0;
                                     SCCBstart <= 1'b1;
                                     Fstate    <= WRITE;
-                                    Rdone     <= 1'b0;
                                     Rstate    <= DONE;
-                                    temp <= 1'b0;
+                                    Rdone     <= 1'b0;
+                                    temp      <= 1'b0;
                                 end
                             end else begin
                                 if(temp == 1'b0) begin
@@ -348,9 +340,10 @@ module SCCB_Data_Controller(
                                 end else begin
                                     SCCBrw    <= 1'b0;
                                     SCCBstart <= 1'b1;
+                                    SCCBrp    <= 1'b1;
                                     Rstate    <= P1;
                                     Fstate    <= READ1;
-                                    temp <= 1'b0;
+                                    temp      <= 1'b0;
                                 end
                             end
                         end
@@ -375,40 +368,31 @@ module SCCB_Data_Controller(
                                 instrAddr <= instrAddr + 1;
                             end
                         end
-                        READ1: begin   // READ Phase 1
+                        READ1: begin
                             SCCBstart <= 1'b0;
                             if(SCCBdone) begin
-                                temp    <= 1'b1;
-                                cnt_reg <= 0;
-                            end else if(temp) begin   // delay 10ms after SCCBdone
-                                cnt_reg <= cnt_reg + 1;
-                                if(cnt_reg == 100_000-1) begin
-                                    cnt_reg <= 0;
-                                    temp    <= 1'b0;
-                                end
-                            end else if(!SCCBdone && !temp) begin
-                                Fstate    <= READ2;
                                 SCCBstart <= 1'b1;
                                 SCCBrw    <= 1'b1;
-                                SCCBrp    <= 1'b1;
+                                SCCBrp    <= 1'b0;
+                                Fstate    <= READ2;
                             end
                         end
-                        READ2: begin   // READ Phase 2
+                        READ2: begin
                             SCCBstart <= 1'b0;
                             if(SCCBdone) begin
+                                SCCBrw  <= 1'b0;
+                                SCCBrp  <= 1'b0;
                                 temp    <= 1'b1;
                                 cnt_reg <= 0;
-                            end else if(temp) begin   // delay 10ms after SCCBdone
+                            end
+                            if(temp) begin
                                 cnt_reg <= cnt_reg + 1;
                                 if(cnt_reg == 100_000-1) begin
-                                    cnt_reg <= 0;
-                                    temp    <= 1'b0;
+                                    WdataBlock[7:0] <= RdataBlock;
+                                    Fstate          <= Rstate;
+                                    Rdone           <= 1'b1;
+                                    temp            <= 1'b0;
                                 end
-                            end if(!SCCBdone && !temp) begin
-                                WdataBlock[7:0] <= RdataBlock;
-                                Fstate          <= Rstate;
-                                SCCBrp          <= 1'b0;
-                                Rdone           <= 1'b1;
                             end
                         end
                         DONE: begin
