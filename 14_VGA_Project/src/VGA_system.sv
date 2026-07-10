@@ -18,8 +18,8 @@ module VGA_system (
     output logic [3:0] port_blue,
 
     output logic       scanning,
-    // output logic       pushed,
-    output logic [3:0] region,
+    output logic [3:0] region_RED,
+    output logic [3:0] region_BLUE,
 
     output logic scl,
     inout  logic sda
@@ -37,9 +37,6 @@ module VGA_system (
     logic [15:0] wData;
 
     logic clk_100M, clk_25M, rclk;
-
-    // scale, filter
-    logic [11:0] port_scale, port_gray, port_rgb;
 
     assign xclk = clk_25M;
 
@@ -90,12 +87,12 @@ module VGA_system (
         .y_pixel(y_pixel),
         .imgPxlData(imgPxlData),
         .imgPxlAddr(imgPxlAddr),
-        .port_red  (port_red),
+        .port_red(port_red),
         .port_green(port_green),
-        .port_blue (port_blue),
+        .port_blue(port_blue),
         .scanning(scanning),
-        // .pushed(pushed),
-        .region(region)
+        .region_RED(region_RED),
+        .region_BLUE(region_BLUE)
     );
     
     OV7670_SCCB_Controller U_SCCB_Data_Ctrl(

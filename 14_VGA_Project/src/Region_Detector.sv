@@ -6,8 +6,8 @@ module Region_Detector(
     input  logic [15:0] frame_data,
     output logic [15:0] frame_addr,
     output logic        scanning,
-    // output logic        pushed,
-    output logic [3:0]  region
+    output logic [3:0]  region_RED,
+    output logic [3:0]  region_BLUE
 );
 
     // edge detect
@@ -19,67 +19,89 @@ module Region_Detector(
                Y_PX      = 240,
                TOT_PX    = X_PX * Y_PX;
     logic [$clog2(TOT_PX)-1:0]         scan_addr;
-    logic [$clog2(TOT_PX)-1:0]         pixel_cnt;
-    logic [$clog2(TOT_PX*X_PX)-1:0]    sum_x;
-    logic [$clog2(X_PX)-1:0]           avg_x;
-    logic [$clog2(X_PX)-1:0]           player_x_reg;
+    logic [$clog2(TOT_PX)-1:0]         pixel_cnt_R, pixel_cnt_B;
+    logic [$clog2(TOT_PX*X_PX)-1:0]    sum_x_R, sum_x_B;
+    logic [$clog2(X_PX)-1:0]           avg_x_R, avg_x_B;
+    logic [$clog2(X_PX)-1:0]           x_reg_R, x_reg_B;
     logic [$clog2(X_PX)-1:0]           curr_x, curr_y;
 
     // Color Detect
     logic [3:0]  r_check, g_check, b_check;
-    logic isRED;
+    logic isRED, isBLUE;
     assign r_check = frame_data[15:12];   // RGB565 -> RGB444
     assign g_check = frame_data[10:7];    // ignore smaller bit
     assign b_check = frame_data[4:1];
-    assign isRED = (r_check > 4'b0100) &&
-                   (g_check < 4'b0111) &&
-                   (b_check < 4'b0111) &&
-                   (r_check >= (g_check + 4'b0010)) && (r_check >= (b_check + 4'b0010));
+    assign isRED  = (r_check > 4'b0100) &&
+                    (g_check < 4'b0111) &&
+                    (b_check < 4'b0111) &&
+                    (r_check > 4'(g_check + 4'b0010)) && (r_check > 4'(b_check + 4'b0010));
+    assign isBLUE = (r_check < 4'b0111) &&
+                    (g_check < 4'b0111) &&
+                    (b_check > 4'b0100) &&
+                    (b_check > 4'(r_check + 4'b0010)) && (b_check > 4'(g_check + 4'b0010));
                    
     // FSM
     localparam IDLE = 0, SCAN = 1, CAL_DIV = 2, CAL_REGION = 3;
-    logic [1:0] state;
+    logic       state;
+    logic [1:0] REDstate, BLUEstate;
 
     always_ff @(posedge clk, posedge reset) begin
         if(reset) begin
             //edge detector
-            vsync_prev   <= 1'b0;
+            vsync_prev     <= 1'b0;
             //region detector
-            scan_addr    <= 0;
-            pixel_cnt    <= 0;
-            sum_x        <= 0;
-            avg_x        <= 0;
-            player_x_reg <= 0;
-            curr_x       <= 0;
-            curr_y       <= 0;
+            scan_addr      <= 0;
+            curr_x         <= 0;
+            curr_y         <= 0;
+            //RED
+            pixel_cnt_R    <= 0;
+            sum_x_R        <= 0;
+            avg_x_R        <= 0;
+            x_reg_R        <= 0;
+            //BLUE
+            pixel_cnt_B    <= 0;
+            sum_x_B        <= 0;
+            avg_x_B        <= 0;
+            x_reg_B        <= 0;
             //output
-            frame_addr   <= 0;
-            scanning     <= 1'b0;
-            // pushed       <= 1'b0;
-            region       <= 4'd0;
+            frame_addr     <= 0;
+            scanning       <= 1'b0;
+            region_RED     <= 4'd0;
+            region_BLUE    <= 4'd0;
             // FSM
-            state        <= 2'd0;
+            state          <= 1'b0;
+            REDstate       <= 2'd0;
+            BLUEstate      <= 2'd0;
         end else begin
+            //edge detector
             vsync_prev <= vsync;
+            if(!vsync_prev && vsync) begin
+                state       <= SCAN;
+                scanning    <= 1'b1;
+                scan_addr   <= 0;
+                pixel_cnt_R <= 0;
+                pixel_cnt_B <= 0;
+                sum_x_R     <= 0;
+                sum_x_B     <= 0;
+                curr_x      <= 0;
+            end
+            
             case(state)
-                IDLE: begin
-                    if(!vsync_prev && vsync) begin
-                        state     <= SCAN;
-                        scanning  <= 1'b1;
-                        scan_addr <= 0;
-                        pixel_cnt <= 0;
-                        sum_x     <= 0;
-                        curr_x    <= 0;
-                    end
-                end
                 SCAN: begin
                     if(!DE) begin
-                        if(scan_addr == TOT_PX) state <= CAL_DIV;
-                        else begin
-                            // count RED pixel
+                        if(scan_addr == TOT_PX) begin
+                            REDstate  <= CAL_DIV;
+                            BLUEstate <= CAL_DIV;
+                            state     <= IDLE;
+                        end else begin
+                            // count Color pixel
                             if(isRED) begin
-                                sum_x     <= sum_x + curr_x;
-                                pixel_cnt <= pixel_cnt + 1;
+                                sum_x_R     <= sum_x_R + curr_x;
+                                pixel_cnt_R <= pixel_cnt_R + 1;
+                            end
+                            if(isBLUE) begin
+                                sum_x_B     <= sum_x_B + curr_x;
+                                pixel_cnt_B <= pixel_cnt_B + 1;
                             end
 
                             // scanning pixel position
@@ -95,41 +117,81 @@ module Region_Detector(
                         end
                     end
                 end
+            endcase
+
+            case(REDstate)
                 CAL_DIV: begin
                     if(!DE) begin
-                        if(pixel_cnt > TARGET_PX) begin
-                            avg_x <= sum_x / pixel_cnt;
-                            state <= CAL_REGION;
+                        if(pixel_cnt_R > TARGET_PX) begin
+                            avg_x_R    <= sum_x_R / pixel_cnt_R;
+                            REDstate   <= CAL_REGION;
                         end else begin
-                            region <= 4'd0;
-                            // pushed <= 1'b0;
-                            state  <= IDLE;
+                            region_RED  <= 4'd0;
+                            REDstate    <= IDLE;
                         end
                     end
                 end
                 CAL_REGION: begin
                     if(!DE) begin
-                        state <= IDLE;
-                        if(pixel_cnt > TARGET_PX) begin
-                            logic [$clog2(X_PX)-1:0] player_x, target_x;
+                        REDstate <= IDLE;
+                        if(pixel_cnt_R > TARGET_PX) begin
+                            logic [$clog2(X_PX)-1:0] player_x_R, target_x_R;
 
                             // RL reverse
-                            if(avg_x > 320) target_x = 0;
-                            else            target_x = 320 - avg_x;
+                            if(avg_x_R > 320) target_x_R = 0;
+                            else              target_x_R = 320 - avg_x_R;
 
                             // EMA filter
-                            player_x     = (player_x_reg * 31 + target_x) >> 5;
-                            player_x_reg <= player_x;
+                            // player_x     = (player_x_reg + target_x) >> 1;
+                            // player_x_reg <= player_x;
+                            player_x_R = target_x_R;
 
                             // region decision
-                            if((player_x >= 0) && (player_x < 80)) region <= 4'b0001;
-                            else if((player_x >= 80)  && (player_x < 160)) region <= 4'b0010;
-                            else if((player_x >= 160) && (player_x < 240)) region <= 4'b0100;
-                            else if((player_x >= 240) && (player_x < 320)) region <= 4'b1000;
-                            // pushed <= 1'b1;
+                            if((player_x_R >= 0) && (player_x_R < 80))         region_RED <= 4'b0001;
+                            else if((player_x_R >= 80)  && (player_x_R < 160)) region_RED <= 4'b0010;
+                            else if((player_x_R >= 160) && (player_x_R < 240)) region_RED <= 4'b0100;
+                            else if((player_x_R >= 240) && (player_x_R < 320)) region_RED <= 4'b1000;
                         end else begin
-                            region <= 4'd0;
-                            // pushed <= 1'b0;
+                            region_RED <= 4'd0;
+                        end
+                    end
+                end
+            endcase
+
+            case(BLUEstate)
+                CAL_DIV: begin
+                    if(!DE) begin
+                        if(pixel_cnt_B > TARGET_PX) begin
+                            avg_x_B    <= sum_x_B / pixel_cnt_B;
+                            BLUEstate  <= CAL_REGION;
+                        end else begin
+                            region_BLUE <= 4'd0;
+                            BLUEstate   <= IDLE;
+                        end
+                    end
+                end
+                CAL_REGION: begin
+                    if(!DE) begin
+                        BLUEstate <= IDLE;
+                        if(pixel_cnt_B > TARGET_PX) begin
+                            logic [$clog2(X_PX)-1:0] player_x_B, target_x_B;
+
+                            // RL reverse
+                            if(avg_x_B > 320) target_x_B = 0;
+                            else              target_x_B = 320 - avg_x_B;
+
+                            // EMA filter
+                            // player_x     = (player_x_reg + target_x) >> 1;
+                            // player_x_reg <= player_x;
+                            player_x_B = target_x_B;
+
+                            // region decision
+                            if((player_x_B >= 0) && (player_x_B < 80))         region_BLUE <= 4'b0001;
+                            else if((player_x_B >= 80)  && (player_x_B < 160)) region_BLUE <= 4'b0010;
+                            else if((player_x_B >= 160) && (player_x_B < 240)) region_BLUE <= 4'b0100;
+                            else if((player_x_B >= 240) && (player_x_B < 320)) region_BLUE <= 4'b1000;
+                        end else begin
+                            region_BLUE <= 4'd0;
                         end
                     end
                 end
