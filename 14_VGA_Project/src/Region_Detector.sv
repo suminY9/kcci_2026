@@ -1,4 +1,4 @@
-module Region_Detector(
+module RegionDetector(
     input  logic        clk,
     input  logic        reset,
     input  logic        vsync,

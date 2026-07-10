@@ -15,7 +15,6 @@ module framePrinter(
     output logic [3:0]  port_blue,
     // region detector
     output logic        scanning,
-    // output logic        pushed,
     output logic [3:0]  region_RED,
     output logic [3:0]  region_BLUE
 );
@@ -37,33 +36,32 @@ module framePrinter(
             case({region_BLUE, region_RED})
                 8'b0000_0000: {port_red, port_green, port_blue} = {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]};
                 // RED
-                8'b0000_0001: if((x_pixel >=   0) && (x_pixel < 160)) {port_red, port_green, port_blue} = {imgPxlData[15:12], 8'd0};
-                                else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12],   imgPxlData[10:7], imgPxlData[4:1]};
-                8'b0000_0010: if((x_pixel >= 160) && (x_pixel < 320)) {port_red, port_green, port_blue} = {imgPxlData[15:12], 8'd0};
-                                else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12],   imgPxlData[10:7], imgPxlData[4:1]};
-                // 8'bx000_0100: if((x_pixel >= 320) && (x_pixel < 480)) {port_red, port_green, port_blue} = {imgPxlData[15:12]+4, imgPxlData[10:7], imgPxlData[4:1]};
-                8'b0000_0100: if((x_pixel >= 320) && (x_pixel < 480)) {port_red, port_green, port_blue} = {imgPxlData[15:12], 8'd0};
-                                else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12],   imgPxlData[10:7], imgPxlData[4:1]};
-                8'b0000_1000: if((x_pixel >= 480) && (x_pixel < 640)) {port_red, port_green, port_blue} = {imgPxlData[15:12], 8'd0};
-                                else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12],   imgPxlData[10:7], imgPxlData[4:1]};
+                8'b0000_0001: if((x_pixel >=   0) && (x_pixel < 160)) {port_red, port_green, port_blue} = {imgPxlData[15:12], {1'b0, imgPxlData[10:8]}, {1'b0,imgPxlData[4:2]}};
+                              else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]};
+                8'b0000_0010: if((x_pixel >= 160) && (x_pixel < 320)) {port_red, port_green, port_blue} = {imgPxlData[15:12], {1'b0, imgPxlData[10:8]}, {1'b0,imgPxlData[4:2]}};
+                              else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]};
+                8'b0000_0100: if((x_pixel >= 320) && (x_pixel < 480)) {port_red, port_green, port_blue} = {imgPxlData[15:12], {1'b0, imgPxlData[10:8]}, {1'b0,imgPxlData[4:2]}};
+                              else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]};
+                8'b0000_1000: if((x_pixel >= 480) && (x_pixel < 640)) {port_red, port_green, port_blue} = {imgPxlData[15:12], {1'b0, imgPxlData[10:8]}, {1'b0,imgPxlData[4:2]}};
+                              else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]};
                 // BLUE
                 8'b0001_0000: if((x_pixel >=   0) && (x_pixel < 160)) {port_red, port_green, port_blue} = {8'd0, imgPxlData[4:1]};
-                                else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12],   imgPxlData[10:7], imgPxlData[4:1]};
+                              else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]};
                 8'b0010_0000: if((x_pixel >= 160) && (x_pixel < 320)) {port_red, port_green, port_blue} = {8'd0, imgPxlData[4:1]};
-                                else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12],   imgPxlData[10:7], imgPxlData[4:1]};
+                              else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]};
                 8'b0100_0000: if((x_pixel >= 320) && (x_pixel < 480)) {port_red, port_green, port_blue} = {8'd0, imgPxlData[4:1]};
-                                else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12],   imgPxlData[10:7], imgPxlData[4:1]};
+                              else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]};
                 8'b1000_0000: if((x_pixel >= 480) && (x_pixel < 640)) {port_red, port_green, port_blue} = {8'd0, imgPxlData[4:1]};
-                                else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12],   imgPxlData[10:7], imgPxlData[4:1]};
+                              else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]};
                 // BLUE = RED 
                 8'b0001_0001: if((x_pixel >=   0) && (x_pixel < 160)) {port_red, port_green, port_blue} = {imgPxlData[15:12], 4'd0, imgPxlData[4:1]};
-                                else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12],   imgPxlData[10:7], imgPxlData[4:1]};
+                              else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]};
                 8'b0010_0010: if((x_pixel >= 160) && (x_pixel < 320)) {port_red, port_green, port_blue} = {imgPxlData[15:12], 4'd0, imgPxlData[4:1]};
-                                else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12],   imgPxlData[10:7], imgPxlData[4:1]};
+                              else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]};
                 8'b0100_0100: if((x_pixel >= 320) && (x_pixel < 480)) {port_red, port_green, port_blue} = {imgPxlData[15:12], 4'd0, imgPxlData[4:1]};
-                                else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12],   imgPxlData[10:7], imgPxlData[4:1]};
+                              else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]};
                 8'b1000_1000: if((x_pixel >= 480) && (x_pixel < 640)) {port_red, port_green, port_blue} = {imgPxlData[15:12], 4'd0, imgPxlData[4:1]};
-                                else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12],   imgPxlData[10:7], imgPxlData[4:1]};
+                              else                                    {port_red, port_green, port_blue} = {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]};
                 // BLUEX & RED0
                 8'b0010_0001: begin
                     if     ((x_pixel >=   0) && (x_pixel < 160)) {port_red, port_green, port_blue} = {imgPxlData[15:12], 8'd0};
@@ -134,7 +132,7 @@ module framePrinter(
         end
     end
 
-    Region_Detector U_Region_Detector(
+    RegionDetector U_Region_Detector(
         .clk(clk),
         .reset(reset),
         .vsync(vsync),
