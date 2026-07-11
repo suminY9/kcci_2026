@@ -1,4 +1,5 @@
 module frameController(
+    input  logic        capture,
     input  logic [9:0]  x_pixel,
     input  logic [9:0]  y_pixel,
     input  logic [3:0]  region,

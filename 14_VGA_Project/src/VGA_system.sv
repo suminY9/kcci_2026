@@ -18,8 +18,7 @@ module VGA_system (
     output logic [3:0] port_blue,
 
     output logic       scanning,
-    output logic [3:0] region_RED,
-    output logic [3:0] region_BLUE,
+    output logic [3:0] region,
 
     output logic scl,
     inout  logic sda
@@ -45,6 +44,12 @@ module VGA_system (
         .clk_25M(clk_25M),
         .reset(reset),
         .clk_in1(clk)
+    );
+    OV7670_SCCB_Controller U_SCCB_Data_Ctrl(
+        .clk(clk_100M),
+        .reset(reset),
+        .scl(scl),
+        .sda(sda)
     );
 
     VGA_Decoder U_VGA_Decoder(
@@ -91,14 +96,6 @@ module VGA_system (
         .port_green(port_green),
         .port_blue(port_blue),
         .scanning(scanning),
-        .region_RED(region_RED),
-        .region_BLUE(region_BLUE)
-    );
-    
-    OV7670_SCCB_Controller U_SCCB_Data_Ctrl(
-        .clk(clk_100M),
-        .reset(reset),
-        .scl(scl),
-        .sda(sda)
+        .region(region)
     );
 endmodule
