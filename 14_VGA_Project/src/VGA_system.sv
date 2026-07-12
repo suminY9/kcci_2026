@@ -17,7 +17,6 @@ module VGA_system (
     output logic [3:0] port_green,
     output logic [3:0] port_blue,
 
-    output logic       scanning,
     output logic [3:0] region,
 
     output logic scl,
@@ -86,16 +85,16 @@ module VGA_system (
     framePrinter U_framePrinter(
         .clk(rclk),
         .reset(reset),
-        .DE(de),
-        .vsync(vsync),
         .x_pixel(x_pixel),
         .y_pixel(y_pixel),
         .imgPxlData(imgPxlData),
         .imgPxlAddr(imgPxlAddr),
+        // .capture(capture),
+        // .note_x(note_x),
+        // .note_y(note_y),
         .port_red(port_red),
         .port_green(port_green),
         .port_blue(port_blue),
-        .scanning(scanning),
         .region(region)
     );
 endmodule
