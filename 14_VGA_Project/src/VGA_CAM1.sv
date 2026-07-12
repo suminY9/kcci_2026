@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module VGA_CAM0(
+module VGA_CAM1(
     input  logic clk,
     input  logic reset,
 
@@ -20,10 +20,11 @@ module VGA_CAM0(
     output logic [3:0] port_green,
     output logic [3:0] port_blue,
 
-    output logic [3:0] region,
-
     output logic scl,
-    inout  logic sda
+    inout  logic sda,
+
+    input  logic uart_rx,
+    output logic uart_tx
 );
 
     logic [9:0] x_pixel;
@@ -36,6 +37,11 @@ module VGA_CAM0(
     logic we;
     logic [$clog2(320*240)-1:0] wAddr;
     logic [15:0] wData;
+
+    logic we_cap;
+    logic done_cap;
+    logic [$clog2(80*110)-1:0] rAddr_cap;
+    logic [11:0] rData_cap;
 
     logic clk_100M, clk_25M, rclk;
 
@@ -53,35 +59,6 @@ module VGA_CAM0(
         .scl(scl),
         .sda(sda)
     );
-    // OV7670_SCCB_Controller U_SCCB_Data_Ctrl1(
-    //     .clk(clk_100M),
-    //     .reset(reset),
-    //     .scl(scl1),
-    //     .sda(sda1)
-    // );
-    // BUFGMUX U_MUX_PCLK(
-    //     .S(capture),
-    //     .I0(pclk0),
-    //     .I1(pclk1),
-    //     .O(pclk)
-    // );
-    // mux_2x1 #(
-    //     .BIT_DEPTH(1)
-    // ) U_MUX_pclk (
-    //     .sel(!capture),
-    //     .in1(pclk0),
-    //     .in2(pclk1),
-    //     .out(pclk)
-    // );
-    // mux_2x1 #(
-    //     .BIT_DEPTH(10)
-    // ) U_MUX_CAM (
-    //     .sel(!capture),
-    //     .in1({href0, vsync0, pdata0}),
-    //     .in2({href1, vsync1, pdata1}),
-    //     .out({href, vsync, pdata}) 
-    // );
-
     VGA_Decoder U_VGA_Decoder(
         .clk(clk_100M),
         .reset(reset),
@@ -103,28 +80,42 @@ module VGA_CAM0(
         .wAddr(wAddr),
         .wData(wData)
     );
-    frameBuffer_CAM0 U_FrameBuffer (
+    frameBuffer_CAM1 U_FrameBuffer (
         .wclk(pclk),
         .we(we),
         .wAddr(wAddr),
         .wData(wData),
         .rclk(rclk),
         .rAddr(imgPxlAddr),
-        .rData(imgPxlData)
+        .rData(imgPxlData),
+        .wclk_cap(rclk),
+        .we_cap(we_cap),
+        .wAddr_cap(wAddr_cap),
+        .wData_cap(wData_cap),
+        .rclk_cap(clk_100M),
+        .rAddr_cap(rAddr_cap),
+        .rData_cap(rData_cap)
     );
-    framePrinter U_framePrinter(
+    frameCapture U_frameCapture(
         .clk(rclk),
         .reset(reset),
         .x_pixel(x_pixel),
         .y_pixel(y_pixel),
         .imgPxlData(imgPxlData),
         .imgPxlAddr(imgPxlAddr),
-        // .capture(capture),
-        // .note_x(note_x),
-        // .note_y(note_y),
-        .port_red(port_red),
-        .port_green(port_green),
-        .port_blue(port_blue),
-        .region(region)
+        .wData_cap(wData_cap),
+        .wAddr_cap(wAddr_cap),
+        .we_cap(we_cap),
+        .done_cap(done_cap),
+        .RGBport({port_red, port_green, port_blue})
+    );
+    uart U_uart(
+        .clk(clk_100M),
+        .reset(reset),
+        .uart_rx(uart_rx),
+        .uart_tx(uart_tx),
+        .done_cap(done_cap),
+        .rData_cap(rData_cap),
+        .rAddr_cap(rAddr_cap)
     );
 endmodule
