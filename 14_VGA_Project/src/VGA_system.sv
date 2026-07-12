@@ -4,12 +4,20 @@ module VGA_system (
     input  logic clk,
     input  logic reset,
 
-    // ov7670 side
+    // GAME
+    input  logic capture,
+
+    // cam0
     output logic       xclk,
     input  logic       pclk,
     input  logic       href,
     input  logic       vsync,
     input  logic [7:0] pdata,
+    // cam1
+    // input  logic       pclk1,
+    // input  logic       href1,
+    // input  logic       vsync1,
+    // input  logic [7:0] pdata1,
 
     output logic       h_sync,
     output logic       v_sync,
@@ -20,8 +28,13 @@ module VGA_system (
     output logic [3:0] region,
 
     output logic scl,
+    // output logic scl1,
     inout  logic sda
+    // inout  logic sda1
 );
+    // // cam
+    // logic pclk, href, vsync;
+    // logic [7:0] pdata;
 
     logic [9:0] x_pixel;
     logic [9:0] y_pixel;
@@ -50,9 +63,36 @@ module VGA_system (
         .scl(scl),
         .sda(sda)
     );
+    // OV7670_SCCB_Controller U_SCCB_Data_Ctrl1(
+    //     .clk(clk_100M),
+    //     .reset(reset),
+    //     .scl(scl1),
+    //     .sda(sda1)
+    // );
+    // BUFGMUX U_MUX_PCLK(
+    //     .S(capture),
+    //     .I0(pclk0),
+    //     .I1(pclk1),
+    //     .O(pclk)
+    // );
+    // mux_2x1 #(
+    //     .BIT_DEPTH(1)
+    // ) U_MUX_pclk (
+    //     .sel(!capture),
+    //     .in1(pclk0),
+    //     .in2(pclk1),
+    //     .out(pclk)
+    // );
+    // mux_2x1 #(
+    //     .BIT_DEPTH(10)
+    // ) U_MUX_CAM (
+    //     .sel(!capture),
+    //     .in1({href0, vsync0, pdata0}),
+    //     .in2({href1, vsync1, pdata1}),
+    //     .out({href, vsync, pdata}) 
+    // );
 
     VGA_Decoder U_VGA_Decoder(
-
         .clk(clk_100M),
         .reset(reset),
         .rclk(rclk),

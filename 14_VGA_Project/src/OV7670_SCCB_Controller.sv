@@ -2,8 +2,15 @@ module OV7670_SCCB_Controller(
     input  logic clk, // 100MHz
     input  logic reset,
     output logic scl,
+    // output logic scl1,
     inout  logic sda
 );
+
+    // // Cam Select
+    // logic cam;
+    // logic scl;
+    // assign scl0 = cam ? 1'b1 : scl;
+    // assign scl1 = cam ? scl : 1'b1;
 
     // SCCB Controller Signals
     logic SCCBstart, SCCBrw, SCCBdone, SCCBrp;
