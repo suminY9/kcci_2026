@@ -40,6 +40,8 @@ module VGA_CAM1(
 
     logic we_cap;
     logic done_cap;
+    logic [$clog2(80*110)-1:0] wAddr_cap;
+    logic [11:0] wData_cap;
     logic [$clog2(80*110)-1:0] rAddr_cap;
     logic [11:0] rData_cap;
 
@@ -99,8 +101,9 @@ module VGA_CAM1(
     frameCapture U_frameCapture(
         .clk(rclk),
         .reset(reset),
-        .x_pixel(x_pixel),
-        .y_pixel(y_pixel),
+        .capture(capture),
+        .x_pixel_VGA(x_pixel),
+        .y_pixel_VGA(y_pixel),
         .imgPxlData(imgPxlData),
         .imgPxlAddr(imgPxlAddr),
         .wData_cap(wData_cap),

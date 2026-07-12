@@ -2,8 +2,8 @@ module frameCapture(
     input  logic        clk,  // 100MHz
     input  logic        reset,
     input  logic        capture,
-    input  logic [9:0]  x_pixel,
-    input  logic [9:0]  y_pixel,
+    input  logic [9:0]  x_pixel_VGA,
+    input  logic [9:0]  y_pixel_VGA,
     input  logic [15:0] imgPxlData,
     output logic [$clog2(320*240)-1:0] imgPxlAddr,
     output logic [11:0] wData_cap,
@@ -14,6 +14,11 @@ module frameCapture(
 );
 
     logic [11:0] RGB_capture;
+
+    logic [9:0] x_pixel, y_pixel;
+    assign x_pixel = x_pixel_VGA >> 1;
+    assign y_pixel = y_pixel_VGA >> 1;
+    assign imgPxlAddr = 320*(y_pixel) + (319-(x_pixel));
     
     Capture U_capture(
         .clk(clk),
@@ -77,7 +82,15 @@ module Capture(
     logic [$clog2(80*110)-1:0] cap_cnt;
 
     // x: 115~194 (80), y: 45~144 (110)
-    assign wAddr_cap = (x_pixel - 115) + (y_pixel - 45) * 80;
+    // assign wAddr_cap = (x_pixel - 115) + (y_pixel - 45) * 80;
+    // assign wData_cap = {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]};
+    // assign we_cap = ((state == CAP && CAPstate == P3)
+    //                 && (x_pixel >= 115 && x_pixel < 195) && (y_pixel >= 45 && y_pixel < 145)
+    //                 && !capDone[wAddr_cap]) ? 1'b1 : 1'b0;
+
+    // 내부 연산의 가독성과 연산 최적화를 위해 y축 오프셋을 먼저 계산
+    wire [15:0] y_offset = y_pixel - 45;
+    assign wAddr_cap = (x_pixel - 115) + ((y_offset << 6) + ((y_offset << 4)));
     assign wData_cap = {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]};
     assign we_cap = ((state == CAP && CAPstate == P3)
                     && (x_pixel >= 115 && x_pixel < 195) && (y_pixel >= 45 && y_pixel < 145)
