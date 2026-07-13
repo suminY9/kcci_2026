@@ -1,9 +1,15 @@
 module OV7670_SCCB_Controller(
     input  logic clk, // 100MHz
     input  logic reset,
-    output logic scl,
+    output logic scl0,
+    output logic scl1,
     inout  logic sda
 );
+    // cam select
+    logic cam;
+    logic scl;
+    assign scl0 = cam ? 1'b1 : scl;
+    assign scl1 = cam ? scl : 1'b1;
 
     // SCCB Controller Signals
     logic SCCBstart, SCCBrw, SCCBdone, SCCBrp;
@@ -74,6 +80,7 @@ module OV7670_SCCB_Controller(
     
     always_ff @(posedge clk, posedge reset) begin
         if(reset) begin
+            cam        <= 1'b0;
             state      <= IDLE;
             Fstate     <= IDLE;
             Rstate     <= IDLE;
@@ -87,11 +94,20 @@ module OV7670_SCCB_Controller(
             Rdone      <= 1'b0;
             temp       <= 1'b0;
             cnt_reg    <= 0;
-            // RdataBlock <= 0;
         end else begin
             case(state)
                 IDLE: begin
-                    if(!done) state <= ResetSW;
+                    if(!cam && !done) begin
+                        done       <= 5'd0;
+                        instrAddr  <= 0;
+                        configAddr <= 0;
+                        state      <= ResetSW;
+                    end else if(cam && done) begin
+                        done       <= 5'd0;
+                        instrAddr  <= 0;
+                        configAddr <= 0;
+                        state      <= ResetSW;
+                    end
                     SCCBstart <= 1'b0;
                 end
                 ResetSW: begin
@@ -439,6 +455,8 @@ module OV7670_SCCB_Controller(
                         end
                     endcase
                     if(done[4]) begin
+                        if(!cam)     cam <= 1'b1;
+                        else if(cam) cam <= 1'b0;
                         state  <= IDLE;
                         Fstate <= IDLE;
                     end

@@ -1,5 +1,6 @@
 module RegionDetector(
     input  logic        clk,
+    // input  logic        vsync,
     input  logic        reset,
     input  logic [9:0]  x_pixel_VGA,
     input  logic [9:0]  y_pixel_VGA,
@@ -49,6 +50,7 @@ module RegionDetector(
             state          <= 2'd0;
         end else begin
             if((x_pixel == 0) && (y_pixel == 0)) begin
+            // if(vsync) begin
                 state          <= SCAN;
                 pxl_cnt0       <= 0;
                 pxl_cnt1       <= 0;
