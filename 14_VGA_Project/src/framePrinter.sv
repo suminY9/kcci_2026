@@ -27,9 +27,6 @@ module framePrinter(
     );
 
     frameController U_Frame_Controller(
-        // .clk(clk),
-        // .reset(reset),
-        // .capture(capture),
         // .note_x(note_x),
         // .note_y(note_y),
         .x_pixel_VGA(x_pixel),
