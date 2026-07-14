@@ -17,11 +17,14 @@ module VGAcam(
     output logic [3:0] port_green,
     output logic [3:0] port_blue,
 
-    // input  logic [3:0] note_x,
-    // input  logic [9:0] note_y0,
-    // input  logic [9:0] note_y1,
-    // input  logic [9:0] note_y2,
-    // input  logic [9:0] note_y3,
+    input  logic [3:0] note_x0,
+    input  logic [3:0] note_x1,
+    input  logic [3:0] note_x2,
+    input  logic [3:0] note_x3,
+    input  logic [9:0] note_y0,
+    input  logic [9:0] note_y1,
+    input  logic [9:0] note_y2,
+    input  logic [9:0] note_y3,
 
     output logic [3:0] region,
 

@@ -10,7 +10,10 @@ module framePrinter(
     output logic [$clog2(320*240)-1:0] imgPxlAddr,
 
     // frame print
-    input  logic [3:0]  note_x,
+    input  logic [3:0]  note_x0,
+    input  logic [3:0]  note_x1,
+    input  logic [3:0]  note_x2,
+    input  logic [3:0]  note_x3,
     input  logic [9:0]  note_y0,
     input  logic [9:0]  note_y1,
     input  logic [9:0]  note_y2,

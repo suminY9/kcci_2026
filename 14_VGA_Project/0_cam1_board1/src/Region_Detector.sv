@@ -1,12 +1,14 @@
 module RegionDetector(
     input  logic        clk,
-    // input  logic        vsync,
+    input  logic        vsync,
     input  logic        reset,
     input  logic [9:0]  x_pixel_VGA,
     input  logic [9:0]  y_pixel_VGA,
     input  logic [15:0] frame_data,
     output logic [3:0]  region
 );
+
+    logic vsync_reg;
 
     localparam TARGET_PX = 50,
                X_PX      = 320,
@@ -48,14 +50,15 @@ module RegionDetector(
             region         <= 4'd0;
             // FSM
             state          <= 2'd0;
+            vsync_reg      <= 1'b0;
         end else begin
-            if((x_pixel == 0) && (y_pixel == 0)) begin
-            // if(vsync) begin
-                state          <= SCAN;
-                pxl_cnt0       <= 0;
-                pxl_cnt1       <= 0;
-                pxl_cnt2       <= 0;
-                pxl_cnt3       <= 0;
+            if(vsync) vsync_reg <= 1'b1;
+            if(vsync_reg && (x_pixel == 0 && y_pixel == 0)) begin
+                state    <= SCAN;
+                pxl_cnt0 <= 0;
+                pxl_cnt1 <= 0;
+                pxl_cnt2 <= 0;
+                pxl_cnt3 <= 0;
             end
 
             case(state)

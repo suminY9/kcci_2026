@@ -1,5 +1,8 @@
 module frameController(
-    input  logic [9:0]  note_x,
+    input  logic [3:0]  note_x0,
+    input  logic [3:0]  note_x1,
+    input  logic [3:0]  note_x2,
+    input  logic [3:0]  note_x3,
     input  logic [9:0]  note_y0,
     input  logic [9:0]  note_y1,
     input  logic [9:0]  note_y2,
@@ -33,7 +36,10 @@ module frameController(
         .o_rgb(RGB_region)
     );
     Filter_NOTE U_Filter_NOTE(
-        .note_x(note_x),
+        .note_x0(note_x0),
+        .note_x1(note_x1),
+        .note_x2(note_x2),
+        .note_x3(note_x3),
         .note_y0(note_y0),
         .note_y1(note_y1),
         .note_y2(note_y2),

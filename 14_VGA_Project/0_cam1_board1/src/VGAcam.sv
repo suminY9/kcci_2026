@@ -17,6 +17,15 @@ module VGAcam(
     output logic [3:0] port_green,
     output logic [3:0] port_blue,
 
+    input  logic [3:0] note_x0,
+    input  logic [3:0] note_x1,
+    input  logic [3:0] note_x2,
+    input  logic [3:0] note_x3,
+    input  logic [9:0] note_y0,
+    input  logic [9:0] note_y1,
+    input  logic [9:0] note_y2,
+    input  logic [9:0] note_y3,
+
     output logic [3:0] region,
 
     output logic scl,
@@ -38,12 +47,12 @@ module VGAcam(
 
     assign xclk = clk_25M;
 
-    // clk_wiz_0 clk_div(
-        // .clk_100M(clk_100M),
-        // .clk_25M(clk_25M),
-        // .reset(reset),
-        // .clk_in1(clk)
-    // );
+    clk_wiz_0 clk_div(
+        .clk_100M(clk_100M),
+        .clk_25M(clk_25M),
+        .reset(reset),
+        .clk_in1(clk)
+    );
     OV7670_SCCB_Controller U_SCCB_Data_Ctrl(
         .clk(clk_100M),
         .reset(reset),
@@ -84,12 +93,19 @@ module VGAcam(
     framePrinter U_framePrinter(
         .clk(rclk),
         .reset(reset),
+        .vsync(vsync),
         .x_pixel(x_pixel),
         .y_pixel(y_pixel),
         .imgPxlData(imgPxlData),
         .imgPxlAddr(imgPxlAddr),
-        // .note_x(note_x),
-        // .note_y(note_y),
+        .note_x0(note_x0),
+        .note_x1(note_x1),
+        .note_x2(note_x2),
+        .note_x3(note_x3),
+        .note_y0(note_y0),
+        .note_y1(note_y1),
+        .note_y2(note_y2),
+        .note_y3(note_y3),
         .RGBport({port_red, port_green, port_blue}),
         .region(region)
     );
