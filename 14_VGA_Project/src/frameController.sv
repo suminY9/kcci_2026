@@ -132,7 +132,10 @@ endmodule
 
 
 module Filter_NOTE(
-    input  logic [3:0]  note_x,
+    input  logic [3:0]  note_x0,
+    input  logic [3:0]  note_x1,
+    input  logic [3:0]  note_x2,
+    input  logic [3:0]  note_x3,
     input  logic [9:0]  note_y0,
     input  logic [9:0]  note_y1,
     input  logic [9:0]  note_y2,
@@ -146,19 +149,37 @@ module Filter_NOTE(
     logic disp;
     logic y0_disp, y1_disp, y2_disp, y3_disp;
 
-    assign y0_disp = (note_y0 > 1) ? ((y_pixel >= note_y0 - 2) && (y_pixel < note_y0 + 2)) : ((note_y0 != 0) && (y_pixel < 2));
-    assign y1_disp = (note_y1 > 1) ? ((y_pixel >= note_y1 - 2) && (y_pixel < note_y1 + 2)) : ((note_y0 != 0) && (y_pixel < 2));
-    assign y2_disp = (note_y2 > 1) ? ((y_pixel >= note_y2 - 2) && (y_pixel < note_y2 + 2)) : ((note_y0 != 0) && (y_pixel < 2));
-    assign y3_disp = (note_y3 > 1) ? ((y_pixel >= note_y3 - 2) && (y_pixel < note_y3 + 2)) : ((note_y0 != 0) && (y_pixel < 2));
+    assign y0_disp = (note_y0 > 1) ? ((y_pixel >= note_y0 - 2) && (y_pixel < note_y0 + 2)) : (note_y0 && (y_pixel < 2));
+    assign y1_disp = (note_y1 > 1) ? ((y_pixel >= note_y1 - 2) && (y_pixel < note_y1 + 2)) : (note_y1 && (y_pixel < 2));
+    assign y2_disp = (note_y2 > 1) ? ((y_pixel >= note_y2 - 2) && (y_pixel < note_y2 + 2)) : (note_y2 && (y_pixel < 2));
+    assign y3_disp = (note_y3 > 1) ? ((y_pixel >= note_y3 - 2) && (y_pixel < note_y3 + 2)) : (note_y3 && (y_pixel < 2));
 
     always_comb begin
         disp = 1'b0;
 
-        if(y0_disp || y1_disp || y2_disp || y3_disp) begin
-            if(note_x[0] && (x_pixel >=  20 && x_pixel <  60)) disp = 1'b1;
-            if(note_x[1] && (x_pixel >= 100 && x_pixel < 140)) disp = 1'b1;
-            if(note_x[2] && (x_pixel >= 180 && x_pixel < 220)) disp = 1'b1;
-            if(note_x[3] && (x_pixel >= 260 && x_pixel < 300)) disp = 1'b1;
+        if(note_y0 && y0_disp) begin
+            if(note_x0[0] && (x_pixel >=  20 && x_pixel <  60)) disp = 1'b1;
+            if(note_x0[1] && (x_pixel >= 100 && x_pixel < 140)) disp = 1'b1;
+            if(note_x0[2] && (x_pixel >= 180 && x_pixel < 220)) disp = 1'b1;
+            if(note_x0[3] && (x_pixel >= 260 && x_pixel < 300)) disp = 1'b1;
+        end
+        if(note_y1 && y1_disp) begin
+            if(note_x1[0] && (x_pixel >=  20 && x_pixel <  60)) disp = 1'b1;
+            if(note_x1[1] && (x_pixel >= 100 && x_pixel < 140)) disp = 1'b1;
+            if(note_x1[2] && (x_pixel >= 180 && x_pixel < 220)) disp = 1'b1;
+            if(note_x1[3] && (x_pixel >= 260 && x_pixel < 300)) disp = 1'b1;
+        end
+        if(note_y2 && y2_disp) begin
+            if(note_x2[0] && (x_pixel >=  20 && x_pixel <  60)) disp = 1'b1;
+            if(note_x2[1] && (x_pixel >= 100 && x_pixel < 140)) disp = 1'b1;
+            if(note_x2[2] && (x_pixel >= 180 && x_pixel < 220)) disp = 1'b1;
+            if(note_x2[3] && (x_pixel >= 260 && x_pixel < 300)) disp = 1'b1;
+        end
+        if(note_y3 && y3_disp) begin
+            if(note_x3[0] && (x_pixel >=  20 && x_pixel <  60)) disp = 1'b1;
+            if(note_x3[1] && (x_pixel >= 100 && x_pixel < 140)) disp = 1'b1;
+            if(note_x3[2] && (x_pixel >= 180 && x_pixel < 220)) disp = 1'b1;
+            if(note_x3[3] && (x_pixel >= 260 && x_pixel < 300)) disp = 1'b1;
         end
 
         if(disp) o_rgb = 12'hfff;

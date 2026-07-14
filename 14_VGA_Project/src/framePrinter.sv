@@ -33,7 +33,10 @@ module framePrinter(
     );
 
     frameController U_Frame_Controller(
-        .note_x(note_x),
+        .note_x0(note_x0),
+        .note_x1(note_x1),
+        .note_x2(note_x2),
+        .note_x3(note_x3),
         .note_y0(note_y0),
         .note_y1(note_y1),
         .note_y2(note_y2),

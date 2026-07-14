@@ -1,9 +1,8 @@
 `timescale 1ns / 1ps
 
 module VGAcam(
-    // input  logic clk_100M,
-    // input  logic clk_25M,
-    input  logic clk,
+    input  logic clk_100M,
+    input  logic clk_25M,
     input  logic reset,
 
     output logic       xclk,
@@ -96,16 +95,14 @@ module VGAcam(
         .y_pixel(y_pixel),
         .imgPxlData(imgPxlData),
         .imgPxlAddr(imgPxlAddr),
-        .note_x(),
-        .note_y0(),
-        .note_y1(),
-        .note_y2(),
-        .note_y3(),
-        // .note_x(note_x),
-        // .note_y0(note_y0),
-        // .note_y1(note_y1),
-        // .note_y2(note_y2),
-        // .note_y3(note_y3),
+        .note_x0(note_x0),
+        .note_x1(note_x1),
+        .note_x2(note_x2),
+        .note_x3(note_x3),
+        .note_y0(note_y0),
+        .note_y1(note_y1),
+        .note_y2(note_y2),
+        .note_y3(note_y3),
         .RGBport({port_red, port_green, port_blue}),
         .region(region)
     );
