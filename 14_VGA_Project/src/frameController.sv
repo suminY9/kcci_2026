@@ -116,6 +116,115 @@ module Filter_Region(
 endmodule
 
 
+module Filter_NOTE(
+    input  logic [3:0]  note_x,
+    input  logic [9:0]  note_y_0,
+    input  logic [9:0]  note_y_1,
+    input  logic [9:0]  note_y_2,
+    input  logic [9:0]  note_y_3,
+    input  logic [9:0]  x_pixel,
+    input  logic [9:0]  y_pixel,
+    input  logic [11:0] i_rgb,
+    output logic [11:0] o_rgb
+);
+    always_comb begin
+        case({note_y_3, note_y_2, note_y_1, note_y_0})
+            40'd0: begin
+                o_rgb = i_rgb;
+            end
+            default: begin
+                case(note_x)
+                    4'b0001: begin
+                        if     ((y_pixel == note_y_0) && ((x_pixel >=  20) && (x_pixel <  60))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_1) && ((x_pixel >=  20) && (x_pixel <  60))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_2) && ((x_pixel >=  20) && (x_pixel <  60))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_3) && ((x_pixel >=  20) && (x_pixel <  60))) o_rgb = 12'hfff;
+                    end
+                    4'b0010: begin
+                        if     ((y_pixel == note_y_0) && ((x_pixel >= 100) && (x_pixel < 160))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_1) && ((x_pixel >= 100) && (x_pixel < 160))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_2) && ((x_pixel >= 100) && (x_pixel < 160))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_3) && ((x_pixel >= 100) && (x_pixel < 160))) o_rgb = 12'hfff;
+                    end
+                    4'b0100: begin
+                        if     ((y_pixel == note_y_0) && ((x_pixel >= 180) && (x_pixel < 240))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_1) && ((x_pixel >= 180) && (x_pixel < 240))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_2) && ((x_pixel >= 180) && (x_pixel < 240))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_3) && ((x_pixel >= 180) && (x_pixel < 240))) o_rgb = 12'hfff;
+                    end
+                    4'b1000: begin
+                        if     ((y_pixel == note_y_0) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_1) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_2) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_3) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                    end
+                    4'b0011: begin
+                        if     ((y_pixel == note_y_0) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 100) && (x_pixel < 160))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_1) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 100) && (x_pixel < 160))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_2) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 100) && (x_pixel < 160))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_3) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 100) && (x_pixel < 160))) o_rgb = 12'hfff;
+                    end
+                    4'b0101: begin
+                        if     ((y_pixel == note_y_0) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 180) && (x_pixel < 240))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_1) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 180) && (x_pixel < 240))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_2) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 180) && (x_pixel < 240))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_3) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 180) && (x_pixel < 240))) o_rgb = 12'hfff;
+                    end
+                    4'b1001: begin
+                        if     ((y_pixel == note_y_0) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_1) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_2) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_3) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                    end
+                    4'b0110: begin
+                        if     ((y_pixel == note_y_0) && ((x_pixel >= 100) && (x_pixel < 160)) && ((x_pixel >= 100) && (x_pixel < 160))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_1) && ((x_pixel >= 100) && (x_pixel < 160)) && ((x_pixel >= 100) && (x_pixel < 160))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_2) && ((x_pixel >= 100) && (x_pixel < 160)) && ((x_pixel >= 100) && (x_pixel < 160))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_3) && ((x_pixel >= 100) && (x_pixel < 160)) && ((x_pixel >= 100) && (x_pixel < 160))) o_rgb = 12'hfff;
+                    end
+                    4'b1010: begin
+                        if     ((y_pixel == note_y_0) && ((x_pixel >= 100) && (x_pixel < 160)) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_1) && ((x_pixel >= 100) && (x_pixel < 160)) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_2) && ((x_pixel >= 100) && (x_pixel < 160)) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_3) && ((x_pixel >= 100) && (x_pixel < 160)) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                    end
+                    4'b1100: begin
+                        if     ((y_pixel == note_y_0) && ((x_pixel >= 180) && (x_pixel < 240)) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_1) && ((x_pixel >= 180) && (x_pixel < 240)) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_2) && ((x_pixel >= 180) && (x_pixel < 240)) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_3) && ((x_pixel >= 180) && (x_pixel < 240)) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                    end
+                    4'b0111: begin
+                        if     ((y_pixel == note_y_0) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 100) && (x_pixel < 160)) && ((x_pixel >= 180) && (x_pixel < 240))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_1) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 100) && (x_pixel < 160)) && ((x_pixel >= 180) && (x_pixel < 240))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_2) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 100) && (x_pixel < 160)) && ((x_pixel >= 180) && (x_pixel < 240))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_3) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 100) && (x_pixel < 160)) && ((x_pixel >= 180) && (x_pixel < 240))) o_rgb = 12'hfff;
+                    end
+                    4'b1101: begin
+                        if     ((y_pixel == note_y_0) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 180) && (x_pixel < 240)) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_1) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 180) && (x_pixel < 240)) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_2) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 180) && (x_pixel < 240)) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_3) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 180) && (x_pixel < 240)) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                    end
+                    4'b1110: begin
+                        if     ((y_pixel == note_y_0) && ((x_pixel >= 100) && (x_pixel < 160)) && ((x_pixel >= 180) && (x_pixel >= 220)) && ((x_pixel >= 260) & (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_1) && ((x_pixel >= 100) && (x_pixel < 160)) && ((x_pixel >= 180) && (x_pixel >= 220)) && ((x_pixel >= 260) & (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_2) && ((x_pixel >= 100) && (x_pixel < 160)) && ((x_pixel >= 180) && (x_pixel >= 220)) && ((x_pixel >= 260) & (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_3) && ((x_pixel >= 100) && (x_pixel < 160)) && ((x_pixel >= 180) && (x_pixel >= 220)) && ((x_pixel >= 260) & (x_pixel < 300))) o_rgb = 12'hfff;
+                    end
+                    4'b1111: begin
+                        if     ((y_pixel == note_y_0) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 100) && (x_pixel < 160)) && ((x_pixel >= 180) && (x_pixel < 220)) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_1) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 100) && (x_pixel < 160)) && ((x_pixel >= 180) && (x_pixel < 220)) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_2) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 100) && (x_pixel < 160)) && ((x_pixel >= 180) && (x_pixel < 220)) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                        else if((y_pixel == note_y_3) && ((x_pixel >=  20) && (x_pixel <  60)) && ((x_pixel >= 100) && (x_pixel < 160)) && ((x_pixel >= 180) && (x_pixel < 220)) && ((x_pixel >= 260) && (x_pixel < 300))) o_rgb = 12'hfff;
+                    end
+                endcase
+            end
+        endcase
+    end
+endmodule
+
+
 module Filter_GAME(
     input  logic [9:0]  x_pixel,
     input  logic [9:0]  y_pixel,
