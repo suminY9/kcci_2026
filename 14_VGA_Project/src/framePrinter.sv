@@ -3,7 +3,7 @@
 module framePrinter(
     input  logic        clk,
     input  logic        reset,
-    // input  logic        vsync,
+    input  logic        vsync,
     input  logic [9:0]  x_pixel,
     input  logic [9:0]  y_pixel,
     input  logic [15:0] imgPxlData,
@@ -25,7 +25,7 @@ module framePrinter(
     RegionDetector U_Region_Detector(
         .clk(clk),
         .reset(reset),
-        // .vsync(vsync),
+        .vsync(vsync),
         .x_pixel_VGA(x_pixel),
         .y_pixel_VGA(y_pixel),
         .frame_data(imgPxlData),
