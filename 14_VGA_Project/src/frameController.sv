@@ -146,18 +146,18 @@ module Filter_NOTE(
     logic disp;
     logic y0_disp, y1_disp, y2_disp, y3_disp;
 
-    assign y0_disp = (note_y0 > 0) ? ((y_pixel >= note_y0 - 1) && (y_pixel < note_y0 + 2)) : (y_pixel < 2);
-    assign y1_disp = (note_y1 > 0) ? ((y_pixel >= note_y1 - 1) && (y_pixel < note_y1 + 2)) : (y_pixel < 2);
-    assign y2_disp = (note_y2 > 0) ? ((y_pixel >= note_y2 - 1) && (y_pixel < note_y2 + 2)) : (y_pixel < 2);
-    assign y3_disp = (note_y3 > 0) ? ((y_pixel >= note_y3 - 1) && (y_pixel < note_y3 + 2)) : (y_pixel < 2);
+    assign y0_disp = (note_y0 > 1) ? ((y_pixel >= note_y0 - 2) && (y_pixel < note_y0 + 2)) : ((note_y0 != 0) && (y_pixel < 2));
+    assign y1_disp = (note_y1 > 1) ? ((y_pixel >= note_y1 - 2) && (y_pixel < note_y1 + 2)) : ((note_y0 != 0) && (y_pixel < 2));
+    assign y2_disp = (note_y2 > 1) ? ((y_pixel >= note_y2 - 2) && (y_pixel < note_y2 + 2)) : ((note_y0 != 0) && (y_pixel < 2));
+    assign y3_disp = (note_y3 > 1) ? ((y_pixel >= note_y3 - 2) && (y_pixel < note_y3 + 2)) : ((note_y0 != 0) && (y_pixel < 2));
 
     always_comb begin
         disp = 1'b0;
 
         if(y0_disp || y1_disp || y2_disp || y3_disp) begin
             if(note_x[0] && (x_pixel >=  20 && x_pixel <  60)) disp = 1'b1;
-            if(note_x[1] && (x_pixel >= 100 && x_pixel < 160)) disp = 1'b1;
-            if(note_x[2] && (x_pixel >= 180 && x_pixel < 240)) disp = 1'b1;
+            if(note_x[1] && (x_pixel >= 100 && x_pixel < 140)) disp = 1'b1;
+            if(note_x[2] && (x_pixel >= 180 && x_pixel < 220)) disp = 1'b1;
             if(note_x[3] && (x_pixel >= 260 && x_pixel < 300)) disp = 1'b1;
         end
 
