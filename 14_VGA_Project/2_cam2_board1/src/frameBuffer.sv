@@ -82,26 +82,26 @@ module frameBuffer(
     // wirte side - cam1
     input  logic wclk_1,
     input  logic we_1,
-    input  logic [$clog2(320*240)-1:0] wAddr_1, //QVGA size
+    input  logic [$clog2(80*60)-1:0] wAddr_1, //QVGA size
     input  logic [15:0] wData_1,
     // read side - cam1
     input  logic                       rclk_1,
-    input  logic [$clog2(320*240)-1:0] rAddr_1,
+    input  logic [$clog2(80*60)-1:0] rAddr_1,
     output logic [15:0] rData_1,
     // write side - cap
     input  logic wclk_cap,
     input  logic we_cap,
-    input  logic [$clog2(80*110)-1:0] wAddr_cap,
+    input  logic [$clog2(60*80)-1:0] wAddr_cap,
     input  logic [11:0] wData_cap,
     // read side - uart
     input  logic rclk_cap,
-    input  logic [$clog2(80*110)-1:0] rAddr_cap,
+    input  logic [$clog2(60*80)-1:0] rAddr_cap,
     output logic [11:0] rData_cap
 );
 
     logic [15:0] cam0RAM[0:(320*240)-1];
-    logic [15:0] cam1RAM[0:(320*240)-1];
-    logic [11:0] captureRAM[0:(80*110)-1];
+    logic [15:0] cam1RAM[0:(80*60)-1];
+    logic [11:0] captureRAM[0:(60*80)-1];
 
     // write side
     always_ff @(posedge wclk_0) begin

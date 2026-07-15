@@ -1,16 +1,15 @@
-module OV7670_SCCB_Controller(
+module OV7670_SCCB_Controller_2CAMs(
     input  logic clk, // 100MHz
     input  logic reset,
-    output logic scl,
-    // output logic scl0,
-    // output logic scl1,
+    output logic scl0,
+    output logic scl1,
     inout  logic sda
 );
-    // // cam select
-    // logic cam;
-    // logic scl;
-    // assign scl0 = cam ? 1'b1 : scl;
-    // assign scl1 = cam ? scl : 1'b1;
+    // cam select
+    logic cam;
+    logic scl;
+    assign scl0 = cam ? 1'b1 : scl;
+    assign scl1 = cam ? scl : 1'b1;
 
     // SCCB Controller Signals
     logic SCCBstart, SCCBrw, SCCBdone, SCCBrp;
@@ -35,7 +34,7 @@ module OV7670_SCCB_Controller(
     localparam AutoExposureMode_EN = 1,
                AutoGainMode_EN     = 1;
     // brightness setting
-    localparam BRIGHTNESS = 128;
+    localparam BRIGHTNESS = 120;
     /*******************/
 
 
@@ -98,18 +97,17 @@ module OV7670_SCCB_Controller(
         end else begin
             case(state)
                 IDLE: begin
-                    // if(!cam && !done) begin
-                    //     done       <= 5'd0;
-                    //     instrAddr  <= 0;
-                    //     configAddr <= 0;
-                    //     state      <= ResetSW;
-                    // end else if(cam && done) begin
-                    //     done       <= 5'd0;
-                    //     instrAddr  <= 0;
-                    //     configAddr <= 0;
-                    //     state      <= ResetSW;
-                    // end
-                    if(!done) state <= ResetSW;
+                    if(!cam && !done) begin
+                        done       <= 5'd0;
+                        instrAddr  <= 0;
+                        configAddr <= 0;
+                        state      <= ResetSW;
+                    end else if(cam && done) begin
+                        done       <= 5'd0;
+                        configAddr <= 0;
+                        state      <= ResetSW;
+                    end
+                    // if(!done) state <= ResetSW;
                     SCCBstart <= 1'b0;
                 end
                 ResetSW: begin
@@ -143,16 +141,16 @@ module OV7670_SCCB_Controller(
                                 SCCBrw     <= 1'b0;
                                 SCCBstart  <= 1'b1;
                                 Fstate     <= WRITE;
-                                if(instrAddr == 50) Rstate <= P5;
-                                else                Rstate <= P2;
+                                if((instrAddr == 50 || instrAddr == 111)) Rstate <= P5;
+                                else                                    Rstate <= P2;
                                 temp <= 1'b0;
                             end
                         end
                         P3: begin // delay 1ms
                             cnt_reg <= cnt_reg + 1;
                             if(cnt_reg == 100_000-1) begin
-                                if(instrAddr == 44 || instrAddr == 57) Fstate <= P4;
-                                else if (instrAddr == 59)              Fstate  <= DONE;
+                                if((instrAddr == 44 || instrAddr == 106) || (instrAddr == 57 || instrAddr == 119)) Fstate <= P4;
+                                else if ((instrAddr == 59 || 121))                     Fstate  <= DONE;
                                 else begin
                                     cnt_reg <= 0;
                                     Fstate  <= Rstate;
@@ -162,7 +160,7 @@ module OV7670_SCCB_Controller(
                         P4: begin // delay 10ms
                             cnt_reg <= cnt_reg + 1;
                             if(cnt_reg == 1_000_000-1) begin
-                                if(instrAddr == 57)       Fstate  <= P6;
+                                if((instrAddr == 57 || instrAddr == 119))       Fstate  <= P6;
                                 else                      Fstate  <= P2;
                                 cnt_reg <= 0;
                             end
@@ -212,7 +210,7 @@ module OV7670_SCCB_Controller(
                             if(SCCBdone) begin
                                 Fstate    <= P3;
                                 instrAddr <= instrAddr + 1;
-                                if(instrAddr > 50 && instrAddr < 57) configAddr <= configAddr + 1;
+                                if((instrAddr > 50 && instrAddr < 57) || (instrAddr > 112 && instrAddr < 119)) configAddr <= configAddr + 1;
                             end
                         end
                         READ1: begin
@@ -457,8 +455,8 @@ module OV7670_SCCB_Controller(
                         end
                     endcase
                     if(done[4]) begin
-                        // if(!cam)     cam <= 1'b1;
-                        // else if(cam) cam <= 1'b0;
+                        if(!cam)     cam <= 1'b1;
+                        else if(cam) cam <= 1'b0;
                         state  <= IDLE;
                         Fstate <= IDLE;
                     end

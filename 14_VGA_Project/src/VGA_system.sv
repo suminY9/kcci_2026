@@ -5,7 +5,10 @@ module VGAsystem(
     input  logic reset,
 
     // GAME
-    // input  logic [3:0] note_x,
+    // input  logic [3:0] note_x0,
+    // input  logic [3:0] note_x1,
+    // input  logic [3:0] note_x2,
+    // input  logic [3:0] note_x3,
     // input  logic [9:0] note_y0,
     // input  logic [9:0] note_y1,
     // input  logic [9:0] note_y2,
@@ -21,6 +24,7 @@ module VGAsystem(
     input  logic       vsync_0,
     input  logic [7:0] pdata_0,
     // cam1
+    output logic       xclk_1,
     input  logic       pclk_1,
     input  logic       href_1,
     input  logic       vsync_1,
@@ -36,6 +40,8 @@ module VGAsystem(
     output logic scl1,
     inout  logic sda
 );
+
+    assign xclk_1 = xclk;
 
     logic [9:0] x_pixel;
     logic [9:0] y_pixel;
@@ -130,7 +136,10 @@ module VGAsystem(
         .y_pixel(y_pixel),
         .imgPxlData(rData_0),
         .imgPxlAddr(rAddr_0),
-        .note_x(),
+        .note_x0(),
+        .note_x1(),
+        .note_x2(),
+        .note_x3(),
         .note_y0(),
         .note_y1(),
         .note_y2(),

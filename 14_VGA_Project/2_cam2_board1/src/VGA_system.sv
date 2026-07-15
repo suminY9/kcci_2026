@@ -5,9 +5,15 @@ module VGAsystem(
     input  logic reset,
 
     // GAME
+    // input  logic [3:0] note_x0,
+    // input  logic [3:0] note_x1,
+    // input  logic [3:0] note_x2,
+    // input  logic [3:0] note_x3,
+    // input  logic [9:0] note_y0,
+    // input  logic [9:0] note_y1,
+    // input  logic [9:0] note_y2,
+    // input  logic [9:0] note_y3,
     input  logic       capture,
-    // input  logic [9:0] note_x,
-    // input  logic [9:0] note_y,
     output logic       done_cap,
     output logic [3:0] region,
 
@@ -18,6 +24,7 @@ module VGAsystem(
     input  logic       vsync_0,
     input  logic [7:0] pdata_0,
     // cam1
+    output logic       xclk_1,
     input  logic       pclk_1,
     input  logic       href_1,
     input  logic       vsync_1,
@@ -33,6 +40,8 @@ module VGAsystem(
     output logic scl1,
     inout  logic sda
 );
+
+    assign xclk_1 = xclk;
 
     logic [9:0] x_pixel;
     logic [9:0] y_pixel;
@@ -59,7 +68,7 @@ module VGAsystem(
         .reset(reset),
         .clk_in1(clk)
     );
-    OV7670_SCCB_Controller U_SCCB_Data_Ctrl(
+    OV7670_SCCB_Controller_2CAMs U_SCCB_Data_Ctrl(
         .clk(clk_100M),
         .reset(reset),
         .scl0(scl0),
@@ -122,13 +131,24 @@ module VGAsystem(
     framePrinter U_framePrinter(
         .clk(rclk),
         .reset(reset),
-        // .vsync(vsync_0),
+        .vsync(vsync_0),
         .x_pixel(x_pixel),
         .y_pixel(y_pixel),
         .imgPxlData(rData_0),
         .imgPxlAddr(rAddr_0),
+        .note_x0(),
+        .note_x1(),
+        .note_x2(),
+        .note_x3(),
+        .note_y0(),
+        .note_y1(),
+        .note_y2(),
+        .note_y3(),
         // .note_x(note_x),
-        // .note_y(note_y),
+        // .note_y0(note_y0),
+        // .note_y0(note_y1),
+        // .note_y0(note_y2),
+        // .note_y0(note_y3),
         .RGBport(RGB_printer),
         .region(region)
     );
@@ -147,14 +167,14 @@ module VGAsystem(
         .done_cap(done_cap),
         .RGBport(RGB_capture)
     );
-    assign {port_red, port_green, port_blue} = RGB_printer;
+    // assign {port_red, port_green, port_blue} = RGB_printer;
     // assign {port_red, port_green, port_blue} = RGB_capture;
-    // mux_2x1 #(
-    //     .BIT_DEPTH(12)
-    // ) U_MUX_RGB (
-    //     .sel(capture),
-    //     .in0(RGB_printer),
-    //     .in1(RGB_capture),
-    //     .out({port_red, port_green, port_blue})
-    // );
+    mux_2x1 #(
+        .BIT_DEPTH(12)
+    ) U_MUX_RGB (
+        .sel(capture),
+        .in0(RGB_printer),
+        .in1(RGB_capture),
+        .out({port_red, port_green, port_blue})
+    );
 endmodule
