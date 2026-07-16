@@ -18,7 +18,7 @@ module VGAsystem(
     output logic [3:0] region,
 
     // cam0
-    output logic       xclk_0,
+    output logic       xclk,
     input  logic       pclk_0,
     input  logic       href_0,
     input  logic       vsync_0,
@@ -41,27 +41,26 @@ module VGAsystem(
     inout  logic sda
 );
 
+    assign xclk_1 = xclk;
 
     logic [9:0] x_pixel;
     logic [9:0] y_pixel;
     logic de;
 
     logic we_0, we_1, we_cap;
-    logic [$clog2(320*240)-1:0] rAddr, rAddr_0, rAddr_1;
-    logic [$clog2(320*240)-1:0] wAddr, wAddr_1;
+    logic [$clog2(320*240)-1:0] rAddr_0, rAddr_1;
+    logic [$clog2(320*240)-1:0] wAddr_0, wAddr_1;
     logic [$clog2(80*110)-1:0] rAddr_cap;
     logic [$clog2(80*110)-1:0] wAddr_cap;
-    logic [15:0] rData, rData_1;
-    logic [15:0] wData, wData_1;
+    logic [15:0] rData_0, rData_1;
+    logic [15:0] wData_0, wData_1;
     logic [11:0] rData_cap;
     logic [11:0] wData_cap;
 
     logic [11:0] RGB_printer, RGB_capture;
 
     logic clk_100M, clk_25M, rclk;
-    // assign xclk = clk_25M;
-    assign xclk_0 = clk_25M;
-    assign xclk_1 = clk_25M;
+    assign xclk = clk_25M;
 
     clk_wiz_0 clk_div(
         .clk_100M(clk_100M),
@@ -76,28 +75,6 @@ module VGAsystem(
         .scl1(scl1),
         .sda(sda)
     );
-    BUFGMUX U_MUX_PCLK(
-        .S(capture),
-        .I0(pclk_0),
-        .I1(pclk_1),
-        .O(pclk)
-    );
-    // mux_2x1 #(
-    //     .BIT_DEPTH(1)
-    // ) U_MUX_pclk (
-    //     .sel(!capture),
-    //     .in1(pclk0),
-    //     .in2(pclk1),
-    //     .out(pclk)
-    // );
-    mux_2x1 #(
-        .BIT_DEPTH(10)
-    ) U_MUX_CAM (
-        .sel(capture),
-        .in0({href_0, vsync_0, pdata_0}),
-        .in1({href_1, vsync_1, pdata_1}),
-        .out({href, vsync, pdata}) 
-    );
     VGA_Decoder U_VGA_Decoder(
         .clk(clk_100M),
         .reset(reset),
@@ -109,40 +86,40 @@ module VGAsystem(
         .de(de)
     );
     OV7670MemController U_OV7670MemController_0(
-        .pclk(pclk),
+        .pclk(pclk_0),
         .reset(reset),
-        .href(href),
-        .vsync(vsync),
-        .pdata(pdata),
-        .we(we),
-        .wAddr(wAddr),
-        .wData(wData)
+        .href(href_0),
+        .vsync(vsync_0),
+        .pdata(pdata_0),
+        .we(we_0),
+        .wAddr(wAddr_0),
+        .wData(wData_0)
     );
-    // OV7670MemController U_OV7670MemController_1(
-    //     .pclk(pclk_1),
-    //     .reset(reset),
-    //     .href(href_1),
-    //     .vsync(vsync_1),
-    //     .pdata(pdata_1),
-    //     .we(we_1),
-    //     .wAddr(wAddr_1),
-    //     .wData(wData_1)
-    // );
-    frameBuffer_CAM1 U_FrameBuffer (
-        .wclk(pclk),
-        .we(we),
-        .wAddr(wAddr),
-        .wData(wData),
-        .rclk(rclk),
-        .rAddr(rAddr),
-        .rData(rData),
-        // .wclk_1(pclk_1),
-        // .we_1(we_1),
-        // .wAddr_1(wAddr_1),
-        // .wData_1(wData_1),
-        // .rclk_1(rclk),
-        // .rAddr_1(rAddr_1),
-        // .rData_1(rData_1),
+    OV7670MemController U_OV7670MemController_1(
+        .pclk(pclk_1),
+        .reset(reset),
+        .href(href_1),
+        .vsync(vsync_1),
+        .pdata(pdata_1),
+        .we(we_1),
+        .wAddr(wAddr_1),
+        .wData(wData_1)
+    );
+    frameBuffer U_FrameBuffer (
+        .wclk_0(pclk_0),
+        .we_0(we_0),
+        .wAddr_0(wAddr_0),
+        .wData_0(wData_0),
+        .rclk_0(rclk),
+        .rAddr_0(rAddr_0),
+        .rData_0(rData_0),
+        .wclk_1(pclk_1),
+        .we_1(we_1),
+        .wAddr_1(wAddr_1),
+        .wData_1(wData_1),
+        .rclk_1(rclk),
+        .rAddr_1(rAddr_1),
+        .rData_1(rData_1),
         .wclk_cap(rclk),
         .we_cap(we_cap),
         .wAddr_cap(wAddr_cap),
@@ -154,10 +131,10 @@ module VGAsystem(
     framePrinter U_framePrinter(
         .clk(rclk),
         .reset(reset),
-        .vsync(vsync),
+        .vsync(vsync_0),
         .x_pixel(x_pixel),
         .y_pixel(y_pixel),
-        .imgPxlData(rData),
+        .imgPxlData(rData_0),
         .imgPxlAddr(rAddr_0),
         .note_x0(),
         .note_x1(),
@@ -182,21 +159,13 @@ module VGAsystem(
         .vsync(vsync_1),
         .x_pixel_VGA(x_pixel),
         .y_pixel_VGA(y_pixel),
-        .imgPxlData(rData),
+        .imgPxlData(rData_1),
         .imgPxlAddr(rAddr_1),
         .wData_cap(wData_cap),
         .wAddr_cap(wAddr_cap),
         .we_cap(we_cap),
         .done_cap(done_cap),
         .RGBport(RGB_capture)
-    );
-    mux_2x1 #(
-        .BIT_DEPTH(17)
-    ) U_MUX_rADDR (
-        .sel(!capture),
-        .in0(rAddr_0),
-        .in1(rAddr_1),
-        .out(rAddr)
     );
     // assign {port_red, port_green, port_blue} = RGB_printer;
     // assign {port_red, port_green, port_blue} = RGB_capture;

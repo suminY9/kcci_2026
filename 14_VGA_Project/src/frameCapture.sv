@@ -1,6 +1,7 @@
 module frameCapture(
     input  logic        clk,  // 100MHz
     input  logic        reset,
+    input  logic        vsync,
     input  logic        capture,
     input  logic [9:0]  x_pixel_VGA,
     input  logic [9:0]  y_pixel_VGA,
@@ -23,9 +24,10 @@ module frameCapture(
     Capture U_capture(
         .clk(clk),
         .reset(reset),
+        .vsync(vsync),
         .capture(capture),
-        .x_pixel(x_pixel),
-        .y_pixel(y_pixel),
+        .x_pixel_QVGA(x_pixel),
+        .y_pixel_QVGA(y_pixel),
         .imgPxlData(imgPxlData),
         .wAddr_cap(wAddr_cap),
         .wData_cap(wData_cap),
@@ -37,31 +39,20 @@ module frameCapture(
         .BIT_DEPTH(12)
     ) U_MUX (
         .sel(capture && !done_cap),
-        .in1(RGB_capture),
-        .in2(12'h000),
+        .in0(RGB_capture),
+        .in1(12'h000),
         .out(RGBport)
     );
-endmodule
-
-
-module mux_2x1#(
-    parameter BIT_DEPTH = 16
-) (
-    input  logic                 sel,
-    input  logic [BIT_DEPTH-1:0] in1,
-    input  logic [BIT_DEPTH-1:0] in2,
-    output logic [BIT_DEPTH-1:0] out
-);
-    assign out = sel? in1 : in2;
 endmodule
 
 
 module Capture(
     input  logic        clk,
     input  logic        reset,
+    input  logic        vsync,
     input  logic        capture,
-    input  logic [9:0]  x_pixel,
-    input  logic [9:0]  y_pixel,
+    input  logic [9:0]  x_pixel_QVGA,
+    input  logic [9:0]  y_pixel_QVGA,
     input  logic [15:0] imgPxlData,
     // captureRAM
     output logic [$clog2(80*110)-1:0] wAddr_cap,
@@ -78,8 +69,18 @@ module Capture(
     logic [2:0] state;
     logic [1:0] CAPstate;
 
-    logic [80*110-1:0] capDone;
+    // logic [80*110-1:0] capDone;
     logic [$clog2(80*110)-1:0] cap_cnt;
+
+// 1. QVGA(320x240) 중앙의 80x110 영역 검출 (가로: 120~199, 세로: 65~174)
+    logic DE_QQQVGA;
+    assign DE_QQQVGA = (x_pixel_QVGA >= 10'd120 && x_pixel_QVGA < 10'd200) && 
+                       (y_pixel_QVGA >= 10'd65  && y_pixel_QVGA < 10'd175);
+
+    // 2. 오프셋을 적용한 상대 좌표 계산 (가로: 0~79, 세로: 0~109)
+    logic [9:0] x_pixel, y_pixel;
+    assign x_pixel = DE_QQQVGA ? (x_pixel_QVGA - 10'd120) : '0;
+    assign y_pixel = DE_QQQVGA ? (y_pixel_QVGA - 10'd65)  : '0;
 
     // x: 115~194 (80), y: 45~144 (110)
     // assign wAddr_cap = (x_pixel - 115) + (y_pixel - 45) * 80;
@@ -88,19 +89,19 @@ module Capture(
     //                 && (x_pixel >= 115 && x_pixel < 195) && (y_pixel >= 45 && y_pixel < 145)
     //                 && !capDone[wAddr_cap]) ? 1'b1 : 1'b0;
 
-    wire [15:0] y_offset = y_pixel - 45;
-    assign wAddr_cap = (x_pixel - 115) + ((y_offset << 6) + ((y_offset << 4)));
-    assign wData_cap = {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]};
-    assign we_cap = ((state == CAP && CAPstate == P3)
-                    && (x_pixel >= 115 && x_pixel < 195) && (y_pixel >= 45 && y_pixel < 145)
-                    && !capDone[wAddr_cap]) ? 1'b1 : 1'b0;
+    // wire [15:0] y_offset = y_pixel - 45;
+    // assign wAddr_cap = (x_pixel - 115) + ((y_offset << 6) + ((y_offset << 4)));
+    // assign wData_cap = {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]};
+    // assign we_cap = ((state == CAP && CAPstate == P3)
+                    // && (x_pixel >= 115 && x_pixel < 195) && (y_pixel >= 45 && y_pixel < 145)
+                    // && !capDone[wAddr_cap]) ? 1'b1 : 1'b0;
 
     always_ff @(posedge clk, posedge reset) begin
         if(reset) begin
             state    <= IDLE;
             CAPstate <= IDLE;
             done     <= 1'b0;
-            capDone  <= 0;
+            // capDone  <= 0;
             cnt_reg  <= 0;
         end else begin
             case(state)
@@ -109,7 +110,7 @@ module Capture(
                         state    <= RD3;
                         CAPstate <= IDLE;
                         done     <= 1'b0;
-                        capDone  <= 0;
+                        // capDone  <= 0;
                         cap_cnt  <= 0;
                         cnt_reg  <= 0;
                     end
@@ -152,11 +153,17 @@ module Capture(
                             CAPstate <= P3;
                         end
                         P3: begin
-                            if (we_cap) begin
-                                capDone[(x_pixel-115) + (y_pixel-45)*80] <= 1'b1;
-                                cap_cnt <= cap_cnt + 1;
+                            // if (we_cap) begin
+                            //     capDone[(x_pixel-115) + (y_pixel-45)*80] <= 1'b1;
+                            //     cap_cnt <= cap_cnt + 1;
+                            if(vsync && cap_cnt < 60*110) begin
+                                we_cap    <= 1'b1;
+                                wData_cap <= {imgPxlData[15:12], imgPxlData[10:7], imgPxlData[4:1]};
+                                wAddr_cap <= cap_cnt;
+                                cap_cnt   <= cap_cnt + 1;
                             end
-                            if (cap_cnt == 80*110) begin
+                            if (vsync && cap_cnt == 80*110) begin
+                                we_cap   <= 1'b0;
                                 state    <= DONE;
                                 CAPstate <= IDLE;
                             end

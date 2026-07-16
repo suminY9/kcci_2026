@@ -82,7 +82,7 @@ module frameBuffer(
     // wirte side - cam1
     input  logic wclk_1,
     input  logic we_1,
-    input  logic [$clog2(80*60)-1:0] wAddr_1, //QQQVGA size
+    input  logic [$clog2(80*60)-1:0] wAddr_1, //QVGA size
     input  logic [15:0] wData_1,
     // read side - cam1
     input  logic                       rclk_1,

@@ -1,0 +1,124 @@
+@00 1280 // CAM0_ResetSW
+@01 3A04 // ResetSW_Config(defaults)
+@02 1200
+@03 13E7
+@04 6F9F
+@05 B084
+@06 073A
+@07 7135
+@08 7211
+@09 73F0
+@0a 7A20
+@0b 7B01
+@0c 7C1E
+@0d 7D35
+@0e 7E5A
+@0f 7F69
+@10 8076
+@11 8180
+@12 8288
+@13 838F
+@14 8497
+@15 85A3
+@16 86AF
+@17 87C4
+@18 88D7
+@19 89E8
+@1a 0000
+@1b 1000
+@1c 0D40
+@1d 1418
+@1e A505
+@1f AB07
+@20 2495
+@21 2533
+@22 26E3
+@23 9F78
+@24 A068
+@25 A103
+@26 A6D8
+@27 A7D8
+@28 A8F0
+@29 A990
+@2a AA94
+@2b 1211 // ResetSW_SetRosolution_Config(RES_QVGA)
+@2c 0C04
+@2d 3E19
+@2e 703A
+@2f 7135
+@30 7211
+@31 73F1
+@32 A202
+@33 17FF // ResetSW_SetResolution_SetFrameControl
+@34 18FF
+@35 32FF
+@36 19FF
+@37 1AFF
+@38 03FF
+@39 12FF // ResetSW_SetColorFormat
+@3a 40FF
+@3b 1301 // AutoExposureMode
+@3c 55FF // SetBrightness
+@3d 1304 // AutoGainMode
+@3e 1280 // CAM1_ResetSW
+@3f 3A04 // ResetSW_Config(defaults)
+@40 1200
+@41 13E7
+@42 6F9F
+@43 B084
+@44 073A
+@45 7135
+@46 7211
+@47 73F0
+@48 7A20
+@49 7B01
+@4a 7C1E
+@4b 7D35
+@4c 7E5A
+@4d 7F69
+@4e 8076
+@4f 8180
+@50 8288
+@51 838F
+@52 8497
+@53 85A3
+@54 86AF
+@55 87C4
+@56 88D7
+@57 89E8
+@58 0000
+@59 1000
+@5a 0D40
+@5b 1418
+@5c A505
+@5d AB07
+@5e 2495
+@5f 2533
+@60 26E3
+@61 9F78
+@62 A068
+@63 A103
+@64 A6D8
+@65 A7D8
+@66 A8F0
+@67 A990
+@68 AA94
+@69 1204 // ResetSW_SetRosolution_Config(RES_QQQVGA)
+@6a 0C04
+@6b 3E1B
+@6c 703A
+@6d 7135
+@6e 7233
+@6f 73F3
+@70 A202
+@71 17FF // ResetSW_SetResolution_SetFrameControl
+@72 18FF
+@73 32FF
+@74 19FF
+@75 1AFF
+@76 03FF
+@77 12FF // ResetSW_SetColorFormat
+@78 40FF
+@79 1301 // AutoExposureMode
+@7a 55FF // SetBrightness
+@7b 1304 // AutoGainMode
