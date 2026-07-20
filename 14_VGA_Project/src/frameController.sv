@@ -48,7 +48,7 @@ module frameController(
     logic [9:0] x_pixel, y_pixel;
     assign x_pixel = x_pixel_VGA >> 1;
     assign y_pixel = y_pixel_VGA >> 1;
-    assign imgPxlAddr = 320*(y_pixel) + (319-(x_pixel));
+    assign imgPxlAddr = 320*(y_pixel) + x_pixel;
 
 
     Filter_Region U_Filter_REG(
