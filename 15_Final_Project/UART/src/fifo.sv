@@ -73,6 +73,8 @@ module fifo_ControlUnit #(
     output logic                     empty
 );
 
+    localparam PTW_DEPTH = $clog2(DEPTH);
+
     always_ff @(posedge clk, posedge reset) begin
         if(reset) begin
             w_ptr <= 0;
@@ -86,16 +88,16 @@ module fifo_ControlUnit #(
                 if(!full) begin
                     w_ptr <= w_ptr + 1;
                     empty <= 1'b0;
-                    if(w_ptr + 1 == r_ptr) full <= 1'b1;
                 end
+                if(PTW_DEPTH'(w_ptr + 1'b1) == r_ptr) full <= 1'b1;
             end
             // pop
             2'b01: begin
                 if(!empty) begin
                     r_ptr <= r_ptr + 1;
                     full  <= 1'b0;
-                    if(w_ptr == r_ptr + 1) empty <= 1'b1;
                 end
+                if(w_ptr == PTW_DEPTH'(r_ptr + 1'b1)) empty <= 1'b1;
             end
             // push + pop
             2'b11: begin

@@ -11,13 +11,8 @@ module UART_top(
     logic w_uart_ready;
     logic w_trans_req, w_trans_req_reg;
 
-    assign w_trans_req = (!w_fifo_empty) && w_uart_ready;   // fifo가 비어있지 않고, uart가 동작중이지 않을 때 trans_req 발생 => 보낼 데이터가 있는데 tx가 놀고있을 때
-    assign w_fifo_pop  = w_trans_req && !w_trans_req_reg;   // trans_req의 edge일 때마다 fifo_pop 발생
-
-    always_ff @(posedge clk, posedge reset) begin
-        if(reset) w_trans_req_reg <= 1'b0;
-        else      w_trans_req_reg <= w_trans_req;
-    end
+    assign w_tx_start = (!w_fifo_empty) && w_uart_ready;   // fifo가 비어있지 않고, uart가 동작중이지 않을 때 trans_req 발생 => 보낼 데이터가 있는데 tx가 놀고있을 때
+    assign w_fifo_pop = w_tx_start;
 
     InfDataController U_InfDataCtrl(
         .clk(clk),
