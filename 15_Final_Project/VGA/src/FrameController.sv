@@ -53,7 +53,7 @@ module FrameCrop(
     output logic [3:0]  o_pos
 );
 
-    logic [10:0] x_en, y_en;
+    logic x_en, y_en;
     assign y_en = ((i_y_pixel >= 456) && (i_y_pixel < 624)) ? 1'b1 : 1'b0;
 
     // position
@@ -68,10 +68,11 @@ module FrameCrop(
     // pixel data pass
     always_comb begin
         case(o_pos)
-            4'b0001: x_en = (i_x_pixel -  624) % 6;
-            4'b0010: x_en = (i_x_pixel -  792) % 6;
-            4'b0100: x_en = (i_x_pixel -  960) % 6;
-            4'b1000: x_en = (i_x_pixel - 1128) % 6;
+            4'b0001: x_en = (i_x_pixel -  624) % 6 ? 1'b0 : 1'b1;
+            4'b0010: x_en = (i_x_pixel -  792) % 6 ? 1'b0 : 1'b1;
+            4'b0100: x_en = (i_x_pixel -  960) % 6 ? 1'b0 : 1'b1;
+            4'b1000: x_en = (i_x_pixel - 1128) % 6 ? 1'b0 : 1'b1;
+            default: x_en = 1'b0;
         endcase
     end
 
