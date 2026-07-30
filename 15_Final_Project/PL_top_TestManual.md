@@ -1,3 +1,21 @@
+### How To Use
+1. Block Design > IP 검색 > **PLtest_v1_1** 추가
+2. port 연결
+
+| Port | bit width | in/out | Connect |
+| :-: | :-: | :-: | :-: |
+| clk | 1 | input | system clock. 100MHz |
+| reset | 1 | input | system reset |
+| pclk | 1 | input | OV5640의 pixel clock 출력 |
+| RGB | 24 | input | OV5640의 RGB 출력 |
+| x_pixel | 11 | input | OV5640의 x_pixel 출력 |
+| y_pixel | 11 | input | OV5640의 y_pixel 출력 |
+| echo | 1 | extern input | SR04에서 들어오는 echo 입력 |
+| pwm | 1 | extern output | SG90으로 나가는 pwm 출력 |
+| btn | 1 | extern output | zybo 보드 버튼 |
+| led | 2 | extern output | zybo 보드 LED |
+
+
 ### Test Manual
 
 1. 초음파 센서가 3cm를 감지하고 2초 후,
