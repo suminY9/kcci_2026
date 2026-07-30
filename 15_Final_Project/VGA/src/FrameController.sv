@@ -40,7 +40,8 @@ module FrameController(
         .i_pdata(PXLmono),
         .o_we(o_we),
         .o_data(o_data),
-        .o_addr(o_addr)
+        .o_addr(o_addr),
+        .o_vga_done(o_vga_done)
     );
 endmodule
 
@@ -107,29 +108,36 @@ module FrameRegister(
     input  logic        i_pdata,
     output logic        o_we,
     output logic [31:0] o_data,
-    output logic [7:0]  o_addr
+    output logic [7:0]  o_addr,
+    output logic        o_vga_done
 );
     logic [27:0] FrameReg;
     logic [4:0]  bitCnt, lineCnt;   // 0 ~ 28
 
     always_ff @(posedge i_pixel_clk, posedge reset) begin
         if(reset) begin
-            o_we    <= 1'b0;
-            o_data  <= 32'd0;
-            bitCnt  <= 5'd0;
-            lineCnt <= 5'd0;
+            o_we       <= 1'b0;
+            o_data     <= 32'd0;
+            o_vga_done <= 1'b0;
+            bitCnt     <= 5'd0;
+            lineCnt    <= 5'd0;
         end else begin
+            o_we       <= 1'b0;
+            o_vga_done <= 1'b0;
             if(i_pos && bitCnt < 27) begin
-                FrameReg <= {FrameReg[26:0], i_pdata};
-                bitCnt   <= bitCnt + 1;
-                o_we     <= 1'b0;
-                o_data   <= 32'd0;
+                FrameReg   <= {FrameReg[26:0], i_pdata};
+                bitCnt     <= bitCnt + 1;
+                o_data     <= 32'd0;
             end else if(bitCnt == 27) begin
                 o_data   <= {2'b11, FrameReg[26:0], i_pdata, 2'b11}; // white padding 28*28 -> 32*32
                 o_we     <= 1'b1;
                 bitCnt   <= 0;
-                if(lineCnt == 27) lineCnt <= 0;
-                else              lineCnt <= lineCnt + 1;
+                if(lineCnt == 27) begin
+                    lineCnt    <= 0;
+                    o_vga_done <= 1'b1;
+                end else begin
+                    lineCnt <= lineCnt + 1;
+                end
             end
         end
     end

@@ -17,6 +17,7 @@ module PL_top(
 
     // SR04 -> SG90
     logic w_open, w_close;
+    logic w_gate;
     // SR04 -> VGA
     logic w_capture;
     logic w_vga_done;
@@ -25,6 +26,11 @@ module PL_top(
     logic [7:0]  w_pixel_addr;
 
     assign led[0] = w_vga_done;
+
+    always_comb begin
+        if(w_close) w_gate = 1'b0;  // close
+        else        w_gate = 1'b1;  // open
+    end
 
     /********* Sensor *********/
     btn_debounce U_BTN_DEB(
@@ -45,8 +51,8 @@ module PL_top(
     SG90_Controller U_SG90(
         .clk(clk),
         .reset(reset),
-        .i_open(w_open),
-        .i_close(w_close),
+        .i_open(w_gate),
+        .i_close(~w_gate),
         .o_pwm(pwm)
     );
 
@@ -84,12 +90,33 @@ module Capture_test(
     output logic        pixel_result
 );
 
+    // 1sec counter
+    logic [$clog2(100_000_000)-1:0] cnt_1sec;
+    logic tick_1sec;
+
+    // test logic FSM
     localparam IDLE = 0, VERIF = 1;
     logic state;
-
+    // test logic
     logic [7:0]  paddrCnt;
     logic [32:0] pre_data;
 
+    /******* count 1 sec *******/
+    always_ff @(posedge clk, posedge reset) begin
+        if(reset) begin
+            cnt_1sec  <= 0;
+            tick_1sec <= 1'b0;
+        end else begin
+            if(cnt_1sec == 100_000_000-1) begin
+                tick_1sec <= 1'b1;
+            end else begin
+                tick_1sec <= 1'b0;
+                cnt_1sec  <= cnt_1sec + 1;
+            end
+        end
+    end
+
+    /******* test logic *******/
     always_ff @(posedge clk, posedge reset) begin
         if(reset) begin
             state      <= 1'b0;
@@ -109,10 +136,12 @@ module Capture_test(
                     end
                 end
                 VERIF: begin
-                    if(pixel_addr == 8'h80) state <= IDLE;
-                    else                    pixel_addr <= pixel_addr + 1;
-                    if(pre_data != pixel_data) pixel_result <= 1'b1;
-                    else                       pixel_result <= 1'b0;
+                    if(tick_1sec) begin
+                        if(pixel_addr == 8'h80) state <= IDLE;
+                        else                    pixel_addr <= pixel_addr + 1;
+                        if(pre_data != pixel_data) pixel_result <= 1'b1;
+                        else                       pixel_result <= 1'b0;
+                    end
                 end
             endcase
         end
