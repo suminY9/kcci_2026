@@ -1,10 +1,11 @@
 # Vision AI를 활용한 Auto Cashier System 🛒
 
 ## 1. 프로젝트 개요
+- 팀명: 로저 해적단
 - 수행 기간: 2026.06.22 ~ 06.30
 - 수행 내용: YOLO 모델 활용, 객체를 탐지 및 인식하는 무인 결제 시스템 개발
 - 사용 기술: ```Python``` ```YOLO``` ```Ubuntu``` ```Google Colab``` ```Jetson Orin Nano```
-- 역할 분장: [팀명: 로저 해적단]
+- 역할 분장:
 
 | 김민기 | 서어진 | 윤수민 | 조유진 |
 |:---:|:---:|:---:|:---:|
@@ -34,6 +35,8 @@
 
 ## 4. 프로젝트 결과물
 ### 동작 시연 영상
+https://github.com/user-attachments/assets/27947ef8-eb36-4283-a46b-c76b31046dc1
+
 1. 상품을 웹캠에 비춘다. 상품이 인식되면 Web 장바구니에 자동으로 상품이 담긴다.
 2. 모든 상품을 장바구니에 담은 후, Web 장바구니의 '결제' 버튼을 누른다.
 3. 영수증 파일(.txt)이 생성된다.
@@ -113,3 +116,13 @@ Colab에서 dataset을 학습시킴<br>
 `YOLO_Training_Continue.ipynb`<br> 
 중단된 학습을 last.pt를 이용해서 이어서 학습시킴.<br> 
 학습 안정화를 위해 epoch을 15 이상 학습시키는 것 추천.<br> 
+
+
+<br>
+
+### 03_result
+**YOLO training 결과**
+
+https://github.com/user-attachments/assets/a70d055b-44c5-4eea-9c89-2872759f8cd4
+
+
