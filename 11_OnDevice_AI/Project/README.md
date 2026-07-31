@@ -15,10 +15,17 @@
 
 ## 2. 주요 설계 내용
 ### Dataset 전처리 과정 자동화 코드 구현
+Python을 활용하여 데이터셋 일괄 resizing & labeling, yaml 자동 생성, Augmentation 자동화 코드 구현.
 
 ### YOLO 딥러닝 모델 학습
+Google Colab 환경에서 yolo11n, yolo11m 모델 학습.
+
+Google Colab의 제약으로 학습량이 일정량을 초과하면 학습이 중단되어, 중단된 학습을 이어받을 수 있도록 Fine-tuning 방식을 활용함.
 
 ### Auto Cashier System 코드 구현
+Jetson Orin Nano 보드 위에서 실행시킬 프로그램 코드 구현.
+
+yolo로 학습시킨 엔진을 올려 구동하고, 웹캠을 통해 탐지하고 인식한 오브젝트를 저장하도록 함. 키보드에서 's' 키를 누르면 웹캠을 종료하고, 탐지된 오브젝트를 기반으로 영수증 파일(.txt)을 생성함.
 
 <br>
 
