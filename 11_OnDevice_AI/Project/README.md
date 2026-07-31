@@ -122,7 +122,3 @@ Colab에서 dataset을 학습시킴<br>
 
 ### 03_result
 **YOLO training 결과**
-
-https://github.com/user-attachments/assets/a70d055b-44c5-4eea-9c89-2872759f8cd4
-
-
