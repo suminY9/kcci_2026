@@ -9,6 +9,7 @@ module PL_top(
     input  logic [10:0] y_pixel,
     // HW
     input  logic echo,      // from SR04
+    output logic trigger,   // to SR04
     output logic pwm,       // to SG90
 
     input  logic       btn, // icc_done
@@ -42,10 +43,10 @@ module PL_top(
     sr04 U_SR04(
         .clk(clk),
         .reset(reset),
-        .echo(echo),
+        .o_echo(echo),
         .i_cnn_done(w_btn),
         .o_capture(w_capture),
-        .o_open(w_open),
+        .o_trigger(trigger),
         .o_close(w_close)
     );
     SG90_Controller U_SG90(

@@ -3,10 +3,10 @@
 module sr04 (
     input  logic clk,
     input  logic reset,
-    input  logic echo,
+    input  logic o_echo,
     input  logic i_cnn_done,
     
-    output logic trigger,
+    output logic o_trigger,
     output logic o_capture,
     output logic o_close
 );
@@ -17,8 +17,8 @@ module sr04 (
     SR04_Controller U_SR04_CONTROLLER(
         .clk(clk),
         .reset(reset),
-        .echo(echo),
-        .trigger(trigger),
+        .echo(o_echo),
+        .trigger(o_trigger),
         .distance(w_distance)
     );
     // 카메라 및 문 제어 FSM 인스턴스
