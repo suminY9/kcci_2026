@@ -25,7 +25,7 @@ module PL_top(
     logic [31:0] w_pixel_data;
     logic [7:0]  w_pixel_addr;
 
-    assign led[0] = w_vga_done;
+    // assign led[0] = w_vga_done;
 
     always_comb begin
         if(w_close) w_gate = 1'b0;  // close
@@ -76,7 +76,8 @@ module PL_top(
         .vga_done(w_vga_done),
         .pixel_data(w_pixel_data),
         .pixel_addr(w_pixel_addr),
-        .pixel_result(led[1])
+        .pixel_result(led[1]),
+        .led_vga_done(led[0])
     );
 endmodule
 
@@ -87,7 +88,8 @@ module Capture_test(
     input  logic        vga_done,
     input  logic [31:0] pixel_data,
     output logic [7:0]  pixel_addr,
-    output logic        pixel_result
+    output logic        pixel_result,
+    output logic        led_vga_done
 );
 
     // 1sec counter
@@ -123,6 +125,8 @@ module Capture_test(
             paddrCnt   <= 8'd0;
             pre_data   <= 32'd0;
             pixel_addr <= 8'd0;
+            pixel_result <= 1'b0;
+            led_vga_done <= 1'b0;
         end else begin
             case(state)
                 IDLE: begin
@@ -130,12 +134,14 @@ module Capture_test(
                     pixel_addr   <= 8'd0;
                     paddrCnt     <= 8'd0;
                     pixel_result <= 1'b0;
+                    led_vga_done <= 1'b0;
                     if(vga_done) begin
                         state    <= VERIF;
                         pre_data <= pixel_data;
                     end
                 end
                 VERIF: begin
+                    led_vga_done <= 1'b1;
                     if(tick_1sec) begin
                         if(pixel_addr == 8'h80) state <= IDLE;
                         else                    pixel_addr <= pixel_addr + 1;
