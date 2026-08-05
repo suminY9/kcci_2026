@@ -7,19 +7,20 @@ module PL_top(
     input  logic [23:0] RGB,
     input  logic [10:0] x_pixel,
     input  logic [10:0] y_pixel,
-    // HW
-    input  logic echo,      // from SR04
-    output logic trigger,   // to SR04
-    output logic pwm,       // to SG90
+    // // HW
+    // input  logic echo,      // from SR04
+    // output logic trigger,   // to SR04
+    // output logic pwm,       // to SG90
 
-    input  logic       btn, // icc_done
-    output logic [1:0] led  // 0:vga_done, 1:vga_test_result
+    input  logic btn,          // cnn_done = capture
+
+    output logic tx
 );
 
     // button
     logic w_btn;
-    // SR04 -> SG90
-    logic w_close;
+    // // SR04 -> SG90
+    // logic w_close;
     // SR04 -> VGA
     (* mark_debug = "true" *) logic w_capture;
     (* mark_debug = "true" *) logic w_vga_done;
@@ -29,6 +30,16 @@ module PL_top(
 
     // assign led[0] = w_vga_done;
 
+    always_ff @(posedge clk, posedge reset) begin
+        if(reset) begin
+            w_capture <= 1'b0;
+        end else begin
+            if(w_btn)           w_capture <= 1'b1;
+            else if(w_vga_done) w_capture <= 1'b0;
+            else                w_capture <= w_capture;
+        end
+    end
+
     /********* Sensor *********/
     btn_debounce U_BTN_DEB(
         .clk(clk),
@@ -36,22 +47,22 @@ module PL_top(
         .i_btn(btn),
         .o_btn(w_btn)
     );
-    sr04 U_SR04(
-        .clk(clk),
-        .reset(reset),
-        .o_echo(echo),
-        .i_cnn_done(w_btn),
-        .o_capture(w_capture),
-        .o_trigger(trigger),
-        .o_close(w_close)
-    );
-    SG90_Controller U_SG90(
-        .clk(clk),
-        .reset(reset),
-        .i_open(~w_close),
-        .i_close(w_close),
-        .o_pwm(pwm)
-    );
+    // sr04 U_SR04(
+    //     .clk(clk),
+    //     .reset(reset),
+    //     .o_echo(echo),
+    //     .i_cnn_done(w_btn),
+    //     .o_capture(w_capture),
+    //     .o_trigger(trigger),
+    //     .o_close(w_close)
+    // );
+    // SG90_Controller U_SG90(
+    //     .clk(clk),
+    //     .reset(reset),
+    //     .i_open(~w_close),
+    //     .i_close(w_close),
+    //     .o_pwm(pwm)
+    // );
 
     /********* CNN *********/
     VGA_top U_VGA_TOP(
@@ -65,12 +76,24 @@ module PL_top(
         .i_capture(w_capture),
         .o_vga_done(w_vga_done)
     );
-    Capture_test U_TEST(
+
+    /********* UART *********/
+    UART_test_top U_UART_TEST_TOP(
         .clk(clk),
         .reset(reset),
-        .vga_done(w_vga_done),
-        .pixel_addr(w_pixel_addr)
+        .i_btn(w_btn),
+        .i_frame_data(w_pixel_data),
+        .o_frame_addr(w_pixel_addr),
+        .o_tx(tx)
     );
+
+    /********* TEST *********/
+    // Capture_test U_TEST(
+    //     .clk(clk),
+    //     .reset(reset),
+    //     .vga_done(w_vga_done),
+    //     .pixel_addr(w_pixel_addr)
+    // );
 endmodule
 
 
