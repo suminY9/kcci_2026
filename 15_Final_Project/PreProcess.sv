@@ -34,6 +34,7 @@ module PreProcess(
     /********* Sensor *********/
     sr04 U_SR04(
         .clk(clk),
+        .pclk(pclk),
         .reset(reset),
         .o_echo(echo),
         .i_cnn_done(cnn_done),
@@ -42,7 +43,7 @@ module PreProcess(
         .o_close(w_close)
     );
     SG90_Controller U_SG90(
-        .clk(clk),
+        .pclk(pclk),
         .reset(reset),
         .i_open(~w_close),
         .i_close(w_close),
