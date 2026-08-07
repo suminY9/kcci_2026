@@ -17,7 +17,6 @@ module FrameController(
 );
 
     // position number
-    logic [3:0]  position;
     logic        valid;
     // Pixel data
     logic [23:0] PXLcrop;
@@ -71,26 +70,25 @@ module FrameCrop(
     //     else x_en = 1'b0;
     // end
 
-    // pdata out
-    always_comb begin
-        if(x_en && y_en) begin
-            o_pdata = i_pdata;
-            o_valid = 1'b1;
-        end else begin
-            o_pdata = 24'd0;
-            o_valid = 1'b0;
-        end
-    end
+    // // pdata out
+    // always_comb begin
+    //     if(x_en && y_en) begin
+    //         o_pdata = i_pdata;
+    //         o_valid = 1'b1;
+    //     end else begin
+    //         o_pdata = 24'd0;
+    //         o_valid = 1'b0;
+    //     end
+    // end
 
-    logic valid;
-    assign x_en = ((i_x_pixel >= 624) && (i_x_pixel < 1296));
-    assign y_en = ((i_y_pixel >= 456) && (i_y_pixel < 624));
+    assign x_en = ((i_x_pixel >= 208) && (i_x_pixel < 432));
+    assign y_en = ((i_y_pixel >= 212) && (i_y_pixel < 268) && (i_y_pixel[0] == 1'b0));
 
     localparam WAIT = 0,
                ENABLE = 1;
     logic state, n_state;
 
-    logic [2:0] pxlCnt;
+    logic pxlCnt;
 
     /********* state update *********/
     always_ff @(posedge i_pixel_clk, posedge reset) begin
@@ -121,7 +119,7 @@ module FrameCrop(
                     if(x_en && y_en) begin
                         o_valid <= 1'b1;
                         o_pdata <= i_pdata;
-                        pxlCnt  <= pxlCnt + 1;
+                        pxlCnt  <= 1'b0;
                     end else begin
                         o_valid <= 1'b0;
                         o_pdata <= 24'd0;
@@ -130,7 +128,7 @@ module FrameCrop(
                 end
                 ENABLE: begin
                     if(x_en && y_en) begin
-                        if(pxlCnt == 5) begin
+                        if(pxlCnt == 1) begin
                             o_valid <= 1'b1;
                             o_pdata <= i_pdata;
                             pxlCnt  <= 0;
@@ -139,11 +137,16 @@ module FrameCrop(
                             o_pdata <= 24'd0;
                             pxlCnt  <= pxlCnt + 1;
                         end
+                    end else begin
+                        o_valid <= 1'b0;
+                        o_pdata <= 24'd0;
+                        pxlCnt  <= 1'b0;
                     end
                 end
                 default: begin
-                    o_valid <= 0;
-                    pxlCnt  <= 0;
+                    o_valid <= 1'b0;
+                    o_pdata <= 24'd0;
+                    pxlCnt  <= 1'b0;
                 end
             endcase
         end
@@ -295,11 +298,18 @@ module FrameRegister(
                 if(posCnt == 3) begin
                     lineCnt <= lineCnt + 1;
                 end
+                if(i_valid) begin
+                    FrameReg <= {27'd0, i_pdata};
+                    bitCnt   <= 1;
+                end
             end
             VGA_DONE: begin
                 if(clkCnt == 2) begin
                     o_vga_done <= 1'b0;
                     clkCnt     <= 1'b0;
+                    bitCnt     <= 5'd0;
+                    lineCnt    <= 5'd0;
+                    posCnt     <= 2'd0;
                 end else begin
                     o_vga_done <= 1'b1;
                     clkCnt     <= clkCnt + 1;

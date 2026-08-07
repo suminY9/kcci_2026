@@ -63,8 +63,8 @@ module tb_VGA_top();
         img_idx   = 0;
 
         // Frame Crop Range Generation (Y: 456 ~ 623 / X: 624 ~ 1295)
-        for (y = 456; y < 624; y = y + 1) begin
-            for (x = 624; x < 1296; x = x + 1) begin
+        for (y = 212; y < 268; y = y + 1) begin
+            for (x = 208; x < 432; x = x + 1) begin
                 @(posedge i_pixel_clk);
                 i_y_pixel = y[10:0];
                 i_x_pixel = x[10:0];
