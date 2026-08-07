@@ -86,18 +86,18 @@ module sr04_fsm (
 
     // Variable
     localparam DISTANCE = 3;
-    localparam DELAY    = 125_000_000;
+    localparam DELAY    = 50_000_000;
 
     state_e state;
     logic [31:0] delay_cnt;
-    logic [1:0]  gone_cnt;
+    logic [2:0]  gone_cnt;
 
 
     always_ff @(posedge clk, posedge reset) begin
         if (reset) begin
             state <= IDLE;
             delay_cnt <= 32'd0;
-            gone_cnt  <= 2'b00;
+            gone_cnt  <= 3'b000;
         end else begin
             case (state)
                 IDLE: begin
@@ -126,20 +126,20 @@ module sr04_fsm (
                 end
                 OPEN: begin
                     delay_cnt <= 32'd0;
-                    gone_cnt  <= 2'b00;
+                    gone_cnt  <= 3'b000;
                     state <= WAIT_GONE;
                 end
                 WAIT_GONE: begin
                     if(i_distance_val) begin
                         if(i_distance > 12'd5 && i_distance < 12'd100) begin
-                            if(gone_cnt >= 2'b10) begin
+                            if(gone_cnt >= 3'b111) begin
                                 state    <= WAIT_DELAY;
-                                gone_cnt <= 2'b00;
+                                gone_cnt <= 3'b000;
                             end else begin
                                 gone_cnt <= gone_cnt + 1'b1;
                             end
                         end else begin
-                            gone_cnt <= 2'b00;
+                            gone_cnt <= 3'b000;
                         end
                     end
                 end
