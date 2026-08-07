@@ -80,6 +80,7 @@ module sr04_fsm (
         WAIT_VGA,
         WAIT_CNN,
         OPEN,
+        WAIT_GONE,
         WAIT_DELAY
     } state_e;
 
@@ -89,12 +90,14 @@ module sr04_fsm (
 
     state_e state;
     logic [31:0] delay_cnt;
+    logic [1:0]  gone_cnt;
 
 
     always_ff @(posedge clk, posedge reset) begin
         if (reset) begin
             state <= IDLE;
             delay_cnt <= 32'd0;
+            gone_cnt  <= 2'b00;
         end else begin
             case (state)
                 IDLE: begin
@@ -123,7 +126,22 @@ module sr04_fsm (
                 end
                 OPEN: begin
                     delay_cnt <= 32'd0;
-                    state <= WAIT_DELAY;
+                    gone_cnt  <= 2'b00;
+                    state <= WAIT_GONE;
+                end
+                WAIT_GONE: begin
+                    if(i_distance_val) begin
+                        if(i_distance > 12'd5 && i_distance < 12'd100) begin
+                            if(gone_cnt >= 2'b10) begin
+                                state    <= WAIT_DELAY;
+                                gone_cnt <= 2'b00;
+                            end else begin
+                                gone_cnt <= gone_cnt + 1'b1;
+                            end
+                        end else begin
+                            gone_cnt <= 2'b00;
+                        end
+                    end
                 end
                 WAIT_DELAY: begin
                     if (delay_cnt >= DELAY) begin
@@ -164,6 +182,10 @@ module sr04_fsm (
                     o_capture <= 1'b0;
                 end
                 OPEN: begin
+                    o_close   <= 1'b0;
+                    o_capture <= 1'b0;
+                end
+                WAIT_GONE: begin
                     o_close   <= 1'b0;
                     o_capture <= 1'b0;
                 end
