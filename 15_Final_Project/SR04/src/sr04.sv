@@ -19,7 +19,7 @@ module sr04 (
     SYNC_2FF #(
         .WIDTH(1)
     ) U_SYNC_cnndone (
-        .clk(clk),
+        .clk(pclk),
         .reset(reset),
         .async_in(i_cnn_done),
         .sync_out(s_cnn_done)
@@ -63,7 +63,7 @@ module sr04_fsm (
 
     // Variable
     localparam DISTANCE = 3;
-    localparam DELAY    = 742_500_000;
+    localparam DELAY    = 125_000_000;
 
     state_e state;
     logic [31:0] delay_cnt;
@@ -73,7 +73,7 @@ module sr04_fsm (
     SYNC_2FF #(
         .WIDTH(12)
     ) U_SYNC_SR04(
-        .clk(pclk),
+        .clk(clk),
         .reset(reset),
         .async_in(i_distance),
         .sync_out(s_distance)
