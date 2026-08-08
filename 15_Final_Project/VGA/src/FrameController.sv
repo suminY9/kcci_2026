@@ -12,7 +12,10 @@ module FrameController(
     output logic [31:0] o_data,
     output logic [7:0]  o_addr,
 
-    // to CNN_top
+    // from SR04
+    input  logic i_vga_start,
+
+    // to CNN_top & SR04
     output logic o_vga_done
 );
 
@@ -21,13 +24,79 @@ module FrameController(
     // Pixel data
     logic [23:0] PXLcrop;
     logic        PXLmono;
+    // start control
+    logic [10:0] x_pixel_passing, y_pixel_passing;
+    logic        w_vga_done;
+
+    // FSM
+    localparam IDLE = 0,
+               WAIT = 1,
+               WORK = 2,
+               DONE = 3;
+    logic [1:0] state, n_state;
+
+    /********* state update *********/
+    always_ff @(posedge i_pixel_clk, posedge reset) begin
+        if(reset) begin
+            state <= IDLE;
+        end else begin
+            state <= n_state;
+        end
+    end
+
+    /******* next state logic *******/
+    always_comb begin
+        n_state = state;
+        case(state)
+            IDLE: begin
+                if(i_vga_start) n_state = WAIT;
+            end
+            WAIT: begin
+                if((i_x_pixel == 0) && (i_y_pixel == 0)) n_state = WORK;
+            end
+            WORK: begin
+                if(w_vga_done) n_state = DONE;
+            end
+            DONE: begin
+                n_state = IDLE;
+            end
+        endcase
+    end
+
+    /******** output logic ********/
+    always_ff @(posedge i_pixel_clk, posedge reset) begin
+        if(reset) begin
+            x_pixel_passing <= 11'd0;
+            y_pixel_passing <= 11'd0;
+        end else begin
+            case(state)
+                IDLE: begin
+                    x_pixel_passing <= 11'd0;
+                    y_pixel_passing <= 11'd0;
+                end
+                WAIT: begin
+                    x_pixel_passing <= 11'd0;
+                    y_pixel_passing <= 11'd0;
+                end
+                WORK: begin
+                    x_pixel_passing <= i_x_pixel;
+                    y_pixel_passing <= i_y_pixel;
+                end
+                DONE: begin
+                    x_pixel_passing <= 11'd0;
+                    y_pixel_passing <= 11'd0;
+                end
+            endcase
+        end
+    end
+    /******************************/
 
     FrameCrop U_FrameCrop(
         .i_pixel_clk(i_pixel_clk),
         .reset(reset),
         .i_pdata(i_RGB),
-        .i_x_pixel(i_x_pixel),
-        .i_y_pixel(i_y_pixel),
+        .i_x_pixel(x_pixel_passing),
+        .i_y_pixel(y_pixel_passing),
         .o_pdata(PXLcrop),
         .o_valid(valid)
     );
@@ -43,7 +112,7 @@ module FrameController(
         .o_we(o_we),
         .o_data(o_data),
         .o_addr(o_addr),
-        .o_vga_done(o_vga_done)
+        .o_vga_done(w_vga_done)
     );
 endmodule
 
