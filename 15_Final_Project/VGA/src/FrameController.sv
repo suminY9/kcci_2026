@@ -68,23 +68,28 @@ module FrameController(
         if(reset) begin
             x_pixel_passing <= 11'd0;
             y_pixel_passing <= 11'd0;
+            o_vga_done      <= 1'b0;
         end else begin
             case(state)
                 IDLE: begin
                     x_pixel_passing <= 11'd0;
                     y_pixel_passing <= 11'd0;
+                    o_vga_done      <= 1'b0;
                 end
                 WAIT: begin
                     x_pixel_passing <= 11'd0;
                     y_pixel_passing <= 11'd0;
+                    o_vga_done      <= 1'b0;
                 end
                 WORK: begin
                     x_pixel_passing <= i_x_pixel;
                     y_pixel_passing <= i_y_pixel;
+                    o_vga_done      <= 1'b0;
                 end
                 DONE: begin
                     x_pixel_passing <= 11'd0;
                     y_pixel_passing <= 11'd0;
+                    o_vga_done      <= 1'b1;
                 end
             endcase
         end
