@@ -92,7 +92,6 @@ module sr04_fsm (
     typedef enum logic [2:0] {
         IDLE,
         WAIT,
-        START_VGA,
         WAIT_VGA,
         WAIT_CNN,
         OPEN,
@@ -123,14 +122,11 @@ module sr04_fsm (
                 end
                 WAIT: begin
                     if (delay_cnt >= DELAY) begin
-                        state <= START_VGA;
+                        state <= WAIT_VGA;
                         delay_cnt <= 32'd0;
                     end else begin
                         delay_cnt <= delay_cnt + 1'b1;
                     end
-                end
-                START_VGA: begin
-                    state <= WAIT_VGA;
                 end
                 WAIT_VGA: begin
                     if(i_vga_done) begin
@@ -191,12 +187,8 @@ module sr04_fsm (
                         o_vga_start <= 1'b0;
                     end
                 end
-                START_VGA: begin
-                    o_vga_start <= 1'b0;
-                    o_close     <= 1'b1;
-                end
                 WAIT_VGA: begin
-                    o_vga_start <= 1'b0;
+                    o_vga_start <= 1'b1;
                     o_close     <= 1'b1;
                 end
                 WAIT_CNN: begin
