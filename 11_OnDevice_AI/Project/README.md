@@ -15,15 +15,15 @@
 <br>
 
 ## 2. 주요 설계 내용
-### Dataset 전처리 과정 자동화 코드 구현
+### 1) Dataset 전처리 과정 자동화 코드 구현
 Python을 활용하여 데이터셋 일괄 resizing & labeling, yaml 자동 생성, Augmentation 자동화 코드 구현.
 
-### YOLO 딥러닝 모델 학습
+### 2) YOLO 딥러닝 모델 학습
 Google Colab 환경에서 yolo11n, yolo11m 모델 학습.
 
 Google Colab의 제약으로 학습량이 일정량을 초과하면 학습이 중단되어, 중단된 학습을 이어받을 수 있도록 Fine-tuning 방식을 활용함.
 
-### Auto Cashier System 코드 구현
+### 3) Auto Cashier System 코드 구현
 Jetson Orin Nano 보드 위에서 실행시킬 프로그램 코드 구현.
 
 yolo로 학습시킨 엔진을 올려 구동하고, 웹캠을 통해 탐지하고 인식한 오브젝트를 저장하도록 함. 키보드에서 's' 키를 누르면 웹캠을 종료하고, 탐지된 오브젝트를 기반으로 영수증 파일(.txt)을 생성함.
@@ -31,7 +31,44 @@ yolo로 학습시킨 엔진을 올려 구동하고, 웹캠을 통해 탐지하�
 <br>
 
 ## 3. 문제 해결
-### YOLO 모델 학습 정확도 개선
+### 1) YOLO 모델 학습 정확도 개선
+<table style="width: 100%; border: none; border-collapse: collapse;">
+  <tr>
+    <td style="width: 50%; text-align: center; padding: 5px; border: none;">
+      <img width="100%" alt="yolo before" src="https://github.com/user-attachments/assets/f8d0c11d-4f27-43c6-8c50-2cda29985b46" />
+    </td>
+    <td style="width: 50%; text-align: center; padding: 5px; border: none;">
+      <img width="100%" alt="yolo after" src="https://github.com/user-attachments/assets/eaccc2dd-3f26-4d54-9779-5a466d44bcbc" />
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 50%; text-align: center; padding: 5px; border: none;">
+      <b>그림 1-1:</b> Yolo Test Result (Before)
+    </td>
+    <td style="width: 50%; text-align: center; padding: 5px; border: none;">
+      <b>그림 1-2:</b> Yolo Test Result (After)
+    </td>
+  </tr>
+</table>
+<table style="width: 100%; border: none; border-collapse: collapse;">
+  <tr>
+    <td style="width: 50%; text-align: center; padding: 5px; border: none;">
+      <img width="100%" alt="yolo before" src="https://github.com/user-attachments/assets/5ef348a3-30e8-4a5c-8a67-5bf66db82ac2" />
+    </td>
+    <td style="width: 50%; text-align: center; padding: 5px; border: none;">
+      <img width="100%" alt="yolo after" src="https://github.com/user-attachments/assets/d596dd91-29b8-48fa-86b9-8389bec7dc4c" />
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 50%; text-align: center; padding: 5px; border: none;">
+      <b>그림 1-3:</b> Yolo Training Result Graph (Before)
+    </td>
+    <td style="width: 50%; text-align: center; padding: 5px; border: none;">
+      <b>그림 1-4:</b> Yolo Training Result Graph (After)
+    </td>
+  </tr>
+</table>
+
 - **문제**: 여러 오브젝트가 함께 있을 때 작은 오브젝트 탐지 능력 미흡, 상품 식별 정확도 미흡
 - **해결**:
 1. validation loss가 지속적인 하향세를 나타낸 점에서 학습 가능성이 남은 것으로 판단, epoch을 기존 65회에서 200회로 대폭 조정
