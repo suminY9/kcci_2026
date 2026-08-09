@@ -188,7 +188,7 @@ module sr04_fsm (
                     end
                 end
                 WAIT_VGA: begin
-                    o_vga_start <= 1'b1;
+                    o_vga_start <= 1'b0;
                     o_close     <= 1'b1;
                 end
                 WAIT_CNN: begin
