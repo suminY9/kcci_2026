@@ -1,5 +1,5 @@
 module SG90_Controller(
-    input  logic pclk,
+    input  logic clk,
     input  logic reset,
     input  logic i_open,
     input  logic i_close,
@@ -10,13 +10,13 @@ module SG90_Controller(
                CLOSE = 1;
     logic state, n_state;
 
-    localparam UNIT = 12_500;
+    localparam UNIT = 50_000;
     localparam PWM = 40;
     logic [$clog2(UNIT)-1:0] unit_cnt; // 0.5ms
     logic [$clog2(PWM)-1:0]  pwm_cnt;  // 20ms
 
     /********* state update *********/
-    always_ff @(posedge pclk, posedge reset) begin
+    always_ff @(posedge clk, posedge reset) begin
         if(reset) begin
             state <= CLOSE;
         end else begin
@@ -51,7 +51,7 @@ module SG90_Controller(
     end
 
     /********** pwm counter *********/
-    always_ff @(posedge pclk, posedge reset) begin
+    always_ff @(posedge clk, posedge reset) begin
         if(reset) begin
             unit_cnt <= 0;
             pwm_cnt  <= 0;

@@ -56,3 +56,29 @@ module PulseSync_100M_to_25M (
     // 변화 감지 (XOR)
     assign pulse_out = sync_toggle_q2 ^ sync_toggle_q3;
 endmodule
+
+
+module PulseSync_25M_to_100M (
+    input  logic clk_100m,   // 수신 측 클록 (100MHz)
+    input  logic reset,
+    input  logic sig_25m,    // 송신 측 신호 (25MHz 도메인)
+    output logic level_sig
+);
+
+    logic sync_q1, sync_q2;
+
+    // 2FF Synchronizer + Delay Flip-Flop
+    always_ff @(posedge clk_100m or posedge reset) begin
+        if (reset) begin
+            // 초기 상태 HIGH
+            sync_q1 <= 1'b1;
+            sync_q2 <= 1'b1;
+        end else begin
+            sync_q1 <= sig_25m;
+            sync_q2 <= sync_q1;
+        end
+    end
+
+    assign level_sig = sync_q2;
+
+endmodule

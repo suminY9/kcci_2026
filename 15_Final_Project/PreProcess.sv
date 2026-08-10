@@ -26,7 +26,7 @@ module PreProcess(
 );
     
     // SR04 -> SG90
-    logic w_close, w_gate;
+    logic w_close, s_close;
     // SR04 -> VGA
     logic w_vga_start, w_vga_done;
     assign vga_done = w_vga_done;
@@ -36,18 +36,24 @@ module PreProcess(
         .clk(clk),
         .pclk(pclk),
         .reset(reset),
-        .o_echo(echo),
+        .i_echo(echo),
         .o_trigger(trigger),
         .i_cnn_done(cnn_done),
         .o_vga_start(w_vga_start),
         .i_vga_done(w_vga_done),
         .o_close(w_close)
     );
-    SG90_Controller U_SG90(
-        .pclk(pclk),
+    PulseSync_25M_to_100M U_CLOSE_SIG_SYNC(
+        .clk_100m(clk),
         .reset(reset),
-        .i_open(~w_close),
-        .i_close(w_close),
+        .sig_25m(w_close),
+        .level_sig(s_close)
+    );
+    SG90_Controller U_SG90(
+        .clk(clk),
+        .reset(reset),
+        .i_open(~s_close),
+        .i_close(s_close),
         .o_pwm(pwm)
     );
 
