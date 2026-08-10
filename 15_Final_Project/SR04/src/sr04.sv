@@ -6,7 +6,7 @@ module sr04 (
     input  logic reset,
     
     // HW
-    input  logic o_echo,
+    input  logic i_echo,
     output logic o_trigger,
 
     // CNN
@@ -44,7 +44,7 @@ module sr04 (
     SR04_Controller U_SR04_CONTROLLER(
         .clk(clk),
         .reset(reset),
-        .echo(o_echo),
+        .echo(i_echo),
         .trigger(o_trigger),
         .distance(w_distance),
         .distance_val(w_distance_val)
