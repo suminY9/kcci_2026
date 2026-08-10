@@ -31,7 +31,7 @@ class vga_monitor extends uvm_monitor;
     task collect_input();
         vga_seq_item in_tx;
 
-        wait(vif.mon_cb.vag_start == 1'b1);
+        wait(vif.mon_cb.vga_start == 1'b1);
 
         forever begin
             @(vif.mon_cb);
@@ -57,7 +57,7 @@ class vga_monitor extends uvm_monitor;
             out_tx.pixel_addr = vif.mon_cb.pixel_addr;
             out_tx.pixel_data = vif.mon_cb.pixel_data;
             `uvm_info(get_type_name(), $sformatf("[%0d/128] Paddr: 0x%0h -> Pdata: 0x%0b",
-                                                    i+1, tx.pixel_addr, tx.pixel_data), UVM_HIGH)
+                                                    i+1, out_tx.pixel_addr, out_tx.pixel_data), UVM_HIGH)
             out_ap.write(out_tx);
         end
 

@@ -46,6 +46,6 @@ module tb_vga();
 
     initial begin
         $fsdbDumpfile("novas.fsdb");
-        $fsdbDumpfile(0, tb_vga, "+all");
+        $fsdbDumpvars(0, tb_vga, "+all");
     end
 endmodule

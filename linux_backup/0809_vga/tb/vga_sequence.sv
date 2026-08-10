@@ -13,12 +13,14 @@ class vga_randRGB_seq extends uvm_sequence#(vga_seq_item);
         item = vga_seq_item::type_id::create("item");
 
         start_item(item);
-            if(!item.randomize() with { RGB == rgb; x_pixel == x; y_pixel == y; })
+            if(!item.randomize() with { RGB == rgb; })
                 `uvm_fatal(get_type_name(), "capture() randomize fail!")
         finish_item(item);
 
+        clear_response_queue();
+
         `uvm_info(get_type_name(), $sformatf("capture() 전송 완료: x_pixel=%03d, y_pixel=%03d, RGB=%06h",
-                                                                  x_pixel, y_pixel, RGB), UVM_MEDIUM)
+                                                                  x, y, rgb), UVM_MEDIUM)
     endtask
 
     task read(bit [7:0] raddr, output bit [31:0] read_data);
@@ -49,7 +51,7 @@ class vga_randRGB_seq extends uvm_sequence#(vga_seq_item);
 
         start_item(item);
             item.vga_start <= 1'b1;
-        finish_ietm(item);
+        finish_item(item);
         for(int y = 0; y <= 479; y++) begin
             for(int x = 0; x <= 639; x++) begin
                 bit [23:0] rand_rgb;

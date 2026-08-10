@@ -2,8 +2,6 @@
 `define VGA_SEQ_ITEM_SV
 
 class vga_seq_item extends uvm_sequence_item;
-    `uvm_object_utils(vga_seq_item)
-
     rand  logic [23:0] RGB;
           logic [10:0] x_pixel;
           logic [10:0] y_pixel;
