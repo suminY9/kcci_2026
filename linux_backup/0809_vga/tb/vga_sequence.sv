@@ -41,6 +41,8 @@ class vga_randRGB_seq extends uvm_sequence#(vga_seq_item);
     endtask
 
     virtual task body();
+        bit [23:0] target_colors[$] = '{24'h00_00_00, 24'hff_ff_ff, 24'hf0_f0_f0, 24'h0f_0f_0f};
+
         vga_seq_item item;
         item = vga_seq_item::type_id::create("item");
 
@@ -50,7 +52,12 @@ class vga_randRGB_seq extends uvm_sequence#(vga_seq_item);
         for(int y = 0; y <= 479; y++) begin
             for(int x = 0; x <= 639; x++) begin
                 bit [23:0] rand_rgb;
-                rand_rgb = $urandom;
+                int rand_pct;
+
+                rand_pct = $urandom_range(1, 100);
+                if(rand_pct <= 90) rand_rgb = target_colors[$urandom_range(0, target_colors.size()-1)];
+                else               rand_rgb = $urandom;
+
                 capture(rand_rgb, x[10:0], y[10:0]);
             end
         end
