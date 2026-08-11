@@ -53,7 +53,7 @@ module FrameController(
                 if(i_vga_start) n_state = WAIT;
             end
             WAIT: begin
-                if(i_y_pixel == 210) n_state = WORK;
+                if(i_y_pixel == 300) n_state = WORK;
             end
             WORK: begin
                 if(w_vga_done) n_state = DONE;
@@ -173,12 +173,15 @@ module FrameCrop(
             case(state)
                 WAIT: begin
                     if(x_en && y_en) begin
-                            o_valid <= 1'b1;
-                            o_pdata <= i_pdata;
+                        o_valid <= 1'b1;
+                        o_pdata <= i_pdata;
+                    end else begin
+                        o_valid <= 1'b0;
+                        o_pdata <= 24'd0;
                     end
                 end
                 ENABLE: begin
-                    o_valid <= 1'b1;
+                    o_valid <= 1'b0;
                     o_pdata <= 24'd0;
                 end
                 default: begin
@@ -201,8 +204,8 @@ module FrameMono(
 
     // binary filter
     always_comb begin
-        if(gray >= 8'b0111_1111) o_pdata = 1'b1;
-        else                     o_pdata = 1'b0;
+        if(gray >= 8'b0111_1111) o_pdata = 1'b0;
+        else                     o_pdata = 1'b1;
     end
 endmodule
 
@@ -279,7 +282,7 @@ module FrameRegister(
             end
             WRITE: begin
                 o_we   <= 1'b1;
-                o_data <= {2'b11, FrameReg, 2'b11}; // white padding 28*28 -> 32*32
+                o_data <= {2'b00, FrameReg, 2'b00}; // white padding 28*28 -> 32*32
                 bitCnt <= 0;
                 posCnt <= posCnt + 1;
                 case(posCnt)
