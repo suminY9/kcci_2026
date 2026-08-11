@@ -1,4 +1,5 @@
 module VGA_top(
+    input  logic clk,
     input  logic i_pixel_clk,
     input  logic reset,
 
@@ -39,6 +40,8 @@ module VGA_top(
         .i_we(frame_we),
         .i_waddr(frame_waddr),
         .i_data(frame_line),
+        .i_rclk(clk),
+        .reset(reset),
         .i_raddr(i_pixel_addr),
         .o_data(o_pixel_data)
     );

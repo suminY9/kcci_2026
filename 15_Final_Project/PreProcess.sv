@@ -59,6 +59,7 @@ module PreProcess(
 
     /********* VGA *********/
     VGA_top U_VGA_TOP(
+        .clk(clk),
         .i_pixel_clk(pclk),
         .reset(reset),
         .i_RGB(RGB),
