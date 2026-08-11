@@ -37,10 +37,10 @@ verdi:
 	verdi $(VERDI_OPTS)
 
 verdi_sim:
-	verdi -dbdir simv.daidir -ssf novas.fsdb
+	verdi -dbdir simv.daidir -ssf novas.fsdb &
 
 verdi_cov:
-	verdi -cov -covdir coverage.vdb
+	verdi -cov -covdir coverage.vdb &
 
 clean:
 	@rm -rf simv* csrc *.key *.h *.log *.fsdb novas* *.conf *Log coverage.*

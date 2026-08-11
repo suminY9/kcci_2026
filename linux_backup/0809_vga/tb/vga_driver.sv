@@ -16,11 +16,20 @@ class vga_driver extends uvm_driver#(vga_seq_item);
     endfunction
 
     virtual task run_phase(uvm_phase phase);
+        vif.drv_cb.vga_start  <= 1'b0;
+        vif.drv_cb.RGB        <= '0;
+        vif.drv_cb.x_pixel    <= '0;
+        vif.drv_cb.y_pixel    <= '0;
+        vif.drv_cb.pixel_addr <= '0;
+
+        wait(vif.reset == 1'b0);
+        @(vif.drv_cb);
+
         forever begin
             seq_item_port.get_next_item(req);
             drive_vga(req);
             // req.set_id_info(req);
-            seq_item_port.item_done(req);
+            seq_item_port.item_done();
         end
     endtask
 
@@ -37,7 +46,9 @@ class vga_driver extends uvm_driver#(vga_seq_item);
         end else begin
             vif.drv_cb.pixel_addr <= item.pixel_addr;
             @(vif.drv_cb);
-            item.pixel_data       <= vif.drv_cb.pixel_data;
+            item.pixel_data = vif.drv_cb.pixel_data;
+
+            seq_item_port.put_response(item);
         end
     endtask
 endclass

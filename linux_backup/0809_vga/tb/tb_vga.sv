@@ -1,3 +1,5 @@
+`timescale 1ps/1ps
+
 `include "uvm_macros.svh"
 import uvm_pkg::*;
 
@@ -16,7 +18,7 @@ module tb_vga();
     logic pclk;
     logic reset;
 
-    always #5 pclk = ~pclk;
+    always #6826 pclk = ~pclk;
 
     vga_if vif(pclk, reset);
 

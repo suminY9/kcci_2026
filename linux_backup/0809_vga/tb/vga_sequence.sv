@@ -15,31 +15,26 @@ class vga_randRGB_seq extends uvm_sequence#(vga_seq_item);
         start_item(item);
             if(!item.randomize() with { RGB == rgb; })
                 `uvm_fatal(get_type_name(), "capture() randomize fail!")
+            item.x_pixel = x;
+            item.y_pixel = y;
         finish_item(item);
 
-        clear_response_queue();
-
         `uvm_info(get_type_name(), $sformatf("capture() 전송 완료: x_pixel=%03d, y_pixel=%03d, RGB=%06h",
-                                                                  x, y, rgb), UVM_MEDIUM)
+                                                                  item.x_pixel, item.y_pixel, item.RGB), UVM_MEDIUM)
     endtask
 
     task read(bit [7:0] raddr, output bit [31:0] read_data);
         vga_seq_item item;
-        uvm_sequence_item rsp;
+        vga_seq_item rsp;
         item = vga_seq_item::type_id::create("item");
 
         start_item(item);
+            item.y_pixel    = 480;
             item.pixel_addr = raddr;
         finish_item(item);
 
         get_response(rsp);
-        begin
-            vga_seq_item rsp_item;
-            if(!$cast(rsp_item, rsp)) begin
-                `uvm_fatal(get_type_name(), "Failed to cast rsp to vga_seq_item.")
-            end
-            read_data = rsp_item.pixel_data;
-        end
+        read_data = rsp.pixel_data;
 
         `uvm_info(get_type_name(), $sformatf("read() 전송 완료: pixel_addr=%03d, pixel_data=%032b",
                                                      raddr, read_data), UVM_MEDIUM)
@@ -50,7 +45,7 @@ class vga_randRGB_seq extends uvm_sequence#(vga_seq_item);
         item = vga_seq_item::type_id::create("item");
 
         start_item(item);
-            item.vga_start <= 1'b1;
+            item.vga_start = 1'b1;
         finish_item(item);
         for(int y = 0; y <= 479; y++) begin
             for(int x = 0; x <= 639; x++) begin
