@@ -30,8 +30,8 @@ class vga_scoreboard extends uvm_scoreboard;
     virtual function void write_in(vga_seq_item tx);
         bit [7:0]  gray;
 
-        if((tx.x_pixel >= 208) && (tx.x_pixel < 432) && (tx.x_pixel[0] == 1'b0)
-            &&(tx.y_pixel >= 212) && (tx.y_pixel < 268) && (tx.y_pixel[0] == 1'b0)) begin
+        if((tx.x_pixel >= 316) && (tx.x_pixel < 764) && (tx.x_pixel[1:0] == 2'b00)
+            &&(tx.y_pixel >= 304) && (tx.y_pixel < 416) && (tx.y_pixel[1:0] == 2'b00)) begin
 
             gray = (tx.RGB[23:16]>>2) + (tx.RGB[15:8]>>1) + (tx.RGB[15:8]>>3) + (tx.RGB[7:0]>>3);
             if(gray >= 8'b0111_1111) temp[i] = 1'b1;

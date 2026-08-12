@@ -140,14 +140,12 @@ module FrameCrop(
 
     logic x_en, y_en;
 
-    assign x_en = ((i_x_pixel >= 208) && (i_x_pixel < 432));
-    assign y_en = ((i_y_pixel >= 212) && (i_y_pixel < 268) && (i_y_pixel[0] == 1'b0));
+    assign x_en = ((i_x_pixel >= 316) && (i_x_pixel < 764) && (i_x_pixel[1:0] == 2'b00));
+    assign y_en = ((i_y_pixel >= 304) && (i_y_pixel < 416) && (i_y_pixel[1:0] == 2'b00));
 
     localparam WAIT = 0,
                ENABLE = 1;
     logic state, n_state;
-
-    logic pxlCnt;
 
     /********* state update *********/
     always_ff @(posedge i_pixel_clk, posedge reset) begin
@@ -171,41 +169,24 @@ module FrameCrop(
     always_ff @(posedge i_pixel_clk, posedge reset) begin
         if(reset) begin
             o_valid <= 0;
-            pxlCnt  <= 0;
         end else begin
             case(state)
                 WAIT: begin
                     if(x_en && y_en) begin
                         o_valid <= 1'b1;
                         o_pdata <= i_pdata;
-                        pxlCnt  <= 1'b0;
                     end else begin
                         o_valid <= 1'b0;
                         o_pdata <= 24'd0;
-                        pxlCnt  <= 0;
                     end
                 end
                 ENABLE: begin
-                    if(x_en && y_en) begin
-                        if(pxlCnt == 1) begin
-                            o_valid <= 1'b1;
-                            o_pdata <= i_pdata;
-                            pxlCnt  <= 0;
-                        end else begin
-                            o_valid <= 1'b0;
-                            o_pdata <= 24'd0;
-                            pxlCnt  <= pxlCnt + 1;
-                        end
-                    end else begin
-                        o_valid <= 1'b0;
-                        o_pdata <= 24'd0;
-                        pxlCnt  <= 1'b0;
-                    end
+                    o_valid <= 1'b0;
+                    o_pdata <= 24'd0;
                 end
                 default: begin
                     o_valid <= 1'b0;
                     o_pdata <= 24'd0;
-                    pxlCnt  <= 1'b0;
                 end
             endcase
         end

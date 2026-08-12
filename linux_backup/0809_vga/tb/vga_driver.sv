@@ -38,7 +38,7 @@ class vga_driver extends uvm_driver#(vga_seq_item);
             vif.drv_cb.vga_start <= 1'b1;
             @(vif.drv_cb);
             vif.drv_cb.vga_start <= 1'b0;
-        end else if(item.y_pixel < 480) begin
+        end else if(item.y_pixel < 720) begin
             vif.drv_cb.RGB     <= item.RGB;
             vif.drv_cb.x_pixel <= item.x_pixel;
             vif.drv_cb.y_pixel <= item.y_pixel;
