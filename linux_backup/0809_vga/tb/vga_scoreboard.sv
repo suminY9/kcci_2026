@@ -34,7 +34,7 @@ class vga_scoreboard extends uvm_scoreboard;
             &&(tx.y_pixel >= 304) && (tx.y_pixel < 416) && (tx.y_pixel[1:0] == 2'b00)) begin
 
             gray = (tx.RGB[23:16]>>2) + (tx.RGB[15:8]>>1) + (tx.RGB[15:8]>>3) + (tx.RGB[7:0]>>3);
-            if(gray >= 8'b0111_1111) temp[i] = 1'b1;
+            if(gray >= 8'b1111_0000) temp[i] = 1'b1;
             else                     temp[i] = 1'b0;
 
             if(i == 27) begin
