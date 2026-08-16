@@ -33,17 +33,33 @@ module SG90_Controller(
         endcase
     end
 
-    /********* output logic *********/
+    /********* output logic (clockwise) *********/
+    // always_comb begin
+    //     case(state)
+    //         OPEN: begin
+    //         // 90 degree: 1.5ms HIGH - 18.5ms LOW
+    //             if(pwm_cnt < 3) o_pwm = 1'b1;
+    //             else            o_pwm = 1'b0;
+    //         end
+    //         CLOSE: begin
+    //         // 0 degree: 0.5ms HIGH - 19.5ms LOW
+    //             if(pwm_cnt < 1) o_pwm = 1'b1;
+    //             else            o_pwm = 1'b0;
+    //         end
+    //         default: o_pwm = 1'b0;
+    //     endcase
+    // end
+    /********* output logic (counterclockwise) *********/
     always_comb begin
         case(state)
             OPEN: begin
-            // 90 degree: 1.5ms HIGH - 18.5ms LOW
-                if(pwm_cnt < 3) o_pwm = 1'b1;
+            // 0 degree: 0.5ms HIGH - 19.5ms LOW
+                if(pwm_cnt < 1) o_pwm = 1'b1;
                 else            o_pwm = 1'b0;
             end
             CLOSE: begin
-            // 0 degree: 0.5ms HIGH - 19.5ms LOW
-                if(pwm_cnt < 1) o_pwm = 1'b1;
+            // 90 degree: 1.5ms HIGH - 18.5ms LOW
+                if(pwm_cnt < 3) o_pwm = 1'b1;
                 else            o_pwm = 1'b0;
             end
             default: o_pwm = 1'b0;
