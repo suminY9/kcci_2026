@@ -108,6 +108,7 @@
 
 <br>
 
+### 4) SPI Slave UVM Verification
 <table style="width: 100%; border: none; border-collapse: collapse;">
   <tr>
     <td style="width: 33%; text-align: center; padding: 5px; border: none;">
@@ -122,13 +123,13 @@
   </tr>
   <tr>
     <td style="width: 33%; text-align: center; padding: 5px; border: none;">
-      <b>그림 3-5:</b> SPI UVM Structure
+      <b>그림 4-1:</b> SPI UVM Structure
     </td>
     <td style="width: 33%; text-align: center; padding: 5px; border: none;">
-      <b>그림 3-6:</b> SPI UVM Result
+      <b>그림 4-2:</b> SPI UVM Result
     </td>
     <td style="width: 33%; text-align: center; padding: 5px; border: none;">
-      <b>그림 3-7:</b> SPI UVM Coverage
+      <b>그림 4-3:</b> SPI UVM Coverage
     </td>
   </tr>
 </table>

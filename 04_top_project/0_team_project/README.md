@@ -15,10 +15,10 @@
 <br>
 
 ## 2. 주요 설계 내용
-### SR04 Controller
+### 1) SR04 Controller
 
 
-### UART 동작 검증
+### 2) UART 동작 검증
 
 
 <br>
