@@ -2,7 +2,7 @@
 
 ## 1. 프로젝트 개요
 - 팀명: Cars대라
-- 수행 기간: 2026.07.22 ~ 08.18
+- 수행 기간: 2026.07.22 ~ 08.20
 - 수행 내용: 차량 번호판 인식, 차량 맞춤 빈 자리 안내, 주차 요금 자동 정산. 스마트 무인 주차장 시스템 개발
 - 사용 기술: `SystemVerilog` `C` `Python` `MicroBlaze` `UVM` `Zybo Z7-20` `ESP32` `Jetson Orin Nano`
 - 담당 역할: PreProcess(SR04, SG90, VGA, UART, Wi-Fi) RTL Design & VGA UVM Verification
@@ -61,6 +61,10 @@ SR04 Controller에서 vga_start 신호가 들어오면 Pcam의 스트림 영상�
 
 ```text
 Project/
+├── 0_TEAM/
+│   ├── System_Integration/
+│   ├── cctv_gui/
+│   └── python_code/
 ├── SG90/
 │   ├── src/
 │   │   ├── test/
@@ -105,6 +109,35 @@ Project/
 │   │   │   └── VGAtest_top.sv
 │   │   └── xdc/
 │   │       └── Basys-3-Master_CAM0.xdc
+│   ├── UVM/
+│   │   ├── rtl/
+│   │   │   ├── FrameController.sv
+│   │   │   ├── PixelBuffer.sv
+│   │   │   └── VGA_top.sv
+│   │   ├── tb/
+│   │   │   ├── tb_vga.sv
+│   │   │   ├── testImage.JPG
+│   │   │   ├── testImage2.jpg
+│   │   │   ├── testImage2_UVM.mem
+│   │   │   ├── testImage3.jpg
+│   │   │   ├── testImage3_UVM.mem
+│   │   │   ├── testImage_UVM.mem
+│   │   │   ├── uvm_component.sv
+│   │   │   ├── vga_agent.sv
+│   │   │   ├── vga_coverage.sv
+│   │   │   ├── vga_driver.sv
+│   │   │   ├── vga_env.sv
+│   │   │   ├── vga_interface.sv
+│   │   │   ├── vga_monitor.sv
+│   │   │   ├── vga_scoreboard.sv
+│   │   │   ├── vga_seq_item.sv
+│   │   │   ├── vga_sequence.sv
+│   │   │   └── vga_test.sv
+│   │   ├── Makefile
+│   │   ├── filelist.f
+│   │   ├── simv_log.tar
+│   │   ├── simv_random.log
+│   │   └── simv_random_coverage.log
 │   ├── src/
 │   │   ├── FrameController.sv
 │   │   ├── PixelBuffer.sv
@@ -122,6 +155,13 @@ Project/
 │       ├── Basys-3-Master_WiFi.xdc
 │       ├── btn_debounce.v
 │       └── Wi-Fi_UART_top.sv
+├── test/
+│   ├── FrameDataController.sv
+│   ├── PL_top.sv
+│   ├── PL_top_TestManual.md
+│   ├── UART_test_top.sv
+│   ├── Zybo-Z7.xdc
+│   └── btn_debounce.v
 ├── PreProcess.sv
 ├── SYNC_2FF.sv
 └── README.md
