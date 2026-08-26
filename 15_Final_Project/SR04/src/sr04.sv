@@ -20,27 +20,18 @@ module sr04 (
     output logic o_close
 );
 
-    logic [11:0] w_distance, s_distance;
-
-    logic s_cnn_done;
-    logic w_distance_val, s_distance_val;
+    logic [11:0] w_distance;
+    logic w_distance_val;
+    logic w_vga_start_100m, s_vga_done_100m;
     
-    always_ff @(posedge pclk or posedge reset) begin
-        if (reset) begin
-            s_distance <= 12'd0;
-        end else if (s_distance_val) begin
-            s_distance <= w_distance;
-        end
-    end
-
-    PulseSync_100M_to_25M U_SYNC_cnndone(
+    PulseSync_100M_to_25M U_SYNC_VGA_START (
         .clk_100m(clk),
-        .clk_25m(pclk),
+        .clk_25m (pclk),
         .reset(reset),
-        .pulse_in(i_cnn_done),
-        .pulse_out(s_cnn_done)
+        .pulse_in(w_vga_start_100m),
+        .pulse_out(o_vga_start)
     );
-    // 초음파 센서 구동부 인스턴스
+    // 초음파 센서 구동부
     SR04_Controller U_SR04_CONTROLLER(
         .clk(clk),
         .reset(reset),
@@ -49,22 +40,22 @@ module sr04 (
         .distance(w_distance),
         .distance_val(w_distance_val)
     );
-    PulseSync_100M_to_25M U_SYNC_distanceval(
-        .clk_100m(clk),
+    PulseSync_25M_to_100M U_SYNC_VGA_DONE(
         .clk_25m(pclk),
+        .clk_100m(clk),
         .reset(reset),
-        .pulse_in(w_distance_val),
-        .pulse_out(s_distance_val)
+        .pulse_in(i_vga_done),
+        .pulse_out(s_vga_done_100m)
     );
     // 카메라 및 문 제어 FSM 인스턴스
     sr04_fsm U_FSM_CONTROL (
-        .clk(pclk),
+        .clk(clk),
         .reset(reset),
-        .i_distance_val(s_distance_val),
-        .i_distance(s_distance),
-        .i_cnn_done(s_cnn_done),
-        .o_vga_start(o_vga_start),
-        .i_vga_done(i_vga_done),
+        .i_distance_val(w_distance_val),
+        .i_distance(w_distance),
+        .i_cnn_done(i_cnn_done),
+        .o_vga_start(w_vga_start_100m),
+        .i_vga_done(s_vga_done_100m),
         .o_close(o_close)
     );
 
@@ -101,7 +92,7 @@ module sr04_fsm (
 
     // Variable
     localparam DISTANCE = 3;
-    localparam DELAY    = 50_000_000;
+    localparam DELAY    = 400_000_000;
 
     state_e state;
     logic [31:0] delay_cnt;
@@ -116,7 +107,7 @@ module sr04_fsm (
             case (state)
                 IDLE: begin
                     delay_cnt <= 32'd0;
-                    if (i_distance > 12'd0 && i_distance <= DISTANCE) begin
+                    if (i_distance_val && i_distance > 12'd0 && i_distance <= DISTANCE) begin
                         state <= WAIT;
                     end
                 end

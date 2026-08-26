@@ -10,19 +10,41 @@
 
 | 김수빈 | 김지홍 | 문태성 | 서어진 | 송주연 | 윤수민 | 조준호 |
 |:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|
-|  |  |  |  |  |  |  |
+| zybo 통합, SR04 Controller 설계, PCAM 스트리밍 | CNN 통합, CNN Control Unit & Conv3 & FC1 & FC2 설계 및 검증 | CNN Ref. model 설계, Conv1 & Conv2 검증 | Wi-Fi 수신 설계, 차량 추적 모델 학습, 차량 안내 서비스, 주차장 내부 관리 총괄 | Pooling Layer 설계, Conv & Pool 통합 | PreProcess 통합, SG90 Controller & VGA 설계, UART & Wi-Fi 송신 설계, VGA_top UVM 검증 | Conv1 & Conv2 설계, AI Dataset Labeling |
 
 <br>
 
 ## 2. 주요 설계 내용
+### 1) PCAM 이미지 처리 모듈 설계 및 UVM 검증
+SR04 Controller에서 vga_start 신호가 들어오면 Pcam의 스트림 영상을 1 frame 캡쳐하고 가공하는 모듈. <br>
+1. **FrameCrop**: 화면 중앙의 특정 영역만큼 이미지를 잘라낸 후 1/4 down scale. <br>
+                  원하는 좌표일 때에만 Valid 신호가 1이 되도록 함.
+2. **FrameMono**: RGB888 형식의 Pixel Data를 Binary 형식으로 변환. <br>
+                  24-bit Pixel Data를 Gray Scale로 변환한 후, 임계값 이상이면 1, 이하이면 0으로 변환.
+3. **FrameRegister**: Binary Pixel Data가 28-bit 모이면 PixelBuffer의 알맞은 주소에 저장. <br>
+                      28-bit가 모이면 MSB와 LSB에 각각 00을 padding하여 32-bit의 word data를 PixelBuffer에 저장. <br>
+                      pos 변수를 두어 word를 저장할 때마다 1씩 증가시킴으로써 4자리 숫자 이미지를 자릿수별로 저장함. <br>
 
 
+### 2) SG90(서보모터) Controller 설계
+20ms의 주기를 갖는 PWM 신호의 Duty Cycle을 변경시켜 모터의 각도를 조절함. <br>
+1. **Close(0도, 차단바 닫힘)**: 0.5ms 동안 HIGH를 유지하고, 19.5ms동안 LOW를 유지.
+2. **Open(90도, 차단바 열림)**: 1.5ms 동안 HIGH를 유지하고, 18.5ms동안 LOW를 유지.
 
 <br>
 
 ## 3. 문제 해결
+### 1) Negative Slack 오류 해결
+- **문제**: 보드에 올린 후 동작시켰을 때 PixelBuffer에 비정상 값이 저장되어 있는 문제
+- **해결**: Pixel Data를 처리하는 과정 전반(FrameCrop, FrameMono, FrameRegister)을 모두 한 클럭의 조합회로로 연산했기 때문에 Negative Slack이 발생한 것으로 분석. FrameCrop에서 한 클럭을 끊어주어 클럭 당 연산량을 줄임.
+- **결과**: PixelBuffer에 정상적으로 이미지 데이터가 저장되는 것을 확인.
+- **배운점**: 시뮬레이션에서는 정상적으로 동작하더라도, 실제 보드 환경에서는 여러 가지 원인으로 인해 정상 동작하지 않을 수 있으며, 클럭 타이밍도 중요한 디버깅 요소라는 점을 배웠다. <br>
 
-
+### 2) 이미지 처리 모듈 빛 저항성 개선
+- **문제**: PixelBuffer에 저장된 이미지 데이터에서 번호판 영역의 글자가 흐릿하게 나타나는 문제
+- **해결**: FrameMono 모듈에서 Gray Scale로 변환했을 때 RGB 값이 8'b0111_1111 이상이면 binary 1로 변환하도록 임계값을 설정했었는데, 빛의 영향을 받아 번호판이 밝게 촬영된 것이 원인이 되어 검은색 글자의 영역도 흰색으로 변환해버린 것이 원인인 것으로 분석. 임계값을 8'b1100_0000으로 높였음.
+- **결과**: PixelBuffer에 자장저자된 이미지 데이터에서 번호판 영역의 글자가 선명하게 나타나는 것을 확인.
+- **배운점**: Pixel Data를 받아서 처리하는 모듈을 설계하고, 처리 결과를 보며 디버깅하는 과정에서 Pixel Data를 다루는 것에 능숙해졌다. Display의 RGB 값은 실제 눈에 보이는 것보다 빛에 더욱 민감하다는 것을 알게 되었다.
 
 <br>
 

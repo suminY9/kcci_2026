@@ -204,7 +204,7 @@ module FrameMono(
 
     // binary filter
     always_comb begin
-        if(gray >= 8'b0111_1111) o_pdata = 1'b0;
+        if(gray >= 8'b1100_0000) o_pdata = 1'b0;
         else                     o_pdata = 1'b1;
     end
 endmodule
