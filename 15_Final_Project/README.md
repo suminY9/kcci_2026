@@ -15,7 +15,7 @@
 <br>
 
 ## 2. 주요 설계 내용
-### 1) PCAM 이미지 처리 모듈 설계 및 UVM 검증
+### 1) PCAM 이미지 처리 모듈 설계
 SR04 Controller에서 vga_start 신호가 들어오면 Pcam의 스트림 영상을 1 frame 캡쳐하고 가공하는 모듈. <br>
 1. **FrameCrop**: 화면 중앙의 특정 영역만큼 이미지를 잘라낸 후 1/4 down scale. <br>
                   원하는 좌표일 때에만 Valid 신호가 1이 되도록 함.
@@ -26,10 +26,24 @@ SR04 Controller에서 vga_start 신호가 들어오면 Pcam의 스트림 영상�
                       pos 변수를 두어 word를 저장할 때마다 1씩 증가시킴으로써 4자리 숫자 이미지를 자릿수별로 저장함. <br>
 
 
-### 2) SG90(서보모터) Controller 설계
+### 2) PCAM 이미지 처리 모듈 UVM 검증
+VGA_top의 데이터 무결성 검증. <br>
+1080*720 RGB888 이미지를 입력으로 넣었을 때, <br>
+(1) FrameRegister의 o_data가 이론 값과 일치하는지 검증. -> PASS <br>
+(2) PixelBuffer에 저장된 이미지 데이터를 출력하여 의도한 결과대로 저장되었는지 확인. -> PASS <br>
+
+
+### 3) SG90(서보모터) Controller 설계
 20ms의 주기를 갖는 PWM 신호의 Duty Cycle을 변경시켜 모터의 각도를 조절함. <br>
 1. **Close(0도, 차단바 닫힘)**: 0.5ms 동안 HIGH를 유지하고, 19.5ms동안 LOW를 유지.
 2. **Open(90도, 차단바 열림)**: 1.5ms 동안 HIGH를 유지하고, 18.5ms동안 LOW를 유지.
+
+
+### 4) UART 설계
+CNN 모듈에서 추론한 4자리 숫자를 16-bit 입력으로 넣어주면, 8-bit씩 분리하여 TX로 2회 송신하는 모듈. <br>
+1. **InfDataController**: 16-bit 입력을 8-bit 출력 두 번으로 분리하여 FIFO에 넣음.
+2. **FIFO**: bit width 8 / depth 4
+3. **UART_TX**: 8-bit씩 tx로 전송.
 
 <br>
 
