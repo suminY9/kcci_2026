@@ -172,7 +172,7 @@ CNN 모듈에서 추론한 4자리 숫자를 16-bit 입력으로 넣어주면, 8
 <br>
 
 ## 3. 문제 해결
-### 1) Negative Slack 오류 해결
+### 1) Negative Slack 해결
 <table style="width: 100%; border: none; border-collapse: collapse;">
 <tr>
     <td style="width: 33%; text-align: center; padding: 5px; border: none;">
