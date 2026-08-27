@@ -9,7 +9,7 @@
 <br>
 
 ## 2. 주요 설계 내용
-### 1) AXI Protocol
+### 1) AXI4-Lite 기반 IP 설계
 <table style="width: 100%; border: none; border-collapse: collapse;">
   <tr>
     <td style="width: 100%; text-align: center; padding: 5px; border: none;">
@@ -23,10 +23,12 @@
   </tr>
 </table>
 
+VALID, READY 핸드셰이크 신호를 주고받는 AW, W, B, AR, R 채널 동작 구현. <br>
+AXI Slave에 SPI, I2C 모듈을 연결하여 MicroBlaze MCU의 AXI 기반 Peripheral IP 설계.
 
 <br>
 
-### 2) I2C Protocol
+### 2) I2C Protocol 구현
 <table style="width: 100%; border: none; border-collapse: collapse;">
   <tr>
     <td style="width: 100%; text-align: center; padding: 5px; border: none;">
@@ -64,10 +66,11 @@
   </tr>
 </table>
 
+SDA/SCL 타이밍 설계를 통한 8-bit 직렬 전송 I2C 프로토콜 FSM 구현.
 
 <br>
 
-### 3) SPI Protocol
+### 3) SPI Protocol 구현
 <table style="width: 100%; border: none; border-collapse: collapse;">
   <tr>
     <td style="width: 100%; text-align: center; padding: 5px; border: none;">
@@ -105,10 +108,11 @@
   </tr>
 </table>
 
+CPOL/CPHA에 따른 SCLK 타이밍 구현을 통한 8-bit 데이터 직렬 전송 SPI 프로토콜 FSM 구현.
 
 <br>
 
-### 4) SPI Slave UVM Verification
+### 4) SPI Slave UVM 검증
 <table style="width: 100%; border: none; border-collapse: collapse;">
   <tr>
     <td style="width: 33%; text-align: center; padding: 5px; border: none;">
@@ -134,11 +138,16 @@
   </tr>
 </table>
 
+데이터 무결성 검증 및 최대 동작 주파수 검증 수행 결과, ALL Pass.
 
 <br>
 
 ## 3. 문제 해결
-
+### 1) UVM 검증을 통한 SPI Master 타이밍 설계 오류 발견 및 개선
+- **문제**: SPI Master의 데이터 무결성 UVM 검증 결과 특정 데이터 수신 시 마지막 bit가 무시되는 오류 발견
+- **해결**: FSM(IDLE-START-WAIT_CMD-DATA-ACK-STOP) state 중 DATA state에서 8-bit를 완성하면 STOP state로 진행하도록 설계하여 타이밍이 어긋났던 것으로 판단. 마지막 bit를 STOP state에서 수신하도록 수정
+- **결과**: 모든 bit가 누락 없이 정상 수신되는 것을 확인. UVM 검증 결과 ALL Pass
+- **배운점**: 통신 모듈은 '신호의 타이밍'이 가장 중요하다는 것을 많이 느꼈고, 설계 뿐만 아니라 디버깅을 하는 데에 있어서도 각각의 신호에 대한 충분한 이해가 필수적으로 동반되어야 함을 체감했다. <br>
 
 
 <br>
