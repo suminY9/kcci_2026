@@ -144,6 +144,25 @@ CPOL/CPHA에 따른 SCLK 타이밍 구현을 통한 8-bit 데이터 직렬 전�
 
 ## 3. 문제 해결
 ### 1) UVM 검증을 통한 SPI Master 타이밍 설계 오류 발견 및 개선
+<table style="width: 100%; border: none; border-collapse: collapse;">
+  <tr>
+    <td style="width: 50%; text-align: center; padding: 5px; border: none;">
+      <img width="500" alt="SPI Error" src="https://github.com/user-attachments/assets/c24a7d99-f52b-4ee4-aea7-6696210e73ec" />
+    </td>
+    <td style="width: 50%; text-align: center; padding: 5px; border: none;">
+      <img width="500" alt="SPI Fixed" src="https://github.com/user-attachments/assets/0d52ea78-1254-4e56-9bcb-5403258f6c76" />
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 50%; text-align: center; padding: 5px; border: none;">
+      <b>그림 5-1:</b> SPI Master Simulation (Error)
+    </td>
+    <td style="width: 50%; text-align: center; padding: 5px; border: none;">
+      <b>그림 5-2:</b> SPI Master Simulation (Fixed)
+    </td>
+  </tr>
+</table>
+
 - **문제**: SPI Master의 데이터 무결성 UVM 검증 결과 특정 데이터 수신 시 마지막 bit가 무시되는 오류 발견
 - **해결**: FSM(IDLE-START-WAIT_CMD-DATA-ACK-STOP) state 중 DATA state에서 8-bit를 완성하면 STOP state로 진행하도록 설계하여 타이밍이 어긋났던 것으로 판단. 마지막 bit를 STOP state에서 수신하도록 수정
 - **결과**: 모든 bit가 누락 없이 정상 수신되는 것을 확인. UVM 검증 결과 ALL Pass
