@@ -64,6 +64,17 @@
   </tr>
 </table>
 
+`ADD`: rd = rs1 + rs2 <br>
+`SUB`: rd = rs1 - rs2 <br>
+`SLL`: rd = rs1 << rs2 <br>
+`SLT`: rd = (rs1 < rs2) ? 1: 0 (signed) <br>
+`SLTU`: rd = (rs1 < rs2) ? 1: 0 (unsigned) <br>
+`XOR`: rd = rs1 ^ rs2 <br>
+`SRL`: rd = rs1 >> rs2 (zero extension) <br>
+`SRA`: rd = rs1 >> rs2 (sign extension) <br>
+`OR`: rd = rs1 | rs2 <br>
+`AND`: rd = rs1 & rs2 <br>
+
 <br>
 
 2. **S-type**
@@ -101,6 +112,10 @@
     </td>
   </tr>
 </table>
+
+`SB`: M[rs1+imm][0:7] = rs2[0:7] <br>
+`SH`: M[rs1+imm][0:15] = rs2[0:15] <br>
+`SW`: M[rs1+imm][0:31] = rs2[0:31] <br>
 
 <br>
 
@@ -140,6 +155,12 @@
   </tr>
 </table>
 
+`LB`: rd = M[rs1+imm][0:7] <br>
+`LH`: rd = M[rs1+imm][0:15] <br>
+`LW`: rd = M[rs1+imm][0:31] <br>
+`LBU`: rd = M[rs1+imm][0:7] (unsigned) <br>
+`LHU`: rd = M[rs1+imm][0:15] (unsigned) <br>
+
 <br>
 
 4. **I-type**
@@ -178,6 +199,16 @@
   </tr>
 </table>
 
+`ADDI`: rd = rs1 + imm <br>
+`SLTI`: rd = (rs1 < imm) ? 1: 0 <br>
+`SLTIU`: rd = (rs1 < imm) ? 1 : 0 (unsigned) <br>
+`XORI`: rd = rs1 ^ imm <br>
+`ORI`: rd = rs1 | imm <br>
+`ANDI`: rd = rs1 & imm <br>
+`SLLI`: rd = rs1 << imm[0:4] <br>
+`SRLI`: rd = rs1 >> imm[0:4] (zero extension) <br>
+`SRAI`: rd = rs1 >> imm[0:4] (sign extension) <br>
+
 <br>
 
 5. **B-type**
@@ -207,6 +238,13 @@
     </td>
 </table>
 
+`BEQ`: if(rs1 == rs2) PC += imm <br>
+`BNE`: if(rs1 != rs2) PC += imm <br>
+`BLT`: if(rs1 < rs2) PC += imm <br>
+`BGE`: if(rs1 >= rs2) PC += imm <br>
+`BLTU`: if(rs1 < rs2) PC += imm <br>
+`BGEU`: if(rs1 >= rs2) PC += imm <br>
+
 <br>
 
 6. **U-type(LUI)**
@@ -220,6 +258,8 @@
       <b>그림 7:</b> U-type(LUI) Block Diagram
     </td>
 </table>
+
+`LUI`: rd = imm <br>
 
 <br>
 
@@ -235,6 +275,8 @@
     </td>
 </table>
 
+`AUIPC`: rd = PC + imm <br>
+
 <br>
 
 8. **J-type(JAL)**
@@ -249,6 +291,8 @@
     </td>
 </table>
 
+`JAL`: rd = PC + 4, PC = PC + imm <br>
+
 <br>
 
 9. **J-type(JALR)**
@@ -262,6 +306,8 @@
       <b>그림 10:</b> J-type(JALR) Block Diagram
     </td>
 </table>
+
+`JALR`: rd = PC + 4, PC = rs1 + imm <br>
 
 <br>
 
